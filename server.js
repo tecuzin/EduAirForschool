@@ -304,6 +304,25 @@ app.get('/contributor/:id',(request,response)=>{
 
 
 
+////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
+
+
+
+app.get('/upload',(request,response)=>{
+
+	var data_page = {
+		'title':request.__('term'),
+		'ip_server':ip_server,
+		'protocol':protocol
+	};
+	response.render('upload',data_page)
+})
+
+////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
+
+
+
+
 
 
 
