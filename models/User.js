@@ -9,9 +9,7 @@ var bcrypt		  = require('bcrypt-nodejs');
 
 
 class User{
-
-
-
+	
 	static login (content,call_back){
 
 		db_connection(function(err, db){

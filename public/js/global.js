@@ -84,10 +84,10 @@ $(document).ready(function(){
 
 
 	//////////////////////Changing Background//////////////////////////////////////////////////////////////////////////
-	// $('body').css('background-image','url("assets/background/test.png")').animate({opacity: 0.9})
-	// $('body').css('background-repeat','no-repeat')
-	// $('body').css('background-attachment','fixed')
-	// $('body').css('background-size','cover')
+	$('body').css('background-image','url("assets/background/test.png")').animate({opacity: 0.9})
+	$('body').css('background-repeat','no-repeat')
+	$('body').css('background-attachment','fixed')
+	$('body').css('background-size','cover')
 	//////////////////////Changing Background//////////////////////////////////////////////////////////////////////////
 	
 

@@ -5,11 +5,14 @@ os 				= require('os'),
 bodyParser 		= require('body-parser'),
 passwordHash 	= require('password-hash'),
 redis 			= require('redis'),
+formidable		= require("formidable"),
+path			= require("path"),
 //client 			= redis.createClient(),
 session 		= require('express-session'),
 redisStore 		= require('connect-redis')(session),
 cookieParser    = require('cookie-parser'),
-bcrypt			= require('bcrypt-nodejs');
+bcrypt			= require('bcrypt-nodejs'),
+fs				= require("fs");
 
 
 var port 		= 80;
@@ -306,8 +309,6 @@ app.get('/contributor/:id',(request,response)=>{
 
 ////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
 
-
-
 app.get('/upload',(request,response)=>{
 
 	var data_page = {
@@ -320,7 +321,27 @@ app.get('/upload',(request,response)=>{
 
 ////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
 
+app.post('/upload', (request, response) => {
+	var form = new formidable.IncomingForm();
 
+	//settings
+	form.multiples = true;
+	form.uploadDir = path.join(__dirname, "/public/uploads");
+
+	form.on("file", function(field, file){
+		fs.rename(file.path, path.join(form.uploadDir, file.name));
+	});
+
+	form.on('error', function(err) {
+		console.log('An error has occured: \n' + err);
+	});
+
+	form.on('end', function() {
+		response.end('success');
+	});
+
+	form.parse(request);
+});
 
 
 

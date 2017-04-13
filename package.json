@@ -17,6 +17,8 @@
     "ejs": "^2.5.5",
     "express": "^4.14.1",
     "express-session": "^1.15.0",
+    "ffmpeg": "0.0.4",
+    "formidable": "^1.1.1",
     "i18n": "^0.8.3",
     "mongodb": "^2.2.22",
     "nodemon": "^1.11.0",
