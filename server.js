@@ -5,14 +5,12 @@ os 				= require('os'),
 bodyParser 		= require('body-parser'),
 passwordHash 	= require('password-hash'),
 redis 			= require('redis'),
-formidable		= require("formidable"),
-path			= require("path"),
 //client 			= redis.createClient(),
 session 		= require('express-session'),
 redisStore 		= require('connect-redis')(session),
 cookieParser    = require('cookie-parser'),
-bcrypt			= require('bcrypt-nodejs'),
-fs				= require("fs");
+bcrypt			= require('bcrypt-nodejs');
+
 
 
 var port 		= 80;
@@ -29,7 +27,10 @@ var min_character_user_password		= 4;
 var language 	= require('./local_modules/language');
 
 var User 		= require('./models/User');//Model user
-var Admin 		= require('./models/Admin');//Model user
+var Admin 		= require('./models/Admin');//Model Admin
+var librarian 	= require('./models/Elastic');//Model Search engine
+var filer  		= require('./models/Filer');//Model to manage files
+
 
 var app = express();
 
@@ -309,6 +310,8 @@ app.get('/contributor/:id',(request,response)=>{
 
 ////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
 
+
+
 app.get('/upload',(request,response)=>{
 
 	var data_page = {
@@ -319,29 +322,23 @@ app.get('/upload',(request,response)=>{
 	response.render('upload',data_page)
 })
 
+
+
+app.get('/test',(request,response)=>{
+
+	
+	filer.convert_to_mp4('test.3gp',function  (results) {
+		
+		response.send(results);
+	})
+})
+
+
+
+
 ////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
 
-app.post('/upload', (request, response) => {
-	var form = new formidable.IncomingForm();
 
-	//settings
-	form.multiples = true;
-	form.uploadDir = path.join(__dirname, "/public/uploads");
-
-	form.on("file", function(field, file){
-		fs.rename(file.path, path.join(form.uploadDir, file.name));
-	});
-
-	form.on('error', function(err) {
-		console.log('An error has occured: \n' + err);
-	});
-
-	form.on('end', function() {
-		response.end('success');
-	});
-
-	form.parse(request);
-});
 
 
 

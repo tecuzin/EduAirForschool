@@ -1,0 +1,222 @@
+[2017-04-07T15:38:21,285][INFO ][o.e.n.Node               ] [] initializing ...
+[2017-04-07T15:38:21,324][ERROR][o.e.b.Bootstrap          ] Exception
+java.lang.IllegalStateException: failed to obtain node locks, tried [[C:\eduair\elasticsearch\data\elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes] (was [1])?
+	at org.elasticsearch.env.NodeEnvironment.<init>(NodeEnvironment.java:260) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:258) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:238) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap$6.<init>(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.setup(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.init(Bootstrap.java:360) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:123) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.execute(Elasticsearch.java:114) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.EnvironmentAwareCommand.execute(EnvironmentAwareCommand.java:58) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.mainWithoutErrorHandling(Command.java:122) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.main(Command.java:88) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:91) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:84) [elasticsearch-5.3.0.jar:5.3.0]
+[2017-04-07T15:38:21,338][WARN ][o.e.b.ElasticsearchUncaughtExceptionHandler] [] uncaught exception in thread [main]
+org.elasticsearch.bootstrap.StartupException: java.lang.IllegalStateException: failed to obtain node locks, tried [[C:\eduair\elasticsearch\data\elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes] (was [1])?
+	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:127) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.execute(Elasticsearch.java:114) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.EnvironmentAwareCommand.execute(EnvironmentAwareCommand.java:58) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.mainWithoutErrorHandling(Command.java:122) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.main(Command.java:88) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:91) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:84) ~[elasticsearch-5.3.0.jar:5.3.0]
+Caused by: java.lang.IllegalStateException: failed to obtain node locks, tried [[C:\eduair\elasticsearch\data\elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes] (was [1])?
+	at org.elasticsearch.env.NodeEnvironment.<init>(NodeEnvironment.java:260) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:258) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:238) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap$6.<init>(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.setup(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.init(Bootstrap.java:360) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:123) ~[elasticsearch-5.3.0.jar:5.3.0]
+	... 6 more
+[2017-04-07T15:40:30,811][INFO ][o.e.n.Node               ] [] initializing ...
+[2017-04-07T15:40:30,849][ERROR][o.e.b.Bootstrap          ] Exception
+java.lang.IllegalStateException: failed to obtain node locks, tried [[C:\eduair\elasticsearch\data\elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes] (was [1])?
+	at org.elasticsearch.env.NodeEnvironment.<init>(NodeEnvironment.java:260) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:258) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:238) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap$6.<init>(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.setup(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.init(Bootstrap.java:360) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:123) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.execute(Elasticsearch.java:114) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.EnvironmentAwareCommand.execute(EnvironmentAwareCommand.java:58) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.mainWithoutErrorHandling(Command.java:122) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.main(Command.java:88) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:91) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:84) [elasticsearch-5.3.0.jar:5.3.0]
+[2017-04-07T15:40:30,857][WARN ][o.e.b.ElasticsearchUncaughtExceptionHandler] [] uncaught exception in thread [main]
+org.elasticsearch.bootstrap.StartupException: java.lang.IllegalStateException: failed to obtain node locks, tried [[C:\eduair\elasticsearch\data\elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes] (was [1])?
+	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:127) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.execute(Elasticsearch.java:114) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.EnvironmentAwareCommand.execute(EnvironmentAwareCommand.java:58) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.mainWithoutErrorHandling(Command.java:122) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.main(Command.java:88) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:91) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:84) ~[elasticsearch-5.3.0.jar:5.3.0]
+Caused by: java.lang.IllegalStateException: failed to obtain node locks, tried [[C:\eduair\elasticsearch\data\elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes] (was [1])?
+	at org.elasticsearch.env.NodeEnvironment.<init>(NodeEnvironment.java:260) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:258) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:238) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap$6.<init>(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.setup(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.init(Bootstrap.java:360) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:123) ~[elasticsearch-5.3.0.jar:5.3.0]
+	... 6 more
+[2017-04-07T15:44:15,504][INFO ][o.e.n.Node               ] [] initializing ...
+[2017-04-07T15:44:16,624][ERROR][o.e.b.Bootstrap          ] Exception
+java.lang.IllegalStateException: failed to obtain node locks, tried [[C:\eduair\elasticsearch\data\elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes] (was [1])?
+	at org.elasticsearch.env.NodeEnvironment.<init>(NodeEnvironment.java:260) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:258) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:238) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap$6.<init>(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.setup(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.init(Bootstrap.java:360) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:123) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.execute(Elasticsearch.java:114) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.EnvironmentAwareCommand.execute(EnvironmentAwareCommand.java:58) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.mainWithoutErrorHandling(Command.java:122) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.main(Command.java:88) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:91) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:84) [elasticsearch-5.3.0.jar:5.3.0]
+[2017-04-07T15:44:16,643][WARN ][o.e.b.ElasticsearchUncaughtExceptionHandler] [] uncaught exception in thread [main]
+org.elasticsearch.bootstrap.StartupException: java.lang.IllegalStateException: failed to obtain node locks, tried [[C:\eduair\elasticsearch\data\elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes] (was [1])?
+	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:127) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.execute(Elasticsearch.java:114) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.EnvironmentAwareCommand.execute(EnvironmentAwareCommand.java:58) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.mainWithoutErrorHandling(Command.java:122) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.main(Command.java:88) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:91) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:84) ~[elasticsearch-5.3.0.jar:5.3.0]
+Caused by: java.lang.IllegalStateException: failed to obtain node locks, tried [[C:\eduair\elasticsearch\data\elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes] (was [1])?
+	at org.elasticsearch.env.NodeEnvironment.<init>(NodeEnvironment.java:260) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:258) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:238) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap$6.<init>(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.setup(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.init(Bootstrap.java:360) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:123) ~[elasticsearch-5.3.0.jar:5.3.0]
+	... 6 more
+[2017-04-07T15:49:55,757][INFO ][o.e.n.Node               ] [] initializing ...
+[2017-04-07T15:49:57,804][ERROR][o.e.b.Bootstrap          ] Exception
+java.lang.IllegalStateException: failed to obtain node locks, tried [[C:\eduair\elasticsearch\data\elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes] (was [1])?
+	at org.elasticsearch.env.NodeEnvironment.<init>(NodeEnvironment.java:260) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:258) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:238) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap$6.<init>(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.setup(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.init(Bootstrap.java:360) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:123) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.execute(Elasticsearch.java:114) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.EnvironmentAwareCommand.execute(EnvironmentAwareCommand.java:58) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.mainWithoutErrorHandling(Command.java:122) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.main(Command.java:88) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:91) [elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:84) [elasticsearch-5.3.0.jar:5.3.0]
+[2017-04-07T15:49:57,824][WARN ][o.e.b.ElasticsearchUncaughtExceptionHandler] [] uncaught exception in thread [main]
+org.elasticsearch.bootstrap.StartupException: java.lang.IllegalStateException: failed to obtain node locks, tried [[C:\eduair\elasticsearch\data\elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes] (was [1])?
+	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:127) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.execute(Elasticsearch.java:114) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.EnvironmentAwareCommand.execute(EnvironmentAwareCommand.java:58) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.mainWithoutErrorHandling(Command.java:122) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.cli.Command.main(Command.java:88) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:91) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.main(Elasticsearch.java:84) ~[elasticsearch-5.3.0.jar:5.3.0]
+Caused by: java.lang.IllegalStateException: failed to obtain node locks, tried [[C:\eduair\elasticsearch\data\elasticsearch]] with lock id [0]; maybe these locations are not writable or multiple nodes were started without increasing [node.max_local_storage_nodes] (was [1])?
+	at org.elasticsearch.env.NodeEnvironment.<init>(NodeEnvironment.java:260) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:258) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.node.Node.<init>(Node.java:238) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap$6.<init>(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.setup(Bootstrap.java:242) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Bootstrap.init(Bootstrap.java:360) ~[elasticsearch-5.3.0.jar:5.3.0]
+	at org.elasticsearch.bootstrap.Elasticsearch.init(Elasticsearch.java:123) ~[elasticsearch-5.3.0.jar:5.3.0]
+	... 6 more
+[2017-04-07T15:54:17,822][INFO ][o.e.n.Node               ] [] initializing ...
+[2017-04-07T15:54:18,296][INFO ][o.e.e.NodeEnvironment    ] [XLsE7TG] using [1] data paths, mounts [[(C:)]], net usable_space [9.9gb], net total_space [80.1gb], spins? [unknown], types [NTFS]
+[2017-04-07T15:54:18,297][INFO ][o.e.e.NodeEnvironment    ] [XLsE7TG] heap size [494.9mb], compressed ordinary object pointers [unknown]
+[2017-04-07T15:54:18,305][INFO ][o.e.n.Node               ] node name [XLsE7TG] derived from node ID [XLsE7TGkTGaQGDHUHQK5Og]; set [node.name] to override
+[2017-04-07T15:54:18,309][INFO ][o.e.n.Node               ] version[5.3.0], pid[7252], build[3adb13b/2017-03-23T03:31:50.652Z], OS[Windows 7/6.1/x86], JVM[Oracle Corporation/Java HotSpot(TM) Client VM/1.8.0_121/25.121-b13]
+[2017-04-07T15:54:24,153][INFO ][o.e.p.PluginsService     ] [XLsE7TG] loaded module [aggs-matrix-stats]
+[2017-04-07T15:54:24,155][INFO ][o.e.p.PluginsService     ] [XLsE7TG] loaded module [ingest-common]
+[2017-04-07T15:54:24,155][INFO ][o.e.p.PluginsService     ] [XLsE7TG] loaded module [lang-expression]
+[2017-04-07T15:54:24,156][INFO ][o.e.p.PluginsService     ] [XLsE7TG] loaded module [lang-groovy]
+[2017-04-07T15:54:24,157][INFO ][o.e.p.PluginsService     ] [XLsE7TG] loaded module [lang-mustache]
+[2017-04-07T15:54:24,157][INFO ][o.e.p.PluginsService     ] [XLsE7TG] loaded module [lang-painless]
+[2017-04-07T15:54:24,159][INFO ][o.e.p.PluginsService     ] [XLsE7TG] loaded module [percolator]
+[2017-04-07T15:54:24,160][INFO ][o.e.p.PluginsService     ] [XLsE7TG] loaded module [reindex]
+[2017-04-07T15:54:24,160][INFO ][o.e.p.PluginsService     ] [XLsE7TG] loaded module [transport-netty3]
+[2017-04-07T15:54:24,162][INFO ][o.e.p.PluginsService     ] [XLsE7TG] loaded module [transport-netty4]
+[2017-04-07T15:54:24,163][INFO ][o.e.p.PluginsService     ] [XLsE7TG] no plugins loaded
+[2017-04-07T15:54:43,807][INFO ][o.e.n.Node               ] initialized
+[2017-04-07T15:54:43,808][INFO ][o.e.n.Node               ] [XLsE7TG] starting ...
+[2017-04-07T15:54:46,168][INFO ][o.e.t.TransportService   ] [XLsE7TG] publish_address {127.0.0.1:9300}, bound_addresses {127.0.0.1:9300}, {[::1]:9300}
+[2017-04-07T15:54:46,181][WARN ][o.e.b.BootstrapChecks    ] [XLsE7TG] JVM is using the client VM [Java HotSpot(TM) Client VM] but should be using a server VM for the best performance
+[2017-04-07T15:54:49,818][INFO ][o.e.c.s.ClusterService   ] [XLsE7TG] new_master {XLsE7TG}{XLsE7TGkTGaQGDHUHQK5Og}{JfQKe8aGTEG30UGPxodboQ}{127.0.0.1}{127.0.0.1:9300}, reason: zen-disco-elected-as-master ([0] nodes joined)
+[2017-04-07T15:54:50,149][INFO ][o.e.g.GatewayService     ] [XLsE7TG] recovered [0] indices into cluster_state
+[2017-04-07T15:54:50,889][INFO ][o.e.h.n.Netty4HttpServerTransport] [XLsE7TG] publish_address {127.0.0.1:9200}, bound_addresses {127.0.0.1:9200}, {[::1]:9200}
+[2017-04-07T15:54:50,937][INFO ][o.e.n.Node               ] [XLsE7TG] started
+[2017-04-07T15:55:19,895][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.9gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T15:55:49,899][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.9gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T15:56:19,897][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.9gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T15:56:49,901][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.9gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T15:57:19,903][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.9gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T15:57:49,905][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.9gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T15:58:19,908][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.9gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T15:58:49,875][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.9gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T15:59:55,695][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.9gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T16:00:25,694][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.9gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:45:27,542][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.9gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:45:57,340][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.9gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:46:27,339][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:46:57,338][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:47:27,336][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:47:57,338][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:48:27,337][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:48:57,336][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:49:27,347][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:49:57,349][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:50:27,347][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:50:57,347][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:51:27,353][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:51:57,355][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:52:27,357][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:52:57,355][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:53:27,356][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:53:57,353][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:54:27,352][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:54:57,354][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:55:27,356][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:55:57,256][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:56:27,255][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:56:57,258][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:57:27,256][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:57:57,255][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:58:27,253][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:58:57,238][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:59:27,236][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T20:59:57,234][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:00:27,244][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:00:57,243][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:01:27,239][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:01:57,240][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:02:27,239][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:02:57,241][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:03:27,239][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:03:57,239][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:04:27,236][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:04:57,235][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:05:27,233][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:05:57,233][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:06:27,232][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:06:57,231][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:07:27,231][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T21:07:57,229][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T23:57:19,660][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T23:57:49,431][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T23:58:19,432][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T23:58:49,434][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T23:59:19,430][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
+[2017-04-07T23:59:49,430][INFO ][o.e.c.r.a.DiskThresholdMonitor] [XLsE7TG] low disk watermark [85%] exceeded on [XLsE7TGkTGaQGDHUHQK5Og][XLsE7TG][C:\eduair\elasticsearch\data\nodes\0] free: 9.8gb[12.3%], replicas will not be assigned to this node
