@@ -3,20 +3,22 @@
 var express 	= require('express'),
 os 				= require('os'),
 bodyParser 		= require('body-parser'),
-passwordHash 	= require('password-hash'),
+passwordHash 		= require('password-hash'),
 redis 			= require('redis'),
-//client 			= redis.createClient(),
+formidable		= require("formidable"),
+path			= require("path"),
+//client 		= redis.createClient(),
 session 		= require('express-session'),
 redisStore 		= require('connect-redis')(session),
-cookieParser    = require('cookie-parser'),
+cookieParser    	= require('cookie-parser'),
 bcrypt			= require('bcrypt-nodejs');
-
+fs			= require("fs");
 
 
 var port 		= 80;
-var redis_port	= 27017;
-var TTL_session = 260 ; //24h 
-var protocol	="http://";
+var redis_port		= 27017;
+var TTL_session 	= 260 ; //24h 
+var protocol		="http://";
 
 
 var min_character_user_full_name	= 5;
@@ -24,11 +26,11 @@ var min_character_user_number		= 5;
 var min_character_user_password		= 4;
 
 
-var language 	= require('./local_modules/language');
+var language 		= require('./local_modules/language');
 
 var User 		= require('./models/User');//Model user
 var Admin 		= require('./models/Admin');//Model Admin
-var librarian 	= require('./models/Elastic');//Model Search engine
+var librarian 		= require('./models/Elastic');//Model Search engine
 var filer  		= require('./models/Filer');//Model to manage files
 
 
@@ -323,7 +325,6 @@ app.get('/upload',(request,response)=>{
 })
 
 
-
 app.get('/test',(request,response)=>{
 
 	
@@ -336,8 +337,30 @@ app.get('/test',(request,response)=>{
 
 
 
+
 ////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
 
+app.post('/upload', (request, response) => {
+	var form = new formidable.IncomingForm();
+
+	//settings
+	form.multiples = true;
+	form.uploadDir = path.join(__dirname, "/public/uploads");
+
+	form.on("file", function(field, file){
+		fs.rename(file.path, path.join(form.uploadDir, file.name));
+	});
+
+	form.on('error', function(err) {
+		console.log('An error has occured: \n' + err);
+	});
+
+	form.on('end', function() {
+		response.end('success');
+	});
+
+	form.parse(request);
+});
 
 
 
@@ -506,6 +529,18 @@ app.get('/big_brother',(request,response)=>{
 	}
 
 	
+});
+
+
+app.use(function(req, response, next){
+
+	var data_page = {
+			'title':'Sorry, page not found',
+			'ip_server':ip_server,
+			'protocol':protocol
+		};
+
+    response.status(404).render('404', data_page);
 });
 
 
