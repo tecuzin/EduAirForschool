@@ -3,19 +3,18 @@
 var express 	= require('express'),
 os 				= require('os'),
 bodyParser 		= require('body-parser'),
-passwordHash 		= require('password-hash'),
+passwordHash 	= require('password-hash'),
 redis 			= require('redis'),
 formidable		= require("formidable"),
 path			= require("path"),
 //client 		= redis.createClient(),
 session 		= require('express-session'),
 redisStore 		= require('connect-redis')(session),
-cookieParser    	= require('cookie-parser'),
-bcrypt			= require('bcrypt-nodejs');
-fs			= require("fs");
+cookieParser    = require('cookie-parser'),
+bcrypt			= require('bcrypt-nodejs'),
+fs				= require('fs');
 
-
-var port 		= 80;
+var port 			= 80;
 var redis_port		= 27017;
 var TTL_session 	= 260 ; //24h 
 var protocol		="http://";
@@ -26,7 +25,7 @@ var min_character_user_number		= 5;
 var min_character_user_password		= 4;
 
 
-var language 		= require('./local_modules/language');
+var language 	= require('./local_modules/language');
 
 var User 		= require('./models/User');//Model user
 var Admin 		= require('./models/Admin');//Model Admin
@@ -101,6 +100,7 @@ app.get('fatal_error/',(request,response)=>{
 
 	response.render('fatal_error',data_page) 
 })
+
 
 
 
@@ -331,6 +331,18 @@ app.get('/test',(request,response)=>{
 	filer.convert_to_mp4('test.3gp',function  (results) {
 		
 		response.send(results);
+	})
+})
+
+
+app.get('/html',(request,response)=>{
+
+	
+	filer.generate_thumbnail(__dirname+'/private/temp/test.jpg',function  (results) {
+
+		if(results){
+			response.send(results);
+		}
 	})
 })
 

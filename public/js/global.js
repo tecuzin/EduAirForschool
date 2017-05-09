@@ -1,6 +1,11 @@
 
 $(document).ready(function(){ 
 
+	//////ToDo///////////////////////////////
+	//Function using notification API
+
+	//////ToDo///////////////////////////////
+
 	/////////////ligne code to replace////////////////
 	//window.is_desktop, if(!window.is_mobile() && $('.field').attr('article')=='yes'),
 
