@@ -32,7 +32,7 @@ $(document).ready(function(){
 		'timestamp':'Il ya 8 ans',
 		'autor':'Gabriel',
 		'id_autor':'27789',
-		'title':'This is demo'
+		'title':'Google Data Studio'
 	}
 	var type_media ='video';
 	var if_wikipedia = false;

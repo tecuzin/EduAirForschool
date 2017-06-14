@@ -28,27 +28,30 @@
           <div class="command_selector row" style="display:none;">
             <div class="hide-on-small-only col m4 l4">
 
-              <img class="thumb_pic" src="img/no_pic.jpg">
+              <span class="this_statu_upload">
+                <img class="thumb_pic" src="assets/img/no_pic.jpg">
+              </span>
+              
               <div class="state_upload">Mise en ligne en cours...
                 <div class="progress">
                   <div class="indeterminate"></div>
                 </div>
               </div>
-              <div class="state_upload">Votre fichier sera diponible à l'adresse suivante <a href="#">http://aireedu.edu/OUUEHytUt</a></div>
+              <div class="state_upload">Votre fichier sera diponible à l'adresse suivante <a href="#">http://airedu.edu/OUUEHytUt</a></div>
             </div>
             <div class="col m8 l8">
               <div class="loader_up">
                 <span class="div_up truncate"><span class="percent_up"><div></div></span>&nbsp;<span class="up_title"></span></span>
                 <div class="progress">
-                    <div class="determinate total_progress" style="width: 40%"></div>
+                    <div class="determinate total_progress" style="width: 0%"></div>
                 </div>
                 <span class="counter"></span>
                 <div class="progress">
-                    <div class="determinate ind_file"></div>
+                    <div class="determinate ind_file" style="width: 0%"></div>
                 </div>
                 <div>
-                    <a class="waves-effect right waves-light btn blue">Publier</a>
-                    <a class="waves-effect right waves-teal btn-flat" id="cancel">Annuler</a>
+                    <a class="waves-effect right waves-light btn blue publish disabled">Publier</a>
+                    <a class="waves-effect right waves-teal btn-flat cancel_publish" id="cancel">Annuler</a>
                 </div>
                 
 
@@ -62,6 +65,9 @@
           <input type="file" class="filer" name="filer" multiple style="display:none;">
         </div>
       </div>
+
+       <!-- For language notifications -->
+      <div class="notif" no_complet="<%=__('no_complet')%>" no_accepted="<%=__('no_accepted')%>" error_password="<%=__('error_pass')%>"></div>
      
      
       

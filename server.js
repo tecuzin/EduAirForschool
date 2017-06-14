@@ -12,12 +12,19 @@ session 		= require('express-session'),
 redisStore 		= require('connect-redis')(session),
 cookieParser    = require('cookie-parser'),
 bcrypt			= require('bcrypt-nodejs'),
-fs				= require('fs');
+fs				= require('fs'),
+mime 			= require('mime'),//Get type mime of file
+crypto 			= require('crypto'); //Generate a random hash
+
+
 
 var port 			= 80;
 var redis_port		= 27017;
 var TTL_session 	= 260 ; //24h 
 var protocol		="http://";
+
+
+var media_library =path.join(__dirname, '.', 'private/');//Define the directory of media library
 
 
 var min_character_user_full_name	= 5;
@@ -60,6 +67,16 @@ app.use(session({
   cookie: { secure: false },
   name : 'SessionIdent'
 }))
+
+
+//////////////////////////////////////////Format accepted in upload////////////////////////////////////////////////////////
+var file_type = ['video' ,'image' ,'audio'];
+var file_type_application = [	'application/pdf' ,
+								'application/vnd.ms-powerpoint',
+								'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+								'application/msword' ,
+								'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+//////////////////////////////////////////Format accepted in upload////////////////////////////////////////////////////////
 
 
 /////////////////////////Todo////////////////////////////////////
@@ -310,6 +327,12 @@ app.get('/contributor/:id',(request,response)=>{
 
 
 
+
+
+
+
+
+
 ////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
 
 
@@ -325,49 +348,45 @@ app.get('/upload',(request,response)=>{
 })
 
 
-app.get('/test',(request,response)=>{
-
-	
-	filer.convert_to_mp4('test.3gp',function  (results) {
-		
-		response.send(results);
-	})
-})
-
-
-app.get('/html',(request,response)=>{
-
-	
-	filer.generate_thumbnail(__dirname+'/private/temp/test.jpg',function  (results) {
-
-		if(results){
-			response.send(results);
-		}
-	})
-})
-
-
-
-
-
-////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
-
 app.post('/upload', (request, response) => {
+
+	///////////////////////:ToDo///////////////////////////////////////////
+	//Restrict extention and size
+	///////////////////////:ToDo///////////////////////////////////////////
+
 	var form = new formidable.IncomingForm();
 
 	//settings
 	form.multiples = true;
-	form.uploadDir = path.join(__dirname, "/public/uploads");
+	form.keepExtensions = true;
+	form.uploadDir = media_library+'temp';
 
 	form.on("file", function(field, file){
-		fs.rename(file.path, path.join(form.uploadDir, file.name));
+
+		//We verify the type mime
+		// console.log(file.type);
+		
+		var current_date = (new Date()).valueOf().toString();
+		
+		var random = Math.random().toString();
+		
+		var new_path = path.join(form.uploadDir, crypto.createHash('sha1').update(current_date + random).digest('hex')+'__'+file.name.replace(/ /g,'_').replace(/[&\/\\#,+()$~%'":*?<>{}]/g, ''));
+
+		fs.rename(file.path, new_path);
+
+		filer.handelFile(new_path)
+
 	});
 
 	form.on('error', function(err) {
+
+		response.end('error')
+
 		console.log('An error has occured: \n' + err);
 	});
 
 	form.on('end', function() {
+
 		response.end('success');
 	});
 
@@ -375,6 +394,73 @@ app.post('/upload', (request, response) => {
 });
 
 
+
+
+app.get('/watch/:FileId',(request,response)=>{
+
+	// Exple: http://domain.edu/watch/Lyd_0_Idfile
+	var my_request = req.params.FileId;
+
+	my_request = my_request.split('_');
+
+	//If it's a file
+	if(my_request[0]=='Lyd'){
+
+		switch(my_request[1]){
+
+			//1) We read the file 2) We add data to the file in the database
+
+			case '0':
+				var movieStream = fs.createReadStream(media_library+'video/'+my_request[2]);
+				movieStream.on('open', function () {
+				    res.writeHead(206, {
+				        "Content-Range": "bytes " + start + "-" + end + "/" + total,
+				            "Accept-Ranges": "bytes",
+				            "Content-Length": chunksize,
+				            "Content-Type": "video/mp4"
+				    });
+				    // This just pipes the read stream to the response object (which goes 
+				    //to the client)
+				    movieStream.pipe(response);
+				});
+
+				movieStream.on('error', function (err) {
+				    response.end(err);
+				});
+			break;
+
+			case '1':
+			break;
+
+			case '2':
+			break;
+
+			default:
+			break;
+		}
+	}else{
+		//If it is a zim file we get the article
+	}
+
+	//Glossary
+	//if id start by Lyd, its a video or picture or article. Exple: http://domain.edu/watch/Lyd_0_FileId (0 for video,1 for picture,2 for article)
+	//If id Lyd and
+
+	var data_page = {
+		'title':request.__('term'),
+		'ip_server':ip_server,
+		'protocol':protocol
+	};
+	response.render('upload',data_page)
+})
+
+
+
+
+
+
+
+////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
 
 
 
@@ -542,6 +628,20 @@ app.get('/big_brother',(request,response)=>{
 
 	
 });
+
+
+///////////////////////////////////////////////:testeur///////////////////////////////////////////////////
+
+app.get('/test',(request,response)=>{
+
+	
+	filer.convert_to_mp4('test.3gp',function  (results) {
+		
+		response.send(results);
+	})
+})
+
+///////////////////////////////////////////////:testeur///////////////////////////////////////////////////
 
 
 app.use(function(req, response, next){
