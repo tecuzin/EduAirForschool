@@ -164,23 +164,34 @@ $(document).ready(function(){
         
     }
 
+    $(".publish").click(function(e){
+            
+        var obj = {
+            title: $(".file_title").val(),
+            description: $(".file_desc").val(),
+            tag: $(".file_tag").val()
+        };
 
+        console.log(obj);
 
+        $.ajax({
 
+              url: '/saveInformation',
 
+              type: 'POST',
 
+              data: obj,
 
+              error: function  (err) {
+                  console.log(err)
+              },
 
-
-
-
-
-
-
-
-
-
-
+              success: function(data){
+                console.log(data);
+                alert("reussi");
+              }
+        })
+    })
 
 
 
