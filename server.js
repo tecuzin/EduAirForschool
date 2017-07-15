@@ -18,7 +18,9 @@ crypto 			= require('crypto'); //Generate a random hash
 
 
 
-var port 			= 3000;
+
+
+var port 			= 80;
 var redis_port		= 27017;
 var TTL_session 	= 260 ; //24h 
 var protocol		="http://";
@@ -35,7 +37,6 @@ var min_character_user_password		= 4;
 var language 	= require('./local_modules/language');
 
 var User 		= require('./models/User');//Model user
-var Save 		= require('./models/Save');//Model user
 var Admin 		= require('./models/Admin');//Model Admin
 var librarian 		= require('./models/Elastic');//Model Search engine
 var filer  		= require('./models/Filer');//Model to manage files
@@ -327,6 +328,13 @@ app.get('/contributor/:id',(request,response)=>{
 })
 
 
+
+
+
+
+
+
+
 ////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
 
 
@@ -382,18 +390,13 @@ app.post('/upload', (request, response) => {
 	form.on('end', function() {
 
 		response.end('success');
-
 	});
 
 	form.parse(request);
 });
 
 
-app.post("/saveInformation", function(req, res){
-	Save.saveVideo({title : req.body.title, description: req.body.description, tag: req.body.tag}, function(results){
-		res.json({status: "success", message: "reussi"});
-	});
-});
+
 
 app.get('/watch/:FileId',(request,response)=>{
 
@@ -454,7 +457,17 @@ app.get('/watch/:FileId',(request,response)=>{
 })
 
 
+
+
+
+
+
 ////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
+
+
+
+
+
 
 
 

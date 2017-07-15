@@ -376,22 +376,19 @@ module.exports = Filer;
 
 		if(audio_type!=audio_type_out && audio_type.indexOf('audio')!=-1 && path.basename(file,path.extname(file))!='mp3'){ //We verify the type mime of audio file
 
-			call_back_json_metada({'duration':false,'thumbnail':false,'error':'no_supported_audio_file'});
-			fs.unlinkSync(temp_file);
-			
-			// //We get the duration of video
-			// exec('ffmpeg -i '+file+' -acodec copy '+final_file+'', function(err, stdout, stderr) {
+			//We get the duration of video
+			exec('ffmpeg -i '+file+' -acodec copy '+final_file+'', function(err, stdout, stderr) {
 						
-			// 	if(!err){
+				if(!err){
 
-			// 		//Delete the original audio if is is not a MP3 audio
-			// 		fs.unlinkSync(temp_file);
+					//Delete the original audio if is is not a MP3 audio
+					fs.unlinkSync(temp_file);
 
-			// 		call_back_json_metada({'duration':stdout.replace('\n','')});
-			// 	}else{
-			// 		console.log(err)
-			// 	}
-			// });
+					call_back_json_metada({'duration':stdout.replace('\n','')});
+				}else{
+					console.log(err)
+				}
+			});
 		
 		}else{ 
 			//It is not a audio, I send an error
