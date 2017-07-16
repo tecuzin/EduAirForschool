@@ -26,6 +26,10 @@ var filepreview = require('filepreview');
 
 var textract = require('textract');//To extract text to file
 
+var Filer_db = require('./models/Filer_db');//Model file for database
+
+var Filer_db = require('./models/Intello');//Model file for Elastic search
+
 var temp_directory =path.join(__dirname, '..', 'private/temp/');//Define the temporary directory when a new file is uploaded
 
 var media_library =path.join(__dirname, '..', 'private/');//Define the directory of media library
@@ -263,7 +267,11 @@ module.exports = Filer;
 
 				    generate_thumbnail(media_library+right_folder+'/'+path.basename(final_file,path.extname(final_file))+path.extname(file),function  (results) {
 				    	
-				    	 Callback(results)
+				    	exec('pdfinfo '+final_file+' | grep ^Pages: ',function(error, stdout, stderr) {
+
+				    		Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':results,'size':getFilesizeInBytes(final_file),'pages':stdout,'format':path.extname(final_file)})
+				    	})
+				    	
 				    }) 
 				})
 			})
@@ -282,7 +290,6 @@ module.exports = Filer;
 
 
 	function convert_video_to_mp4 (file,call_back_json_metada){
-
 
 		var real_fileName = get_real_fileName(file);
 
@@ -314,7 +321,7 @@ module.exports = Filer;
 							//Delete the original video if is is not a MP4 video
 							fs.unlinkSync(temp_file);
 
-							call_back_json_metada({'duration':stdout.replace('\n',''),'thumbnail':thumbnail});
+							call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file)});
 						}else{
 							console.log('err')
 						}
@@ -349,7 +356,7 @@ module.exports = Filer;
 								
 								if(!err){
 
-									call_back_json_metada({'duration':stdout.replace('\n',''),'thumbnail':thumbnail});
+									call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file)});
 								}else{
 									console.log('err')
 								}
@@ -384,7 +391,7 @@ module.exports = Filer;
 					//Delete the original audio if is is not a MP3 audio
 					fs.unlinkSync(temp_file);
 
-					call_back_json_metada({'duration':stdout.replace('\n','')});
+					call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'size':getFilesizeInBytes(final_file),'format':path.extname(final_file)});
 				}else{
 					console.log(err)
 				}
@@ -413,7 +420,7 @@ module.exports = Filer;
 								
 								if(!err){
 
-									call_back_json_metada({'duration':stdout.replace('\n','')});
+									call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'size':getFilesizeInBytes(final_file),'format':path.extname(final_file)});
 								}else{
 									console.log('err')
 								}
@@ -446,7 +453,7 @@ module.exports = Filer;
 			    //Get the thumbnail of the video
 			    generate_thumbnail(final_file,function  (thumbnail) {
 			        		
-					Callback(thumbnail)
+					Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file)})
 			   	})
 			}
 	    })
@@ -472,8 +479,11 @@ module.exports = Filer;
 
 			    //Get the thumbnail of the video
 			    generate_thumbnail(final_file,function  (thumbnail) {
-			        		
-					Callback(thumbnail)
+
+			    	exec('pdfinfo '+final_file+' | grep ^Pages: ',function(error, stdout, stderr) {
+
+				    	Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'pages':stdout,'format':path.extname(final_file)})
+				    })
 			 	})
 			}
 	    });
@@ -610,4 +620,14 @@ module.exports = Filer;
 		real_fileName 		= real_fileName[1];
 
 		return real_fileName;
+	}
+
+
+	function getFilesizeInBytes(filename) {
+
+	    const stats = fs.statSync(filename)
+
+	    const fileSizeInBytes = stats.size;
+
+	    return fileSizeInBytes;
 	}

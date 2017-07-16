@@ -166,9 +166,11 @@ class User{
 
 						
 				db.collection("user_data").findOne(objToFind, function(error, result) {
-		    						if (error) throw error;
-		 
-								    console.log(result);   
+		    		if (error) {
+		    			console.log(error)
+		    		}else{
+		    			call_back(result)
+		    		}  
 				});
 			}
     	});
