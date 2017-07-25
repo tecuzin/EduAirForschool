@@ -1,7 +1,24 @@
 
 "use strict"; 
+
+////////////////////////////Connection for MongoDb//////////////////////////////
+
+var db_connection 	= require('../config/db');
+
+var MongoObjectID 	= require("mongodb").ObjectID;
+////////////////////////////Connection for MongoDb//////////////////////////////
+
+var Elastic = require('../models/Elastic');//Model file for Elastic search
+
+
+
+
+
+
 var path 		 	= require('path');
 var date			= new Date();
+
+
 
 
 
@@ -20,21 +37,41 @@ class Intello{
 	        	call_back({'statu':'problem','message':'fatal_error in db_connection'})
 
 			}else{
-				content.create_at 	= date.getTime();
-				content.user_id		= 'anonyme';
-				content.view 		= 0;
-				content.last_view	= 0;
+				var text_extracted 			= content.text_extracted;
+				content.create_at 			= date.getTime();
+				content.user_id				= 'anonyme';
+				content.view 				= 0;
+				content.last_view			= 0;
+				content.text_extracted 		= null;
  				
 			    db.collection("user_file").insert(content,(err, results)=> {
 
 					if(err){
+
 						console.log(err)
+
 					} else{
-						call_back({'statu':'ok','results':results})
+
+						content 	= results.ops[0];
+
+						console.log(content.pages)
+						console.log(content)
+
+						if(content.pages!=undefined){
+
+							content.text_extracted	= JSON.parse(JSON.stringify(text_extracted))
+						}
+
+						 
+
+						Elastic.add_new_file(content,function  (response) {
+							
+							call_back({'statu':'ok','results':response})
+						})
 					}
-				});
+				})
 			}
-    	});
+    	})
 	}
 
 
@@ -99,6 +136,7 @@ class Intello{
 			}
     	});
 	}
+
 
 
 

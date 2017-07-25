@@ -8,25 +8,33 @@ var client = new elasticsearch.Client({
   log: 'trace'
 });
 
-
+var index_db = 'eduair';
 
 
 
 class Elastic{
 
-	static add_user (content,call_back){
+	static add_new_file(content,call_back){
 
-		var this_user = content.ops[0];
+		client.index({ 
 
-		client.hmset('user:'+this_user._id, content.ops[0],(err, reply)=>{
-		 	content.user_form_pass	= undefined;
-		 	content.is_connect		= undefined;
-			call_back(content)
+		  	index: index_db,
 
-		 	client.expire('user:'+this_user._id, TTL_session); 
-		});
+		  	type: 'file',
+
+		  	id:content._id.toString(),
+	  
+		  	body:content
+
+		},function(err,resp,status) {
+	    	
+	    	call_back(resp)
+
+		})
 	}
 }
+
+
 
 
 module.exports = Elastic;

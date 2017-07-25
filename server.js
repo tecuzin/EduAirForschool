@@ -38,7 +38,6 @@ var language 	= require('./local_modules/language');
 
 var User 		= require('./models/User');//Model user
 var Admin 		= require('./models/Admin');//Model Admin
-var librarian 		= require('./models/Elastic');//Model Search engine
 var filer  		= require('./models/Filer');//Model to manage files
 
 
@@ -372,11 +371,15 @@ app.post('/upload', (request, response) => {
 		
 		var random = Math.random().toString();
 		
-		var new_path = path.join(form.uploadDir, crypto.createHash('sha1').update(current_date + random).digest('hex')+'__'+file.name.replace(/ /g,'_').replace(/[&\/\\#,+()$~%'":*?<>{}]/g, ''));
+		var new_path = path.join(form.uploadDir, crypto.createHash('sha1').update(current_date + random).digest('hex')+path.extname(file.name));
+		
+		// var new_path = path.join(form.uploadDir, crypto.createHash('sha1').update(current_date + random).digest('hex')+'__'+file.name.replace(/ /g,'_').replace(/[&\/\\#,+()$~%'":*?<>{}]/g, ''));
 
 		fs.rename(file.path, new_path);
 
-		filer.handelFile(new_path)
+		var new_file = {'file_name':path.basename(file.name,path.extname(file.name)),'file_path':new_path}
+
+		filer.handelFile(new_file)
 
 	});
 

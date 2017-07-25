@@ -16,7 +16,7 @@ const md5File = require('md5-file'); //Generate the hash of a file
 
 var crypto = require('crypto'); //Generate a random hash
 
-var exec = require('child_process').exec;
+var exec = require('child_process').exec;																																								
 
 var mime = require('mime');//Get type mime of file
 
@@ -26,9 +26,9 @@ var filepreview = require('filepreview');
 
 var textract = require('textract');//To extract text to file
 
-var Filer_db = require('./models/Filer_db');//Model file for database
+var utf8 = require('utf8');
 
-var Filer_db = require('./models/Intello');//Model file for Elastic search
+var Intello = require('../models/Intello');//Model file for Elastic search and database
 
 var temp_directory =path.join(__dirname, '..', 'private/temp/');//Define the temporary directory when a new file is uploaded
 
@@ -50,7 +50,9 @@ var file_type_application = [	'application/pdf' ,
 
 class Filer{
 
-	static handelFile(file){ 
+	static handelFile(fileUploaded){ 
+
+		var file = fileUploaded.file_path;
 
 		var file_type 		= mime.lookup(file);
 
@@ -65,21 +67,32 @@ class Filer{
 		switch(file_type){
 
 			case 'video':
-				convert_video_to_mp4(file,function  (results) {
-				
-					console.log(results)
+				convert_video_to_mp4(fileUploaded,function  (results) {
+
+					Intello.add_new_file(results,function  (response) {
+						
+						console.log(response)
+					})
 				})
 			break;
 
 			case 'image':
-				move_image(file,function  (results) {
-					console.log(results)
+				move_image(fileUploaded,function  (results) {
+					
+					Intello.add_new_file(results,function  (response) {
+						
+						console.log(response)
+					})
 				})
 			break;
 
 			case 'audio':
-				convert_audio_to_mp3(file,function  (results) {
-					console.log(results)
+				convert_audio_to_mp3(fileUploaded,function  (results) {
+					
+					Intello.add_new_file(results,function  (response) {
+						
+						console.log(response)
+					})
 				})
 			break;
 
@@ -88,113 +101,26 @@ class Filer{
 
 					if(file_extension=='pdf'){
 
-						move_pdf(file,function  (results) {
-							console.log(results)
+						move_pdf(fileUploaded,function  (results) {
+							
+							Intello.add_new_file(results,function  (response) {
+						
+								console.log(response)
+							})
 						})
 					}else{ 
-						DOCx_and_ppt_2_pdf(file,function  (results) {
+						DOCx_and_ppt_2_pdf(fileUploaded,function  (results) {
 						
-							console.log(results)
+							Intello.add_new_file(results,function  (response) {
+						
+								console.log(response)
+							})
 						})
 					}
 				}
 			break;
 		}
-
-		
-
-		//A la fin on donne le vrai non en nettoyant
 	}
-
-
-
-
-
-	static PDF_2_html(file,Callback){
-
-		exec('pdf2htmlEX '+file, function(error, stdout, stderr) {
-
-			var source_pdf 		= fs.createReadStream(temp_directory+path.basename(file));
-    		var destination_pdf = fs.createWriteStream(media_library+'pdf/pdf/'+path.basename(file));
-
-    		source_pdf.pipe(destination_pdf,{ end: false });
-
-			source_pdf.on("end", function(){
-
-			    fs.unlinkSync(file);//I delete the old file
-
-			    //I move the html file also
-			    var html_file 			= path.basename(file,'.pdf')+'.html';
-			    var source_html 		= fs.createReadStream(html_file);
-    			var destination_html	= fs.createWriteStream(media_library+'pdf/html/'+html_file);
-
-    			source_html.pipe(destination_html,{ end: false });
-
-				source_html.on("end", function(){
-
-				    fs.unlinkSync(html_file);//I delete the old file
-
-				    Callback('OK')
-				});
-			});
-
-			if(stderr){
-				console.log('Error convertion PDF to HTML: ' + stderr)
-			}
-  			
-		    
-		    if (error !== null) {
-		        console.log('exec error: ' + error);
-		    }
-		});
-	}
-
-
-
-
-
-	///////////////////////////////////////////Utilities//////////////////////////////////////////////////////////////////////
-
-	static extract_text(file,Callback){
-
-		textract.fromFileWithPath(file, function( error, text ) {
-  			
-			if (error) {
-
-			    console.log('Error extracting text from : '+path.basename(file)+' ' + error);
-			    
-			    Callback('error')
-			}else{
-
-				Callback(text)
-			}
-		})
-	}
-
-
-	static watermark_image(file,Callback){
-
-		var command = [
-		    'composite',
-		    '-dissolve', '50%',
-		    '-gravity', 'center', 
-		    '-quality', 100,
-		    logo_watermark,
-		    file,
-		    file
-		];
-
-		exec(command.join(' '), function(err, stdout, stderr) {
-    		
-    		Callback('OK')
-		});
-	}
-
-
-
-
-	///////////////////////////////////////////Utilities//////////////////////////////////////////////////////////////////////
-
 		
 }
 
@@ -227,7 +153,9 @@ module.exports = Filer;
 
 
 
-	function DOCx_and_ppt_2_pdf(file,Callback){ 
+	function DOCx_and_ppt_2_pdf(fileUploaded,Callback){ 
+
+		var file = fileUploaded.file_path;
 
 		//Is it word or ppt file?
 		if(path.extname(file).indexOf('doc')!=-1){
@@ -241,9 +169,9 @@ module.exports = Filer;
 
 			var file_converted_in_root 	= path.basename(file,path.extname(file))+'.pdf';
 
-			var real_fileName 			= get_real_fileName(file);
+			var real_fileName 			= fileUploaded.file_name;
 
-			var final_file 				= media_library+right_folder+'/pdf/'+real_fileName+'__'+generate_name_of_file()+'.pdf';
+			var final_file 				= media_library+right_folder+'/pdf/'+path.basename(fileUploaded.file_path,path.extname(fileUploaded.file_path))+'.pdf';
 
 			var source_pdf 				= fs.createReadStream(file_converted_in_root);
 
@@ -269,9 +197,11 @@ module.exports = Filer;
 				    	
 				    	exec('pdfinfo '+final_file+' | grep ^Pages: ',function(error, stdout, stderr) {
 
-				    		Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':results,'size':getFilesizeInBytes(final_file),'pages':stdout,'format':path.extname(final_file)})
+				    		extract_text(final_file,function  (text_extracted) {
+			    	
+				    			Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':results,'size':getFilesizeInBytes(final_file),'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,'format':path.extname(final_file),'format_initial':path.extname(file),'text_extracted':text_extracted})
+			    			})
 				    	})
-				    	
 				    }) 
 				})
 			})
@@ -289,13 +219,13 @@ module.exports = Filer;
 
 
 
-	function convert_video_to_mp4 (file,call_back_json_metada){
+	function convert_video_to_mp4 (fileUploaded,call_back_json_metada){
 
-		var real_fileName = get_real_fileName(file);
+		var real_fileName = fileUploaded.file_name;
 
-		var temp_file 	= file;
+		var temp_file 	= fileUploaded.file_path;
 
-		var final_file	= media_library+'video/'+real_fileName+'__'+generate_name_of_file()+'.mp4' ;
+		var final_file	= media_library+'video/'+path.basename(fileUploaded.file_path,path.extname(fileUploaded.file_path))+'.mp4' ;
 
 		//Convert To MP4 if it is not a mp4 video
 		var video_type 	= mime.lookup(temp_file);
@@ -304,9 +234,9 @@ module.exports = Filer;
 
 			var convert = new Mp4Convert(temp_file, final_file);
 
-			convert.on('progress', function(p) {
-    			// console.log('Progress', p);///////////////////////////////////////////////////////////////////////////////////////////
-			});
+			// convert.on('progress', function(p) {
+   //  			console.log('Progress', p);///////////////////////////////////////////////////////////////////////////////////////////
+			// });
 
 			convert.on('done', function() {
 			    
@@ -321,7 +251,7 @@ module.exports = Filer;
 							//Delete the original video if is is not a MP4 video
 							fs.unlinkSync(temp_file);
 
-							call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file)});
+							call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
 						}else{
 							console.log('err')
 						}
@@ -356,7 +286,7 @@ module.exports = Filer;
 								
 								if(!err){
 
-									call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file)});
+									call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
 								}else{
 									console.log('err')
 								}
@@ -370,13 +300,15 @@ module.exports = Filer;
 
 
 
-	function convert_audio_to_mp3 (file,call_back_json_metada){ 
+	function convert_audio_to_mp3 (fileUploaded,call_back_json_metada){ 
 
-		var real_fileName 	= get_real_fileName(file);
+		var real_fileName 	= fileUploaded.file_name;
 
-		var temp_file 	= file;
+		var temp_file 		= fileUploaded.file_path;
 
-		var final_file	= media_library+'audio/'+real_fileName+'__'+generate_name_of_file()+'.mp3' ;
+		var file 			= fileUploaded.file_path;
+
+		var final_file		= media_library+'audio/'+path.basename(fileUploaded.file_path,path.extname(fileUploaded.file_path))+'.mp3' ;
 
 		//Convert To MP3 if it is not a mp3 audio
 		var audio_type 	= mime.lookup(temp_file); 
@@ -391,7 +323,7 @@ module.exports = Filer;
 					//Delete the original audio if is is not a MP3 audio
 					fs.unlinkSync(temp_file);
 
-					call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'size':getFilesizeInBytes(final_file),'format':path.extname(final_file)});
+					call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
 				}else{
 					console.log(err)
 				}
@@ -420,9 +352,9 @@ module.exports = Filer;
 								
 								if(!err){
 
-									call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'size':getFilesizeInBytes(final_file),'format':path.extname(final_file)});
+									call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
 								}else{
-									console.log('err')
+									console.log(err)
 								}
 							});
 			        }
@@ -436,12 +368,14 @@ module.exports = Filer;
 
 
 
-	function move_image (file,Callback) {
+	function move_image (fileUploaded,Callback) {
 
-		var real_fileName 	= get_real_fileName(file)
+		var file = fileUploaded.file_path;
+
+		var real_fileName 	= fileUploaded.file_name;
 
 		//final_file = FileName_timestamp_generatedHash.jpg
-		var final_file	= media_library+'image/'+real_fileName+'__'+generate_name_of_file()+'.'+path.extname(file) ;
+		var final_file	= media_library+'image/'+path.basename(fileUploaded.file_path,path.extname(fileUploaded.file_path))+'.'+path.extname(file) ;
 		
 		fs.rename(file, final_file, function (err) {
 			        
@@ -452,8 +386,11 @@ module.exports = Filer;
 
 			    //Get the thumbnail of the video
 			    generate_thumbnail(final_file,function  (thumbnail) {
-			        		
-					Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file)})
+
+			    	extract_text(final_file,function  (text_extracted) {
+			    	
+						Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'text_extracted':text_extracted})
+			    	})
 			   	})
 			}
 	    })
@@ -463,12 +400,14 @@ module.exports = Filer;
 
 
 
-	function move_pdf (file,Callback) {
+	function move_pdf (fileUploaded,Callback) {
 
-		var real_fileName 	= get_real_fileName(file);
+		var file 			= fileUploaded.file_path;
+
+		var real_fileName 	= fileUploaded.file_name;
 
 		//final_file = FileName_timestamp_generatedHash.jpg
-		var final_file	= media_library+'pdf/'+real_fileName+'__'+generate_name_of_file()+path.extname(file) ;
+		var final_file	= media_library+'pdf/'+path.basename(fileUploaded.file_path,path.extname(fileUploaded.file_path))+path.extname(file) ;
 		
 		fs.rename(file, final_file, function (err) {
 			        
@@ -482,13 +421,64 @@ module.exports = Filer;
 
 			    	exec('pdfinfo '+final_file+' | grep ^Pages: ',function(error, stdout, stderr) {
 
-				    	Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'pages':stdout,'format':path.extname(final_file)})
+			    		extract_text(final_file,function  (text_extracted) {
+			    	
+							Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,'format':path.extname(final_file),'text_extracted':text_extracted})
+			    		})
 				    })
 			 	})
 			}
 	    });
 	}
 	///////////////////////////////////////////////////Converter//////////////////////////////////////////////////////////
+
+
+
+
+
+
+	///////////////////////////////////////////Utilities//////////////////////////////////////////////////////////////////////
+
+	function extract_text(file,Callback){
+
+		textract.fromFileWithPath(file,function( error, text ) {
+  			
+			if (error) {
+
+			    console.log('Error extracting text from : '+path.basename(file)+' ' + error);
+			    
+			    Callback('error')
+			}else{
+
+				Callback(utf8.encode(text))
+			}
+		})
+	}
+
+
+	function watermark_image(file,Callback){
+
+		var command = [
+		    'composite',
+		    '-dissolve', '50%',
+		    '-gravity', 'center', 
+		    '-quality', 100,
+		    logo_watermark,
+		    file,
+		    file
+		];
+
+		exec(command.join(' '), function(err, stdout, stderr) {
+    		
+    		Callback('OK')
+		});
+	}
+
+
+
+
+	///////////////////////////////////////////Utilities//////////////////////////////////////////////////////////////////////
+
 
 
 
@@ -548,15 +538,6 @@ module.exports = Filer;
 	}
 
 
-	function generate_name_of_file (){
-
-		var dt = new Date();
-
-		var the_name = dt.getTime()+'_'+generate_hash();
-
-		return the_name ;
-	}
-
 
 
 
@@ -610,17 +591,6 @@ module.exports = Filer;
 		},200)
 	}
 
-
-	function get_real_fileName (file) {
-		
-		var real_fileName 	= path.basename(file,path.extname(file));
-
-		real_fileName 		= real_fileName.split('__')
-
-		real_fileName 		= real_fileName[1];
-
-		return real_fileName;
-	}
 
 
 	function getFilesizeInBytes(filename) {
