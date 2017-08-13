@@ -127,7 +127,7 @@ $(document).ready(function(){
 		//We make request
 
 		//We diplay result on finish
-		$('.suggestion,.suggestion_vid,.suggestion_mobile').html('<h5>SUGGESTIONS</h5><div class="collection"></div>');
+		$('.suggestion,.suggestion_vid,.suggestion_mobile').html('<h1>Suggestions</h1><div class="collection"></div>');
 		demo();
 
 	}
@@ -144,14 +144,14 @@ $(document).ready(function(){
 
 		}
 
-		var html ='<a href="#!" class="card-panel collection-item waves-effect waves-light">';
+		var html ='<a href="#!" class="collection-item waves-effect waves-light">';
 			html +=sample;
 			html +='<div class="title blue-text text-darken-2 truncate">'+title+'</div>';
             html +='<span class="red-text text-darken-2 truncate description">'+description+'</span>';
             html +=info_length;
             html +='<div class="black-text text-darken-2 data_file">';
             html +='<span class="views"><span class="number">'+view+'</span>&nbsp;<span class="view_lang">Views</span></span>&nbsp;.&nbsp;'
-            html +='<span class="dateTime">'+from+'</span></div></a>';
+            html +='<span class="dateTime">'+from+'</span></div></a><div class="divider"></div>';
 
         $('.suggestion .collection,.suggestion_vid .collection,.suggestion_mobile .collection').append(html);
 	}
@@ -178,6 +178,35 @@ $(document).ready(function(){
 			}
 		};
 	}
+
+
+	/////////////////////////managin suggestion style in responsive design////////////////////////////////////////////
+	var range_responsive = suggestion_responsive();
+
+	function suggestion_responsive () {
+		
+		if(window.is_tablet()){
+
+			$("[class*='suggestion_'] .first_pic").css('float','none')
+			$("[class*='suggestion_'] .first_pic").css('width','100%')
+			$("[class*='suggestion_'] .first_pic").css('max-height','none')
+			$("[class*='suggestion_'] .first_letter").hide()
+		}
+
+
+		if(window.is_desktop()){
+
+			$("[class*='suggestion_'] .first_pic").css('float','left')
+			$("[class*='suggestion_'] .first_pic").css('width','')
+			$("[class*='suggestion_'] .first_pic").css('max-height','70px')
+			$("[class*='suggestion_'] .first_letter").show()
+		}
+
+	}
+	$(window).resize(function  () {
+		
+		suggestion_responsive()
+	})
 
 
 
@@ -224,7 +253,7 @@ $(document).ready(function(){
 		
 		var html ='<div class="card '+this_class+' '+position+'" style="width:'+width+'">';
 		html	+=image_card;
-		html	+='<div class="card-content">'+title+'<div class="info_file black-text text-darken-2 data_file">';
+		html	+='<div class="card-content">'+title+'<h3 class="right">'+infos.views+'</h3><div class="info_file black-text text-darken-2 data_file">';
 		html	+='<div class="black-text text-darken-2 data_file truncate"><span class="nom">'+infos.timestamp+'</span></div>';
 		html	+='<div class="truncate"><a href="'+infos.id_autor+'"><span class="nom bold">'+infos.autor+'</span></a></div>';
 		html	+='<div><span class="abon"><a href="'+infos.subsription_link+'"><span class="new badge blue" data-badge-caption="S\'abonner"></span></a>';

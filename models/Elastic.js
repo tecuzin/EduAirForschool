@@ -8,7 +8,8 @@ var client = new elasticsearch.Client({
   log: 'trace'
 });
 
-var index_db = 'eduair';
+var index_db 	= 'eduair';
+var type_bd		= 'file';
 
 
 
@@ -31,6 +32,11 @@ class Elastic{
 	    	call_back(resp)
 
 		})
+	}
+
+
+	static search_on_media_library(term,call_back) {
+
 	}
 }
 

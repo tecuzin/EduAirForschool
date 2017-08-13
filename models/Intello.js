@@ -54,9 +54,6 @@ class Intello{
 
 						content 	= results.ops[0];
 
-						console.log(content.pages)
-						console.log(content)
-
 						if(content.pages!=undefined){
 
 							content.text_extracted	= JSON.parse(JSON.stringify(text_extracted))
