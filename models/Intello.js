@@ -25,6 +25,38 @@ var date			= new Date();
 
 class Intello{
 
+
+	static verify_if_the_file_name_exist(hashName,Callback){
+
+		db_connection(function(err, db){ 
+
+			if(err){
+
+				console.log(err)
+
+			}else{
+ 				db.collection("user_file").find({'hashName':hashName}).toArray((err, results)=> { 
+
+		        	if(err){
+		        		console.log(err)
+		        	}else{
+
+		        		if(results.length==0){
+
+		        			var verdict = true;
+
+			        		Callback(verdict)
+		        		}else{
+				        	var verdict = false;
+
+			        		Callback(verdict)
+		        		}
+		        	}
+				});
+			}
+    	});
+	}
+
 	
 	static add_new_file (content,call_back){ 
 
@@ -69,6 +101,46 @@ class Intello{
 				})
 			}
     	})
+	}
+
+
+
+	static set_file_description(file_description,Callback){
+
+		db_connection(function(err, db){ 
+
+			if(err){
+
+				console.log(err)
+
+	        	call_back({'statu':'problem','message':'fatal_error in db_connection'})
+
+			}else{
+
+				db.collection("user_file").update(
+
+				    { _id: new MongoObjectID(file_description._id)},
+
+				    { $set: { 'description': file_description.description,'title':file_description.title,'tags':file_description.tags } },
+
+				    (err,results)=>{
+
+				    	if(!err){
+
+				    		//We update the file in elasticsearch
+							Elastic.set_file_description(file_description,function (results) {
+								
+								// body...
+								Callback(results)
+							})
+				    	}else{
+
+				    		console.log(err)
+				    	}
+				    }
+				)
+			}
+		})
 	}
 
 

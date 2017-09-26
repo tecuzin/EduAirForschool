@@ -40,6 +40,8 @@
 	"professional":"Professional",
 	"visitors":"Visitors",
 	"user_choose_school":"Wich school or exam?",
-	"user_not_connected":"You shouls connect you"
+	"user_not_connected":"You shouls connect you",
+	"upload_processing":"processing...",
+	"File_type_Not_allowed": "File type Not allowed"
 
 }

@@ -7,6 +7,8 @@
            Veuillez vous assurer de ne pas porter atteinte à des droits d'auteur ou à la vie privée d'autrui. <a href="#">En savoir plus</a>
         </div>
         <div class="field_upload" >
+          <center> <div class="card-panel blue lighten-2 white-text text-darken-2 statu_upload" style="display:none;"></div></center>
+         
           
             <div class="selector row click_to_uplaod">
               <center>
@@ -37,7 +39,6 @@
                   <div class="indeterminate"></div>
                 </div>
               </div>
-              <div class="state_upload">Votre fichier sera diponible à l'adresse suivante <a href="#">http://airedu.edu/OUUEHytUt</a></div>
             </div>
             <div class="col m8 l8">
               <div class="loader_up">
@@ -45,19 +46,17 @@
                 <div class="progress">
                     <div class="determinate total_progress" style="width: 0%"></div>
                 </div>
-                <span class="counter"></span>
-                <div class="progress">
-                    <div class="determinate ind_file" style="width: 0%"></div>
-                </div>
+  
                 <div>
-                    <a class="waves-effect right waves-light btn blue publish disabled">Publier</a>
+                    <a class="waves-effect right waves-light btn blue publish" style="display:none;">Publier</a>
                     <a class="waves-effect right waves-teal btn-flat cancel_publish" id="cancel">Annuler</a>
                 </div>
+
                 
 
-                <input class="file_title" type="text" value="" placeholder="Title" required>
-                <textarea class="file_desc" placeholder="Description"></textarea>
-                <input class="file_tag" type="text" value="" placeholder="Tag(histoire,cuisine,couture,equation,html...)">
+                <input class="file_title file_input" type="text" value="" placeholder="Title" required>
+                <textarea class="file_desc file_input" placeholder="Description"></textarea>
+                <input class="file_tag file_input" type="text" value="" placeholder="Tags Exemple: histoire,cuisine,couture,equation,html...">
 
               </div>
             </div>
@@ -67,7 +66,7 @@
       </div>
 
        <!-- For language notifications -->
-      <div class="notif" no_complet="<%=__('no_complet')%>" no_accepted="<%=__('no_accepted')%>" error_password="<%=__('error_pass')%>"></div>
+      <div class="notif" File_type_Not_allowed="<%=__('File_type_Not_allowed')%>" upload_processing="<%=__('upload_processing')%>" no_complet="<%=__('no_complet')%>" no_accepted="<%=__('no_accepted')%>" error_password="<%=__('error_pass')%>"></div>
      
      
       

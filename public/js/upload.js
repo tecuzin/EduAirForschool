@@ -2,7 +2,19 @@ var rowCount = 0;
 var fileCount = 0;
 var pos = 0; 
 
+
+var file_type_application = [   'application/pdf' ,
+                                'application/vnd.ms-powerpoint', //ppt
+                                'application/vnd.openxmlformats-officedocument.presentationml.presentation',//pptx
+                                'application/msword' ,//DOC
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'//docx
+                                ];
+
 $(document).ready(function(){
+
+    var socket  = io.connect($('.ip_server').attr('protocol')+$('.ip_server').attr('ip')+':8083/');
+
+    var file_to_upload;
 
 	//fixe the size of the uploader
 	$('.field_upload').height((window.field_upload_height*$(window).height())/100)
@@ -45,141 +57,287 @@ $(document).ready(function(){
     });
 
 
-    $('.filer').change(function(e){
- 
+    $('.filer').change(function(e){ 
+        
+        $('.publish').fadeIn()
+
+         // We show the dashboard
+        $(".selector").fadeOut();
+        $('.command_selector').fadeIn('slow');
+
+        $('.statu_upload').html('')
+        $('.statu_upload').fadeOut()
+
         var files = $(this)[0].files;
 
-        //Init progress bars to 0
-        big_progress_bar(0)
-        small_progress_bar(0)
-
         prepare_file (files)
+
+        // //Init progress bars to 0
+        // big_progress_bar(0)
+
 
     });
 
 
 	obj.on('drop', function (e)
 	{
+
+        $('.publish').fadeIn()
+        $(".selector").fadeOut();
+        $('.command_selector').fadeIn('slow');
+
+        $('.statu_upload').html('')
+        $('.statu_upload').fadeOut()
 		e.preventDefault();
 		var files = e.originalEvent.dataTransfer.files;
 
         //Init progress bars to 0
         big_progress_bar(0)
-        small_progress_bar(0)
 
         prepare_file (files)
-
-		//We need to send dropped files to Server
-		// handleFileUpload(files,obj);
 	});
+
+
+    $('.publish').click(function  () {
+
+        $('.publish').addClass('disabled')
+        $('.file_input').attr("disabled", "disabled")
+
+        upload_to_the_server(file_to_upload)
+        
+        return false;
+    })
+
+
+
+    function big_progress_bar (percent) {
+        
+        $('.total_progress').attr('style','width: '+percent+'%')
+
+        $('.percent_up').text(percent+'%')
+    }
+
+    
 
 
     function prepare_file (files) {//To do. extention and size
         
         if (files.length > 0){
             
-            // We show the dashboard
-            $(".selector").fadeOut();
-            $('.command_selector').fadeIn('slow');
+            //We write the name of file
+            $('.file_title').val(files[0]['name'].replace('.'+files[0]['name'].split('.').pop(),''))
 
-            upload_to_the_server(files,0)
+            //We verify file
+            //Is it the good format
+            var this_entire_type = files[0].type;
+            
+            this_entire_type = this_entire_type.split('/')
+            
+            var this_type = this_entire_type[0];
+            
+            var this_extension = this_type[1]; 
+
+            switch(this_type){
+
+                case 'video':
+                case 'image':
+                case 'audio':
+                case 'application':
+
+                    if(this_type=='application' && file_type_application.indexOf(files[0].type)!=-1){
+
+                        file_to_upload = files;
+                    }else{
+
+                        if(this_type=='video' || this_type=='audio' || this_type=='image'){
+
+                           file_to_upload = files;    
+                        }else{
+                            //We change the bar statu
+                            $('.statu_upload').html('<div class="link_uploaded"><i class="material-icons">close</i><span class="red-text text-darken-2"> '+$('.notif').attr('File_type_Not_allowed')+'</span></div>')
+                            $('.statu_upload').fadeIn()
+
+                            //we show the upload form and hide input text
+                             // We show the dashboard
+                            $(".selector").fadeIn();
+                            $('.command_selector').hide('slow');
+
+                        }
+                    }
+
+                break;
+
+                default:
+                     //We change the bar statu
+                    $('.statu_upload').html('<div class="link_uploaded"><i class="material-icons">close</i><span class="red-text text-darken-2"> '+$('.notif').attr('File_type_Not_allowed')+'</span></div>')
+                    $('.statu_upload').fadeIn()
+
+                    //we show the upload form and hide input text
+                     // We show the dashboard
+                    $(".selector").fadeIn();
+                    $('.command_selector').hide('slow');
+                break;
+            }
         }
+
+        //We hide the indeterminant progressbar even if it's not hide or not
+        $('.state_upload').hide()
     }
 
 
 
-    function upload_to_the_server (files,index) { 
+    function upload_to_the_server (files) { 
 
-        //Display the big progress bar
-        small_progress_bar((index*100)/files.length)
+        //We show the progress bar
+        $('.state_upload').fadeIn()
 
+        // create a FormData object which will be sent as the data payload in the
+        // AJAX request
+        var formData = new FormData();
 
-        if(index==0 || files.length!=index){
+        var file = files[0];
 
-            // create a FormData object which will be sent as the data payload in the
-            // AJAX request
-            var formData = new FormData();
+        $('.up_title').text(file.name)
 
-            var file = files[index];
+        // add the files to formData object for the data payload
+        formData.append('file', file, file.name);
 
-            $('.up_title').text(file.name)
+        $.ajax({
 
-            // add the files to formData object for the data payload
-            formData.append('file', file, file.name);
+            url: '/upload',
 
-            index=index+1;
+            type: 'POST',
 
-            $.ajax({
+            data: formData,
 
-                  url: '/upload',
+            processData: false,
 
-                  type: 'POST',
+            contentType: false,
 
-                  data: formData,
+            dataType: 'json',
 
-                  processData: false,
+            error: function  (err) {
+              console.log(err)
+            },
 
-                  contentType: false,
+            xhr: function() {
+                // create an XMLHttpRequest
+                var xhr = new XMLHttpRequest();
 
-                  error: function  (err) {
-                      console.log(err)
-                  },
+                // listen to the 'progress' event
+                xhr.upload.addEventListener('progress', function(evt) {
 
-                  success: function(data){
+                  if (evt.lengthComputable) {
+                    // calculate the percentage of upload completed
+                    var percentComplete = evt.loaded / evt.total;
+                    percentComplete = parseInt(percentComplete * 100);
 
-                    upload_to_the_server (files,index)
-                  },
-                  xhr: function() {
-                    // create an XMLHttpRequest
-                    var xhr = new XMLHttpRequest();
+                    // update the Bootstrap progress bar with the new percentage
+                    big_progress_bar(percentComplete)
 
-                    // listen to the 'progress' event
-                    xhr.upload.addEventListener('progress', function(evt) {
-
-                      if (evt.lengthComputable) {
-                        // calculate the percentage of upload completed
-                        var percentComplete = evt.loaded / evt.total;
-                        percentComplete = parseInt(percentComplete * 100);
-
-                        // update the Bootstrap progress bar with the new percentage
-                        big_progress_bar(percentComplete)
-                      }
-
-                    }, false);
-
-                    return xhr;
                   }
-            })
 
-        }else{
+                }, false);
 
-            //We hide the indeterminate progressBar
-            $('.state_upload').fadeOut()
+                return xhr;
+            },
+            success: function(data){
 
-            $('.this_statu_upload').html('<center><i class="large material-icons">done</i></center>')
+                if(data.statu=='success'){
 
-            $('.publish').removeClass('disabled')
-            $('.cancel_publish').fadeOut();
-        }
+                    //We hide the indeterminate progressBar
+                    $('.state_upload').fadeOut()
+
+                    $('.cancel_publish').fadeOut();
+
+                    $('.percent_up').html($('.notif').attr('upload_processing'))
+
+                }else{
+
+                    //We change the bar statu
+                    $('.statu_upload').html('<div class="link_uploaded"><i class="material-icons">close</i><span class="red-text text-darken-2"> '+data.message+'</span></div>')
+                    $('.statu_upload').fadeIn()
+
+                    //we hide the upload form and show input text
+                    $(".selector").fadeIn();
+                    $('.command_selector').hide();
+                    init_form ()
+                }
+            }
+        })
         
     }
 
 
+    $('.cancel_publish').click(function  () {
+        
+        location.reload();
+
+        return false;   
+
+    })
+
+
+
+    socket.on('upload_treatment_ended',function (results) { console.log(results) 
+
+        $.ajax({
+
+            url: '/send_description_file',
+
+            type: 'POST',
+
+            data: {'title':$('.file_title').val(),'description':$('.file_desc').val(),'tags':$('.file_tag').val().split(','),'hashName':results.hashName,'_id':results._id},
+
+            dataType: 'json',
+
+            error: function  (err) {
+              console.log(err)
+            },
+            success: function(data){
+
+                if(data.statu=='success'){
+
+                    //We change the bar statu
+                    $('.statu_upload').html('<div class="link_uploaded"><i class="material-icons">done</i> Votre fichier est diponible <a href="'+$('.ip_server').attr('protocol')+$('.ip_server').attr('ip')+'/watch/'+results.hashName+'" class="my_link"><span class="blue-text text-darken-2">ici</span></a></div>')
+                    $('.statu_upload').fadeIn()
+
+                    //we show the upload form and hide input text
+                     // We show the dashboard
+                    $(".selector").fadeIn();
+                    $('.command_selector').hide('slow');
+                    init_form ()
+
+                }else{
+
+                    //We change the bar statu
+                    $('.statu_upload').html('<div class="link_uploaded"><i class="material-icons">close</i><span class="red-text text-darken-2"> '+data.message+'</span></div>')
+                    $('.statu_upload').fadeIn()
+
+                    //we hide the upload form and show input text
+                    $(".selector").fadeIn();
+                    $('.command_selector').hide();
+                    init_form ()
+                }
+            }
+        })
+
+    })
 
 
 
 
+    function init_form () {
+        
+        $('.file_input').removeAttr('disabled')
+        $('.filer,.file_input').val('') //We rest the file input
+        $('.publish').hide()
+        big_progress_bar (0)
+        $('.up_title').text('')
+        $('.publish').removeClass('disabled')
+        $('.cancel_publish').fadeIn()
 
-
-
-
-
-
-
-
-
-
-
+    }
 
 
 
@@ -215,165 +373,6 @@ $(document).ready(function(){
         rowCount = 0;
         fileCount = 0;
     });
-
-    function big_progress_bar (percent) {
-        
-        $('.total_progress').attr('style','width: '+percent+'%')
-        $('.percent_up').text(percent+'%')
-    }
-
-    function small_progress_bar (percent) {
-        
-        $('.ind_file').attr('style','width: '+percent+'%')
-        $('.counter').text(percent+'%')
-        
-    }
-
-
-
-    // function sendFileToServer(formData, status, files){
-    //     var uploadUrl = "/upload";
-    //     var extraData = {};
-    //     var jqXHR=$.ajax({
-    //             xhr: function() {
-    //             var xhrobj = $.ajaxSettings.xhr();
-    //             if (xhrobj.upload) {
-    //                     if(fileCount == 0){
-    //                         var percent2 = 0;
-    //                     }
-    //                     xhrobj.upload.addEventListener('progress', function(event) {
-    //                         var percent = 0;
-    //                         var position = event.loaded || event.position;
-    //                         var total = event.total;
-    //                         var total2 = 0;
-    //                         for(var j = 0; j < files.length; j++){
-    //                             total2 += files[j].size;
-    //                         }
-    //                         if (event.lengthComputable) {
-    //                             percent = Math.ceil(position / total * 100);
-    //                             percent2 = Math.ceil(position / total2 * 100);
-    //                         }
-    //                         status.setProgress(percent);
-    //                         status.setTotalProgress(percent2);
-    //                     }, false);
-    //                 }
-    //             return xhrobj;
-    //         },
-    //         url: uploadUrl,
-    //         type: "POST",
-    //         contentType:false,
-    //         processData: false,
-    //         cache: false,
-    //         data: formData,
-    //         success: function(data){
-
-    //             if(data=='success'){
-
-    //                 status.setProgress(100);
-
-    //                 if(files.length > fileCount){
-    //                     handleFileUpload(files, $(".selector"));
-    //                     fileCount++;
-    //                 }else{
-    //                     alert("it's correct!");
-    //                     fileCount = 0;
-    //                     rowCount = 0;
-    //                 }
-    //             }else{
-    //                 if(data=='bad_file'){
-
-    //                     alert(data)
-    //                 }
-    //             }
-               
-
-    //             //$("#status1").append("File upload Done<br>");
-    //         }
-    //     });
-
-    //     status.setAbort(jqXHR);
-    // }
-
-    // function createStatusbar(obj, files)
-    // {
-    //      rowCount++;
-    //      //var row="odd";
-    //      //if(rowCount %2 ==0) row ="even";
-    //      this.statusbar = $(".command_selector");
-    //      this.filename = $("<div class='filename'></div>").appendTo(this.statusbar);
-    //      this.size = $("<div class='filesize'></div>").appendTo(this.statusbar);
-    //      this.progressBar = $("<div class='progressBar'><div></div></div>").appendTo(this.statusbar);
-    //      this.abort = $("<div class='abort'>Abort</div>").appendTo(this.statusbar);
-    //      /*obj.after(this.statusbar);*/
-    //      $(".counter").html("("+ rowCount + "/" + files.length +")");
-
-    //     this.setFileNameSize = function(name,size)
-    //     {
-    //         var sizeStr="";
-    //         var sizeKB = size/1024;
-    //         if(parseInt(sizeKB) > 1024)
-    //         {
-    //             var sizeMB = sizeKB/1024;
-    //             sizeStr = sizeMB.toFixed(2)+" MB";
-    //         }
-    //         else
-    //         {
-    //             sizeStr = sizeKB.toFixed(2)+" KB";
-    //         }
-
-    //         $(".up_title").html(name + " - <b>" + sizeStr + "</b>");
-    //         $(".file_title").val(name);
-    //         /*this.filename.html(name);
-    //         this.size.html(sizeStr);*/
-    //     }
-    //     this.setProgress = function(progress)
-    //     {
-    //         var progressBarWidth =progress*$(".ind_file").width()/ 100;
-    //         $(".ind_file").css("width", progress + "%");
-    //         $(".percent_up").find('div').animate({ width: progressBarWidth }, 10).html(progress + "% ");
-    //         if(parseInt(progress) >= 100)
-    //         {
-    //             this.abort.hide();
-    //         }
-    //     }
-    //     this.setTotalProgress = function(progress)
-    //     {
-    //         $(".total_progress").css("width", progress + "%");
-    //         if(parseInt(progress) >= 100)
-    //         {
-    //             this.abort.hide();
-    //         }
-    //     }
-    //     this.setAbort = function(jqxhr)
-    //     {
-    //         var sb = this.statusbar;
-    //         this.abort.click(function()
-    //         {
-    //             jqxhr.abort();
-    //             sb.hide();
-    //         });
-    //     }
-
-    // }
-
-    // function handleFileUpload(files, obj)
-    // {
-    //     var fd = new FormData();
-
-    //     for (var i = 0; i < files.length; i++)
-    //     {
-
-
-    //         if(fileCount >= files.length) return false;
-    //         fd.append('file', files[fileCount]);
-
-    //         var status = new createStatusbar(obj, files); //Using this we can set progress.
-    //         status.setFileNameSize(files[fileCount].name,files[fileCount].size);
-    //         sendFileToServer(fd, status, files);
-    //         fileCount++;
-
-    //     }
-    // }
 
 
 

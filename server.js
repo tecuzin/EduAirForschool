@@ -14,11 +14,21 @@ cookieParser    = require('cookie-parser'),
 bcrypt			= require('bcrypt-nodejs'),
 fs				= require('fs'),
 mime 			= require('mime'),//Get type mime of file
-crypto 			= require('crypto'); //Generate a random hash
+file_type_application = [	'application/pdf' ,
+								'application/vnd.ms-powerpoint', //ppt
+								'application/vnd.openxmlformats-officedocument.presentationml.presentation',//pptx
+								'application/msword' ,//DOC
+								'application/vnd.openxmlformats-officedocument.wordprocessingml.document'//docx
+								];
+var crypto 			= require('crypto'); //Generate a random hash
 
 
+var MaxFieldSize = 1000 * 1000,
+    MaxFields = 100,
+    MaxUploadSize = 1000 * 1000 * 1000;
 
 
+var io = require('socket.io').listen(8083,{ log: false }) ;
 
 var port 			= 80;
 var redis_port		= 27017;
@@ -48,6 +58,7 @@ var app = express();
 app.set('view engine','ejs')
 
 app.use('/assets', express.static('public'))
+app.use('/socket', express.static('node_modules/socket.io-client/dist'))
 
 app.use(language)
 
@@ -357,46 +368,169 @@ app.post('/upload', (request, response) => {
 
 	var form = new formidable.IncomingForm();
 
+
 	//settings
 	form.multiples = true;
 	form.keepExtensions = true;
 	form.uploadDir = media_library+'temp';
+	form.maxFieldsSize = MaxFieldSize;
+    form.maxFields = MaxFields;
 
-	form.on("file", function(field, file){
+	form.on("fileBegin", function(field, file){ 
 
-		//We verify the type mime
-		// console.log(file.type);
-		
-		var current_date = (new Date()).valueOf().toString();
-		
-		var random = Math.random().toString();
-		
-		var new_path = path.join(form.uploadDir, crypto.createHash('sha1').update(current_date + random).digest('hex')+path.extname(file.name));
-		
-		// var new_path = path.join(form.uploadDir, crypto.createHash('sha1').update(current_date + random).digest('hex')+'__'+file.name.replace(/ /g,'_').replace(/[&\/\\#,+()$~%'":*?<>{}]/g, ''));
+		var file 			= file.name;
 
-		fs.rename(file.path, new_path);
+		var file_type 		= mime.lookup(file);
 
-		var new_file = {'file_name':path.basename(file.name,path.extname(file.name)),'file_path':new_path}
+		var file_type_mime 	= file_type;
 
-		filer.handelFile(new_file)
+		file_type 			= file_type.split('/');
+
+		var file_extension 	= file_type[1];
+
+		file_type 			= file_type[0];
+
+		switch(file_type){
+
+			case 'video':
+			case 'image':
+			case 'audio':
+			case 'application':
+
+				if(file_type=='application' && file_type_application.indexOf(file_type_mime)!=-1){
+
+				}else{
+
+					if(file_type=='video' || file_type=='audio' || file_type=='image'){
+
+						
+					}else{
+						response.status(413);
+						response.set({"connection": 'close', "content-type": 'text/plain'});
+						response.json({'statu':'fail','message':'format not allowed'});
+						request.connection.destroy();
+            			form._error (new Error ('format not allowed'));
+					}
+				}
+
+			break;
+
+			default:
+				response.status(413);
+				response.set({"connection": 'close', "content-type": 'text/plain'});
+				response.json({'statu':'fail','message':'format not allowed'});
+				request.connection.destroy();
+				form._error (new Error ('format not allowed'));
+			break;
+		}
 
 	});
 
-	form.on('error', function(err) {
-
-		response.end('error')
-
-		console.log('An error has occured: \n' + err);
+	form.on('error', function(err) { 
+		console.log(err)
 	});
 
-	form.on('end', function() {
 
-		response.end('success');
+	form.on('abort', function(err) {
+
+		response.status(413);
+		response.set({"connection": 'close', "content-type": 'text/plain'});
+		response.json({'statu':'fail','message':'File Error'})
+		request.connection.destroy();
 	});
+
+
+	form.on('end', function(fields,files) { 
+
+		var file = this.openedFiles[0];
+		
+		generate_file_name_and_send_to_database(function (final_file_name) { 
+
+			var new_path = path.join(form.uploadDir, final_file_name+path.extname(file.name));
+			// var new_path = path.join(form.uploadDir, crypto.createHash('sha1').update(current_date + random).digest('hex')+'__'+file.name.replace(/ /g,'_').replace(/[&\/\\#,+()$~%'":*?<>{}]/g, ''));
+
+			fs.rename(file.path, new_path,function  (err) {
+				
+				if(!err){
+
+					fs.stat(new_path, function fsStat(err, stats) {
+
+					    if(!err){
+
+					    	var new_file = {'file_name':path.basename(file.name,path.extname(file.name)),'file_path':new_path}
+
+							filer.handelFile(new_file,function  (callback) {
+						
+								// Make action after finish completly. Like send notification, trigger something
+								io.sockets.emit('upload_treatment_ended',callback)
+							})
+
+							response.json({'statu':'success','file_url':final_file_name});
+						      
+					    }
+  					});
+				}
+			})
+		});
+	});
+
+
+
+    form.on ('progress', function (bytesReceived, bytesExpected) {
+        //console.log (bytesReceived, bytesExpected);
+        if(bytesReceived > MaxUploadSize)
+        {
+            console.log ('*** TOO BIG');
+
+            // ***HACK*** see Formidable lib/incoming_form.js
+            // forces close files then triggers error in form.parse below
+            // bonus: removes temporary files
+            // --> use throttling in Chrome while opening /tmp in nautilus
+            //     and watch the files disappear
+            form.__2big__ = true;
+            form._error (new Error ('too big'));
+
+            //req.connection.destroy (); --- moved to form.parse
+        }
+    });
 
 	form.parse(request);
 });
+
+
+
+function generate_file_name_and_send_to_database(callback) { 
+
+	filer.get_a_file_name(function  (fileName) {
+
+  		callback(fileName)
+	})
+}
+
+
+
+
+app.post('/send_description_file',(request,response)=>{ 
+
+	var data = request.body;
+
+	filer.update_description_file({'title':data.title,'description':data.description,'tags':data.tags,'hashName':data.hashName,'_id':data._id},function  (results) {
+		
+		response.json(results)
+	})
+
+})
+
+
+// app.get('/cancel_upload',(request,response)=>{
+
+// 	response.status(413);
+// 	response.set({"connection": 'close', "content-type": 'text/plain'});
+// 	response.json({'statu':'fail','message':'File Error'})
+// 	request.connection.destroy();
+// 		// response.redirect('/')
+
+// })
 
 
 
@@ -404,7 +538,7 @@ app.post('/upload', (request, response) => {
 app.get('/watch/:FileId',(request,response)=>{
 
 	// Exple: http://domain.edu/watch/Lyd_0_Idfile
-	var my_request = req.params.FileId;
+	var my_request = request.params.FileId;
 
 	my_request = my_request.split('_');
 

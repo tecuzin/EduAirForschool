@@ -86,10 +86,78 @@ body{
   width: 80%;
 }
 
+.all_card{
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.brother,.father{
+  margin-right: 20px;
+}
+
+.one_hit{
+  display: block;
+}
+
+.brother{
+  vertical-align: top;
+}
+
+
+.all_brother li{
+  margin-bottom: 2px;
+  padding-bottom: 2px;
+  line-height: 2em;
+}
+
+.all_card h1{
+  font-size: 1em;
+  color: #000000;
+}
+
+.all_brother{
+ bottom: 0;
+}
+
+.spacer{
+  margin-bottom: 20px;
+}
+
 
 .all_card .this_card{
   display: inline-block;
   margin: 5px;
+}
+
+.menu_search .tabs .tab a{
+  font-size: 11px;
+  text-transform: none;
+}
+
+.suggest_image ul li{
+  display: inline;
+}
+
+.suggest_image h1{
+  font-size: 1em;
+  color: #000000;
+}
+
+.suggest_image{
+
+  padding-top:1px; 
+  padding-bottom:10px; 
+}
+
+.goodies video{
+  width:100%;
+}
+
+.suggestion h1,.suggestion_vid h1,.suggestion_mobile h1{
+  font-size: 1em;
+  color: #000000;
+  font-weight: bold;
+  padding-left: 20px;
 }
 
 .all_card .card .card-content{
@@ -100,6 +168,87 @@ body{
 .autor{
   height: 50px;
   float: left;
+}
+.video_played{
+  width: 100%;
+}
+
+
+
+#search-form-user{
+  margin-bottom: 5px;
+}
+
+#search-box,#search-box-user {
+position: relative;
+width: 100%;
+margin: 0;
+}
+
+#search-form 
+{
+height: 30px;
+border: 1px solid #64B5F6;
+background-color: #fff;
+overflow: hidden;
+}
+
+
+#search-form-user
+{
+height: 30px;
+border: 1px solid #000000;
+background-color: #fff;
+overflow: hidden;
+}
+
+#search-text ,#search-text-user
+{
+font-size: 14px;
+color: #ddd;
+border-width: 0;
+background: transparent;
+}
+
+#search-box input[type="text"]
+{
+width: 90%;
+padding: 0px 0 12px 1em;
+color: #000000;
+outline: none;
+}
+
+
+#search-box-user input[type="text"]
+{
+width: 90%;
+padding: 0px 0 12px 1em;
+color: #000000;
+outline: none;
+}
+
+#search-button {
+  background-color:#64B5F6;
+}
+
+
+#search-button-user{
+
+  background-color:#ff0000;
+}
+
+#search-button ,#search-button-user{
+position: absolute;
+top: 0;
+right: 0;
+height: 30px;
+width: 40px;
+font-size: 14px;
+color: #fff;
+text-align: center;
+line-height: 42px;
+border-width: 0;
+cursor: pointer;
 }
 
 
@@ -135,6 +284,14 @@ body{
 .video_airedu h1{
   font-size: 2em;
   margin: 0px;
+  color: #000000;
+}
+
+.video_airedu h3{
+  font-size: 1.5em;
+  margin: 0px;
+  color: #000000;
+  border-bottom: 1px solid #D32F2F;
 }
 
 .suggestion{
@@ -142,6 +299,12 @@ body{
   width: 40%;
   padding-left: 20px; 
   padding-right: 10px; 
+}
+
+.suggestion_vid{
+   padding-top: 20px;
+   padding-right: 0px;
+   padding-left: 0px;
 }
 
 .suggestion_mobile{
@@ -329,52 +492,62 @@ video,.img_target{
 
 
 /*For user profil*/
-.user_background{
-  background: #000000;
-  padding-left: 10px;
+.marketing_account{
+  background-image: url('../img/banner.jpg');
+  height: 170px;
+  position: relative;
 }
 
-.user_background i{
+.marketing_contact{
+  position: absolute;
+  bottom: 0px;
+  right: 12px;
   color: #fff;
 }
 
-.user_identity{
-  color: #fff;
-}
-
-.user_pic{
-  display: block;
-  padding-top: 10px;
-}
-
-.contact i{
-  color: #fff;
-}
-
-.contact{
-  margin-right: 10px;
-}
-
-.user_pic img{
-  height: 50px;
+.contact_me{
   float: left;
-  margin-right: 5px;
+  background-color: rgba(0, 0, 0, 0.3);
+  text-align: center;
+  font-size: 0.8em;
+  padding: 6px;
 }
 
-.first_ident{
-  background: #fff;
-  margin-top: 5px;
+.tel_user{
+  margin-right: 1px;
 }
 
-.last_file{
-  width: 50%;
-  background: #fff;
+.mini_pic_user{
+  float: left;
+  margin-right: 6px;
 }
 
-.last_file img{
-  height: 100px;
-  padding: 10px;
+.img_user_pic{
+  padding-left: 20px;
 }
+
+.account_info h1{
+  color: #000000;
+  font-size: 1.5em; 
+  margin: 0px;
+}
+
+.account_info{
+  box-shadow: none;
+  margin-top: 0px;
+  padding-top: 20px;
+  padding-bottom: 0px;
+}
+
+.user_page_channel .tabs .tab{
+  text-transform: none;
+}
+
+.user_page_channel .tabs .tab .active{
+  color: #000000;
+  font-weight: bold;
+}
+
 
 
 
@@ -496,3 +669,18 @@ video,.img_target{
   width: 100%;
 }
 
+
+.desc_promo h1{
+ 
+  color: #000000;
+  font-size: 2em;
+}
+
+.my_favorite_video{
+  width: 100%;
+}
+
+.statu_upload{
+  font-size: 1.5em;
+  font-weight: bold;
+}

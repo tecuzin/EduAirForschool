@@ -351,4 +351,13 @@ $(document).ready(function(){
 			}) 
 		}
 	}
+
+
+
+
+
+	window.display_popup = function  (message) {
+		
+  		Materialize.toast($toastContent, 10000);
+	}
 });

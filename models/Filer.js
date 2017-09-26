@@ -50,7 +50,7 @@ var file_type_application = [	'application/pdf' ,
 
 class Filer{
 
-	static handelFile(fileUploaded){ 
+	static handelFile(fileUploaded,Callback){ 
 
 		var file = fileUploaded.file_path;
 
@@ -71,7 +71,7 @@ class Filer{
 
 					Intello.add_new_file(results,function  (response) {
 						
-						console.log(response)
+						Callback(results)
 					})
 				})
 			break;
@@ -121,11 +121,57 @@ class Filer{
 			break;
 		}
 	}
+
+
+	static get_a_file_name(Callback){ 
+
+		generate_a_file_name(function  (hashName) {
+			
+			Callback(hashName);
+		});
+	}
+
+
+	static update_description_file(file_description,Callback){
+
+		//We update data to intello
+		Intello.set_file_description(file_description,function  (response) {
+						
+			Callback(response)	
+		})
+		
+	}
 		
 }
 
 
 module.exports = Filer;
+
+
+	////////////////////////////////////////Generate a file name/////////////////////////////////////////////////////////
+
+	function generate_a_file_name (hashName) {
+		
+		var maxi_lenght = 10;
+  		var text = "";
+  		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+
+  		for (var i = 0; i < maxi_lenght; i++)
+  			text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  		//verify to the data base if the file doesn't exixt yet
+  		Intello.verify_if_the_file_name_exist(text,function  (statu) { 
+  			
+  			if(statu==true){
+
+  				hashName(text)
+  			}else{
+  				generate_a_file_name(hashName)
+  			}
+  		})
+	}
+	////////////////////////////////////////Generate a file name/////////////////////////////////////////////////////////
 
 
 	///////////////////////////////////////////////////Converter//////////////////////////////////////////////////////////
@@ -221,11 +267,11 @@ module.exports = Filer;
 
 	function convert_video_to_mp4 (fileUploaded,call_back_json_metada){
 
-		var real_fileName = fileUploaded.file_name;
+		var real_fileName 	= fileUploaded.file_name;
 
-		var temp_file 	= fileUploaded.file_path;
+		var temp_file 		= fileUploaded.file_path;
 
-		var final_file	= media_library+'video/'+path.basename(fileUploaded.file_path,path.extname(fileUploaded.file_path))+'.mp4' ;
+		var final_file		= media_library+'video/'+path.basename(fileUploaded.file_path,path.extname(fileUploaded.file_path))+'.mp4' ;
 
 		//Convert To MP4 if it is not a mp4 video
 		var video_type 	= mime.lookup(temp_file);

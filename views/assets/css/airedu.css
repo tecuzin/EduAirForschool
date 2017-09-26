@@ -679,3 +679,8 @@ video,.img_target{
 .my_favorite_video{
   width: 100%;
 }
+
+.statu_upload{
+  font-size: 2em;
+  font-weight: bold;
+}

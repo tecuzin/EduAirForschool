@@ -1,18 +1,10 @@
 
 $(document).ready(function(){ 
 
-	//////ToDo///////////////////////////////
-	//Function using notification API
-
-	//////ToDo///////////////////////////////
-
-	/////////////ligne code to replace////////////////
-	//window.is_desktop, if(!window.is_mobile() && $('.field').attr('article')=='yes'),
-
 	//Config system
 
 	//Pub
-	window.activate_pub 				= true;
+	window.activate_pub 				= false;
 	window.sell_plateform 				= 'Whatsapp';
 	window.sell_contact   				= '678335503';
 
@@ -42,9 +34,6 @@ $(document).ready(function(){
 
 	// For video call
 	window.video_caller_height			= 90; //In percent %
-
-	//Expiration of session
-	window.session_TTL					= 259200; //3 days
 
 
 
@@ -85,15 +74,7 @@ $(document).ready(function(){
 
 
 
-	//$('.chips').material_chip();//Initiate chip for tags
-
-
-	//////////////////////Changing Background//////////////////////////////////////////////////////////////////////////
-	// $('body').css('background-image','url("assets/background/test.png")').animate({opacity: 0.9})
-	// $('body').css('background-repeat','no-repeat')
-	// $('body').css('background-attachment','fixed')
-	// $('body').css('background-size','cover')
-	//////////////////////Changing Background//////////////////////////////////////////////////////////////////////////
+	$('.chips').material_chip();//Initiate chip
 	
 
 
@@ -123,7 +104,7 @@ $(document).ready(function(){
 	//This manages the suggestion on desktop or tablet
 	window.suggestion = function  () {
 		
-		get_suggestion()
+			get_suggestion()
 	}
 
 	function get_suggestion () {
@@ -146,7 +127,7 @@ $(document).ready(function(){
 		//We make request
 
 		//We diplay result on finish
-		$('.suggestion,.suggestion_vid,.suggestion_mobile').html('<h5>SUGGESTIONS</h5><div class="collection"></div>');
+		$('.suggestion,.suggestion_vid,.suggestion_mobile').html('<h1>Suggestions</h1><div class="collection"></div>');
 		demo();
 
 	}
@@ -163,14 +144,14 @@ $(document).ready(function(){
 
 		}
 
-		var html ='<a href="#!" class="card-panel collection-item waves-effect waves-light">';
+		var html ='<a href="#!" class="collection-item waves-effect waves-light">';
 			html +=sample;
 			html +='<div class="title blue-text text-darken-2 truncate">'+title+'</div>';
             html +='<span class="red-text text-darken-2 truncate description">'+description+'</span>';
             html +=info_length;
             html +='<div class="black-text text-darken-2 data_file">';
             html +='<span class="views"><span class="number">'+view+'</span>&nbsp;<span class="view_lang">Views</span></span>&nbsp;.&nbsp;'
-            html +='<span class="dateTime">'+from+'</span></div></a>';
+            html +='<span class="dateTime">'+from+'</span></div></a><div class="divider"></div>';
 
         $('.suggestion .collection,.suggestion_vid .collection,.suggestion_mobile .collection').append(html);
 	}
@@ -197,6 +178,35 @@ $(document).ready(function(){
 			}
 		};
 	}
+
+
+	/////////////////////////managin suggestion style in responsive design////////////////////////////////////////////
+	var range_responsive = suggestion_responsive();
+
+	function suggestion_responsive () {
+		
+		if(window.is_tablet()){
+
+			$("[class*='suggestion_'] .first_pic").css('float','none')
+			$("[class*='suggestion_'] .first_pic").css('width','100%')
+			$("[class*='suggestion_'] .first_pic").css('max-height','none')
+			$("[class*='suggestion_'] .first_letter").hide()
+		}
+
+
+		if(window.is_desktop()){
+
+			$("[class*='suggestion_'] .first_pic").css('float','left')
+			$("[class*='suggestion_'] .first_pic").css('width','')
+			$("[class*='suggestion_'] .first_pic").css('max-height','70px')
+			$("[class*='suggestion_'] .first_letter").show()
+		}
+
+	}
+	$(window).resize(function  () {
+		
+		suggestion_responsive()
+	})
 
 
 
@@ -243,7 +253,7 @@ $(document).ready(function(){
 		
 		var html ='<div class="card '+this_class+' '+position+'" style="width:'+width+'">';
 		html	+=image_card;
-		html	+='<div class="card-content">'+title+'<div class="info_file black-text text-darken-2 data_file">';
+		html	+='<div class="card-content">'+title+'<h3 class="right">'+infos.views+'</h3><div class="info_file black-text text-darken-2 data_file">';
 		html	+='<div class="black-text text-darken-2 data_file truncate"><span class="nom">'+infos.timestamp+'</span></div>';
 		html	+='<div class="truncate"><a href="'+infos.id_autor+'"><span class="nom bold">'+infos.autor+'</span></a></div>';
 		html	+='<div><span class="abon"><a href="'+infos.subsription_link+'"><span class="new badge blue" data-badge-caption="S\'abonner"></span></a>';
@@ -267,7 +277,7 @@ $(document).ready(function(){
 		$('.commentor,.description_media').width(window.commentor_width_article);
 	}
 
-	//autosize($('text_comment,.text_comment_comment'));//For elasctic textarea
+	autosize($('text_comment,.text_comment_comment'));//For elasctic textarea
 
 	//Show button when you want to comment
 	$('.text_comment').focus(function  () {
@@ -315,108 +325,6 @@ $(document).ready(function(){
 			$('.ul_com_'+user_text_id).append(html)
 	}
 
-
-
-	window.pops = function  (message) {
-		
-		Materialize.toast(message, 4000) // 4000 is the duration of the toast
-	}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//Manage all school
-
-	window.list_profil = {
-		'students':[
-			{	
-				'name':'secondary',
-				'list':[
-							{
-								'name':'BEPC',
-								'number':0,
-								'list_user':[0]
-							}
-						]},
-			{	
-				'name':'high_school',
-				'list':[
-							{
-								'name':'Univsersité de Douala',
-								'number':0,
-								'censured':true,
-								'list_user':[0]
-							},
-							{
-								'name':'IUC',
-								'number':0,
-								'list_user':[0]
-							}
-						]},
-			{	
-				'name':'formation',
-				'list':[
-							{
-								'name':'CIS',
-								'number':18,
-								'list_user':[0]
-							},
-							{
-								'name':'CEFOR Hotêlerie',
-								'number':0,
-								'list_user':[0]
-							}
-						]}
-		],
-		'teacher':{
-			'number':0,
-			'list_user':[0]
-		},
-		'professional':{
-			'number':0,
-			'list_user':[0]
-		},
-		'visitors':{
-			'number':0,
-			'list_user':[0]
-		}
-	}
-
-	//Get all school
-	window.get_school = function  () {
-		
-		$.ajax({
-
-			url : $('.ip_server').attr('protocol')+$('.ip_server').attr('ip')+'/get_school',
-
-			type : 'POST',
-
-			data : window.list_profil,
-
-			dataType:'json',
-
-			error : function(err) {
-
-				console.log(err)
-			},
-
-			success : function  (data) { 
-
-				       		
-				if(data.statu==true){
-
-				    window.all_list_school = data.results.results[0];
-
-				}else{
-				    console.log(data.message)
-				}
-			}
-    	})
-	}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 	//demo comments
 	for (var i = 0; i < 10; i++) {
 		var text = 'There are 3 main button types described in material design. The raised button is a standard button that signify actions and seek to give depth to a mostly flat page';
@@ -442,5 +350,14 @@ $(document).ready(function(){
 				})
 			}) 
 		}
+	}
+
+
+
+
+
+	window.display_popup = function  (message) {
+		
+  		Materialize.toast(message, 10000);
 	}
 });

@@ -33,6 +33,7 @@
     "pdf-image": "^1.1.0",
     "pdftohtmljs": "^0.4.2",
     "redis": "^2.6.5",
+    "socket.io": "^2.0.3",
     "textract": "^2.1.2",
     "utf8": "^2.1.2",
     "video-thumb": "0.0.3"
