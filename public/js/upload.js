@@ -287,7 +287,7 @@ $(document).ready(function(){
 
             type: 'POST',
 
-            data: {'title':$('.file_title').val(),'description':$('.file_desc').val(),'tags':$('.file_tag').val().split(','),'hashName':results.hashName,'_id':results._id},
+            data: {'title':$('.file_title').val(),'description':$('.file_desc').val(),'tags':$('.file_tag').val().split(','),'hashName':results.hashName,'_id':results.id_file_mongoDB.toString() ,'format':results.format},
 
             dataType: 'json',
 

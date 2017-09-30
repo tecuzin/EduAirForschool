@@ -88,14 +88,15 @@ class Intello{
 
 						if(content.pages!=undefined){
 
-							content.text_extracted	= JSON.parse(JSON.stringify(text_extracted))
+							content.text_extracted	= text_extracted;
+							// content.text_extracted	= JSON.parse(JSON.stringify(text_extracted))
 						}
 
 						 
-
-						Elastic.add_new_file(content,function  (response) {
+						
+						Elastic.add_new_file(content,function  (response) { 
 							
-							call_back({'statu':'ok','results':response})
+							call_back({'statu':'ok','last_inserted_id_on_mongoDb':results.insertedIds[0]})
 						})
 					}
 				})
@@ -105,7 +106,7 @@ class Intello{
 
 
 
-	static set_file_description(file_description,Callback){
+	static set_file_description(file_description,Callback){ 
 
 		db_connection(function(err, db){ 
 
@@ -242,3 +243,6 @@ class Intello{
 
 
 module.exports = Intello;
+
+
+

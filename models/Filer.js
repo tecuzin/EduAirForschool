@@ -24,7 +24,7 @@ var PDFImage = require("pdf-image").PDFImage;//Get a shoot for a PDF file
 
 var filepreview = require('filepreview');
 
-var textract = require('textract');//To extract text to file
+var textract = require('pdf-text-extract');//To extract text to file
 
 var utf8 = require('utf8');
 
@@ -81,7 +81,7 @@ class Filer{
 					
 					Intello.add_new_file(results,function  (response) {
 						
-						console.log(response)
+						Callback(results)
 					})
 				})
 			break;
@@ -91,7 +91,7 @@ class Filer{
 					
 					Intello.add_new_file(results,function  (response) {
 						
-						console.log(response)
+						Callback(results)
 					})
 				})
 			break;
@@ -104,8 +104,19 @@ class Filer{
 						move_pdf(fileUploaded,function  (results) {
 							
 							Intello.add_new_file(results,function  (response) {
-						
-								console.log(response)
+								
+								delete results.text_extracted ;
+								delete results.pages;
+								delete results.thumbnail;
+								delete results.created_at;
+								delete results.last_view;
+								delete results.page_number;
+								delete results.text_page;
+								delete results.view;
+
+								results.id_file_mongoDB = response.last_inserted_id_on_mongoDb;
+
+								Callback(results)
 							})
 						})
 					}else{ 
@@ -113,7 +124,7 @@ class Filer{
 						
 							Intello.add_new_file(results,function  (response) {
 						
-								console.log(response)
+								Callback(results)
 							})
 						})
 					}
@@ -243,7 +254,7 @@ module.exports = Filer;
 				    	
 				    	exec('pdfinfo '+final_file+' | grep ^Pages: ',function(error, stdout, stderr) {
 
-				    		extract_text(final_file,function  (text_extracted) {
+				    		extract_text_from_pdf(final_file,function  (text_extracted) {
 			    	
 				    			Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':results,'size':getFilesizeInBytes(final_file),'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,'format':path.extname(final_file),'format_initial':path.extname(file),'text_extracted':text_extracted})
 			    			})
@@ -433,7 +444,7 @@ module.exports = Filer;
 			    //Get the thumbnail of the video
 			    generate_thumbnail(final_file,function  (thumbnail) {
 
-			    	extract_text(final_file,function  (text_extracted) {
+			    	extract_text_from_pdf(final_file,function  (text_extracted) {
 			    	
 						Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'text_extracted':text_extracted})
 			    	})
@@ -467,7 +478,7 @@ module.exports = Filer;
 
 			    	exec('pdfinfo '+final_file+' | grep ^Pages: ',function(error, stdout, stderr) {
 
-			    		extract_text(final_file,function  (text_extracted) {
+			    		extract_text_from_pdf(final_file,function  (text_extracted) {
 			    	
 							Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,'format':path.extname(final_file),'text_extracted':text_extracted})
 			    		})
@@ -485,19 +496,19 @@ module.exports = Filer;
 
 	///////////////////////////////////////////Utilities//////////////////////////////////////////////////////////////////////
 
-	function extract_text(file,Callback){
+	function extract_text_from_pdf(file,Callback){ //Ad current page to json file,also strea file before extract text,to the same function to photo
 
-		textract.fromFileWithPath(file,function( error, text ) {
-  			
-			if (error) {
+		textract(file,function (err, text) {
+		  	
+		  	if (err) {
 
-			    console.log('Error extracting text from : '+path.basename(file)+' ' + error);
-			    
-			    Callback('error')
-			}else{
+		    	console.log('Error extracting text from : '+path.basename(file)+' ' + err);
 
-				Callback(utf8.encode(text))
-			}
+		    	Callback('error')
+		  	}else{
+
+		  		Callback(text)
+		  	}
 		})
 	}
 

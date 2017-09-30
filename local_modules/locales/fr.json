@@ -42,7 +42,8 @@
 	"user_choose_school":"Quel école ou examen?",
 	"user_not_connected":"Vous devez vous connecter",
 	"upload_processing":"traitement...",
-	"File_type_Not_allowed": "Format de fichier non autorisé"
+	"File_type_Not_allowed": "Format de fichier non autorisé",
+	"upload_file":"Ajouter des fichiers"
 
 
 
