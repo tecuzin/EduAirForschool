@@ -537,6 +537,17 @@ app.post('/send_description_file',(request,response)=>{
 
 app.get('/watch/:FileId',(request,response)=>{
 
+
+// 	var fs = require('fs');  // file system
+// var http = require('http');
+// var server = http.createServer(function (req, res) {
+//   // logic here to determine what file, etc
+//   var rstream = fs.createReadStream('existFile');
+//   rstream.pipe(res);
+// });
+// server.listen(8000, '127.0.0.1');  // start
+
+
 	// Exple: http://domain.edu/watch/Lyd_0_Idfile
 	var my_request = request.params.FileId;
 

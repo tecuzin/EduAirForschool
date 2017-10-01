@@ -254,13 +254,24 @@ module.exports = Filer;
 				    	
 				    	exec('pdfinfo '+final_file+' | grep ^Pages: ',function(error, stdout, stderr) {
 
-				    		extract_text_from_pdf(final_file,function  (text_extracted) {
+				    		if(error){
+
+				    			console.log('get page number error : '+error)
+				    		}else{
+
+				    			extract_text_from_pdf(final_file,function  (text_extracted) {
 			    	
-				    			Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':results,'size':getFilesizeInBytes(final_file),'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,'format':path.extname(final_file),'format_initial':path.extname(file),'text_extracted':text_extracted})
-			    			})
+				    				Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':results,'size':getFilesizeInBytes(final_file),'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,'format':path.extname(final_file),'format_initial':path.extname(file),'text_extracted':text_extracted})
+			    				})
+				    		}
 				    	})
 				    }) 
 				})
+			})
+
+			source_pdf.on('error',function  (error) {
+				
+				console.log(error)
 			})
 
       		if(stderr){
@@ -635,9 +646,11 @@ module.exports = Filer;
 			
 			var destination = media_library+this_file+'/thumbnails/'+path.basename(file,path.extname(file))+'.png';
 
+			 console.log(destination)
+
 			filepreview.generate(file,destination, function(error) {
 			    
-			    if (error) {
+			    if (error) { 
 			      	return console.log(error);
 			    }else{
 
@@ -645,7 +658,7 @@ module.exports = Filer;
 			    }
 	    		
 	  		});
-		},200)
+		},400)
 	}
 
 
