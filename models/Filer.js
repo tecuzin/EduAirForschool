@@ -24,7 +24,9 @@ var PDFImage = require("pdf-image").PDFImage;//Get a shoot for a PDF file
 
 var filepreview = require('filepreview');
 
-var textract = require('pdf-text-extract');//To extract text to file
+var textract = require('pdf-text-extract');//To PDF file
+
+var tesseract = require('node-tesseract'); //To image
 
 var utf8 = require('utf8');
 
@@ -48,7 +50,7 @@ var file_type_application = [	'application/pdf' ,
 
 
 
-class Filer{
+class Filer{ 
 
 	static handelFile(fileUploaded,Callback){ 
 
@@ -77,9 +79,20 @@ class Filer{
 			break;
 
 			case 'image':
-				move_image(fileUploaded,function  (results) {
+				move_image(fileUploaded,function  (results) { 
 					
-					Intello.add_new_file(results,function  (response) {
+					Intello.add_new_file(results,function  (response) { 
+
+						delete results.text_extracted ;
+						delete results.pages;
+						delete results.thumbnail;
+						delete results.created_at;
+						delete results.last_view;
+						delete results.page_number;
+						delete results.text_page;
+						delete results.view;
+
+						results.id_file_mongoDB = response.last_inserted_id_on_mongoDb;
 						
 						Callback(results)
 					})
@@ -123,6 +136,17 @@ class Filer{
 						DOCx_and_ppt_2_pdf(fileUploaded,function  (results) {
 						
 							Intello.add_new_file(results,function  (response) {
+
+								delete results.text_extracted ;
+								delete results.pages;
+								delete results.thumbnail;
+								delete results.created_at;
+								delete results.last_view;
+								delete results.page_number;
+								delete results.text_page;
+								delete results.view;
+
+								results.id_file_mongoDB = response.last_inserted_id_on_mongoDb;
 						
 								Callback(results)
 							})
@@ -261,7 +285,7 @@ module.exports = Filer;
 
 				    			extract_text_from_pdf(final_file,function  (text_extracted) {
 			    	
-				    				Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':results,'size':getFilesizeInBytes(final_file),'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,'format':path.extname(final_file),'format_initial':path.extname(file),'text_extracted':text_extracted})
+				    				Callback({'fileName':real_fileName,'type':'office','hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':results,'size':getFilesizeInBytes(final_file),'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,'format':path.extname(final_file),'format_initial':path.extname(file),'text_extracted':text_extracted})
 			    				})
 				    		}
 				    	})
@@ -319,7 +343,7 @@ module.exports = Filer;
 							//Delete the original video if is is not a MP4 video
 							fs.unlinkSync(temp_file);
 
-							call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
+							call_back_json_metada({'fileName':real_fileName,'type':'video','hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
 						}else{
 							console.log('err')
 						}
@@ -354,7 +378,7 @@ module.exports = Filer;
 								
 								if(!err){
 
-									call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
+									call_back_json_metada({'fileName':real_fileName,'type':'video','hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
 								}else{
 									console.log('err')
 								}
@@ -391,7 +415,7 @@ module.exports = Filer;
 					//Delete the original audio if is is not a MP3 audio
 					fs.unlinkSync(temp_file);
 
-					call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
+					call_back_json_metada({'fileName':real_fileName,'type':'audio','hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
 				}else{
 					console.log(err)
 				}
@@ -443,7 +467,7 @@ module.exports = Filer;
 		var real_fileName 	= fileUploaded.file_name;
 
 		//final_file = FileName_timestamp_generatedHash.jpg
-		var final_file	= media_library+'image/'+path.basename(fileUploaded.file_path,path.extname(fileUploaded.file_path))+'.'+path.extname(file) ;
+		var final_file	= media_library+'image/'+path.basename(fileUploaded.file_path,path.extname(fileUploaded.file_path))+path.extname(file) ;
 		
 		fs.rename(file, final_file, function (err) {
 			        
@@ -455,9 +479,9 @@ module.exports = Filer;
 			    //Get the thumbnail of the video
 			    generate_thumbnail(final_file,function  (thumbnail) {
 
-			    	extract_text_from_pdf(final_file,function  (text_extracted) {
+			    	extract_text_from_image(final_file,function  (text_extracted) {
 			    	
-						Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'text_extracted':text_extracted})
+						Callback({'fileName':real_fileName,'type':'image','hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'text_extracted':text_extracted})
 			    	})
 			   	})
 			}
@@ -491,7 +515,7 @@ module.exports = Filer;
 
 			    		extract_text_from_pdf(final_file,function  (text_extracted) {
 			    	
-							Callback({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,'format':path.extname(final_file),'text_extracted':text_extracted})
+							Callback({'fileName':real_fileName,'type':'pdf','hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,'format':path.extname(final_file),'text_extracted':text_extracted})
 			    		})
 				    })
 			 	})
@@ -520,6 +544,23 @@ module.exports = Filer;
 
 		  		Callback(text)
 		  	}
+		})
+	}
+
+
+	function extract_text_from_image(file,Callback){ //Ad current page to json file,also strea file before extract text,to the same function to photo
+
+
+		// Recognize text of any language in any format
+		tesseract.process(file,function(err, text) {
+
+			if(err) {
+				console.log('Error extracting text from : '+path.basename(file)+' ' + err);
+
+				Callback('error')
+			} else { 
+				Callback(text);
+			}
 		})
 	}
 
@@ -638,15 +679,19 @@ module.exports = Filer;
 			case '.png':
 			case '.png':
 			case '.jpeg':
+			case '.gif':
+			case '.svg':
 				this_file = 'image';
+			break;
+
+			default:
+				this_file = 'undefined';
 			break;
 		}
 
 		setTimeout(function  () {
 			
 			var destination = media_library+this_file+'/thumbnails/'+path.basename(file,path.extname(file))+'.png';
-
-			 console.log(destination)
 
 			filepreview.generate(file,destination, function(error) {
 			    

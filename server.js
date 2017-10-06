@@ -512,7 +512,7 @@ function generate_file_name_and_send_to_database(callback) {
 
 app.post('/send_description_file',(request,response)=>{ 
 
-	var data = request.body; console.log(data)
+	var data = request.body;
 
 	filer.update_description_file({'title':data.title,'description':data.description,'tags':data.tags,'hashName':data.hashName,'_id':data._id,'format':data.format},function  (results) {
 		

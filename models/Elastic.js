@@ -25,20 +25,42 @@ class Elastic{
 			})
 		}else{
 
-			client.index({ 
+			if(content.type=='image'){
 
-		  		index: index_db,
+				clean_text_extrated (content,function  (content_with_text_cleaned) {
 
-		  		type: 'file',
+					client.index({ 
 
-		  		id:content._id.toString(),
-	  
-		  		body:content
+				  		index: index_db,
 
-				},function(err,resp,status) {
-	    	
-	    			call_back({'statu':'ok','message':resp})
-			})
+				  		type: 'file',
+
+				  		id:content._id.toString(),
+			  
+				  		body:content_with_text_cleaned
+
+						},function(err,resp,status) {
+			    	
+			    			call_back({'statu':'ok','message':resp})
+					})
+				})
+			}else{
+
+				client.index({ 
+
+			  		index: index_db,
+
+			  		type: 'file',
+
+			  		id:content._id.toString(),
+		  
+			  		body:content
+
+					},function(err,resp,status) {
+		    	
+		    			call_back({'statu':'ok','message':resp})
+				})
+			}
 		}
 	}
 
@@ -133,6 +155,14 @@ function add_pdf_file (content,Callback) {
 		}
 		
 	};
+}
+
+
+function clean_text_extrated (content,Callback) {
+	
+	content.text_extracted = content.text_extracted.trim().replace(/[\r\n]/g, ''); //We remove any newline on the text on the image
+
+	Callback(content)
 }
 
 

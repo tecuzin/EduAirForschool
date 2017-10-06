@@ -86,14 +86,13 @@ class Intello{
 
 						content 	= results.ops[0];
 
-						if(content.pages!=undefined){
+						if(content.pages!=undefined || content.type=='image'){
 
 							content.text_extracted	= text_extracted;
 							// content.text_extracted	= JSON.parse(JSON.stringify(text_extracted))
 						}
 
 						 
-						
 						Elastic.add_new_file(content,function  (response) { 
 							
 							call_back({'statu':'ok','last_inserted_id_on_mongoDb':results.insertedIds[0]})
