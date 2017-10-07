@@ -1,11 +1,15 @@
 <div class="row top">
-        <div class="col s2">
-          <img src="assets/img/air.png" class="air">
-        </div>
-        <div class="col s8">
-          <input type="text" class="search_list">
-        </div>
-        <div class="col s2">
-          <a href="#"><i class="material-icons left">search</i></a>
-        </div>
+    <div class="col s2">
+      <img src="assets/img/air.png" class="air">
+    </div>
+    <div class="col s10 m10 l5">
+      <div id='search-box'>
+        <form action='/search' id='search-form' method='get' target='_top'>
+          <input id='search-text' name='q' type='text'/>
+          <button id='search-button' type='submit'>                     
+            <span> <center> <i class="material-icons left">search</i></center></span>
+          </button>
+        </form>
+      </div>
+    </div>
 </div>

@@ -22,6 +22,8 @@ file_type_application = [	'application/pdf' ,
 								];
 var crypto 			= require('crypto'); //Generate a random hash
 
+console.log('eduair loaded')
+
 
 var MaxFieldSize = 1000 * 1000,
     MaxFields = 100,
