@@ -234,7 +234,7 @@ class Intello{
 					        	var this_results = [];//Results should be [title,link,cite]
 
 					        	this_results.push($('.results ul li a').eq(i).text())
-					        	this_results.push($('.results ul li a').eq(i).attr('href').replace(data.zim_wikipedia,'wp'))
+					        	this_results.push($('.results ul li a').eq(i).attr('href').replace(data.zim_wikipedia,'wp?url='))
 					        	this_results.push($('.results ul li cite').eq(i).text())
 
 					        	all_results.push(this_results)
@@ -307,6 +307,16 @@ class Intello{
 			Callback(results)
 		})	
 	}
+
+
+
+	static get_wikipedia_article(data,Callback){
+
+		get_wikipedia_article(data,function  (results) {
+			
+			Callback(results);
+		})
+	}
 }
 
 
@@ -321,6 +331,32 @@ function record_search (data) {
 	//If it's a new term ToDo
 
 	//Else, nothing
+}
+
+
+
+function get_wikipedia_article (data,Callback) {
+
+
+	request(encodeURI(data.protocol+data.ip_server+':'+data.zim_port+'/'+data.zim_wikipedia+data.my_url),function  (error,response,html) {
+		
+		if(!error && response.statusCode == 200){
+
+			var results = {};
+
+			var $ = cheerio.load(html);
+			//http://192.168.8.40:8100/wikipedia_fr_all_11_2013/I/media/U/b/u/n/Ubuntu_13.10_Saucy_Salamander.jpg
+
+			results.text = $('#content').html().replace(/src="\/wikipedia_fr_all_11_2013/g, 'src="http://'+data.ip_server+':'+data.zim_port+'/'+data.zim_wikipedia+'/').replace(/href="\/wikipedia_fr_all_11_2013/g, 'href="wp?url=')
+			results.title= $('#firstHeading').text();
+
+			//Todo record image inside
+
+			Callback(results)
+		}else{
+			console.log(error)
+		}
+	})
 }
 
 

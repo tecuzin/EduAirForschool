@@ -661,6 +661,32 @@ app.get('/fatal_error',(request,response)=>{
 
 
 
+app.get('/wp',(request,response)=>{ 
+
+	var data = {};
+
+	data.ip_server 		= ip_server;
+	data.zim_port 	 	= zim_port;
+	data.protocol  		= protocol;
+	data.zim_wikipedia 	= zim_wikipedia;
+	data.my_url			= request.query.url;
+
+	Intello.get_wikipedia_article(data,function  (results) { 
+		
+		var data_page = {
+			'title':results.title,
+			'text':results.text,
+			'ip_server':ip_server,
+			'protocol':protocol
+		}
+
+		response.render('article',data_page)
+	})
+})
+
+
+
+
 
 
 
