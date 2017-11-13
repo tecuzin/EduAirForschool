@@ -36,6 +36,7 @@ $(document).ready(function(){
 	window.video_caller_height			= 90; //In percent %
 
 
+	window.socket  = io.connect($('.ip_server').attr('protocol')+$('.ip_server').attr('ip')+':8083/');
 
 
 	//Mobile Devices <= 600px	
@@ -94,6 +95,16 @@ $(document).ready(function(){
 			return title;
 		}
 	}
+
+
+
+	///////////////////////verify if local storage exist///////////////////////////////////
+	if(!$.jStorage.storageAvailable()){
+
+		alert('local storage non permit')
+	}
+	///////////////////////verify if local storage exist///////////////////////////////////
+
 
 
 

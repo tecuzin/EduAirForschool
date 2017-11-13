@@ -12,7 +12,7 @@ var file_type_application = [   'application/pdf' ,
 
 $(document).ready(function(){
 
-    var socket  = io.connect($('.ip_server').attr('protocol')+$('.ip_server').attr('ip')+':8083/');
+   
 
     var file_to_upload;
 
@@ -98,7 +98,7 @@ $(document).ready(function(){
 	});
 
 
-    $('.publish').click(function  () {
+    $('.publish').click(function  () { 
 
         $('.publish').addClass('disabled')
         $('.file_input').attr("disabled", "disabled")
@@ -121,7 +121,7 @@ $(document).ready(function(){
 
 
     function prepare_file (files) {//To do. extention and size
-        
+
         if (files.length > 0){
             
             //We write the name of file
@@ -279,7 +279,7 @@ $(document).ready(function(){
 
 
 
-    socket.on('upload_treatment_ended',function (results) { console.log(results) 
+    window.socket.on('upload_treatment_ended',function (results) { 
 
         $.ajax({
 
@@ -287,23 +287,23 @@ $(document).ready(function(){
 
             type: 'POST',
 
-            data: {'title':$('.file_title').val(),'description':$('.file_desc').val(),'tags':$('.file_tag').val().split(','),'hashName':results.hashName,'_id':results.id_file_mongoDB.toString() ,'format':results.format},
+            data: {'title':$('.file_title').val(),'description':$('.file_desc').val(),'tags':$('.file_tag').val().split(','),'file_name':results.file_name,'file_path':results.file_path},
 
             dataType: 'json',
 
             error: function  (err) {
               console.log(err)
             },
-            success: function(data){
+            success: function(data){  
 
-                if(data.statu=='success'){
+                if(data.statu=='ok'){
 
                     //We change the bar statu
-                    $('.statu_upload').html('<div class="link_uploaded"><i class="material-icons">done</i> Votre fichier est diponible <a href="'+$('.ip_server').attr('protocol')+$('.ip_server').attr('ip')+'/watch/'+results.hashName+'" class="my_link"><span class="blue-text text-darken-2">ici</span></a></div>')
+                    $('.statu_upload').html('<div class="link_uploaded"><i class="material-icons">done</i> Votre fichier est diponible <a href="'+$('.ip_server').attr('protocol')+$('.ip_server').attr('ip')+'/watch/'+data.hashName+'" class="my_link"><span class="blue-text text-darken-2">ici</span></a></div>')
                     $('.statu_upload').fadeIn()
 
                     //we show the upload form and hide input text
-                     // We show the dashboard
+                    // We show the dashboard
                     $(".selector").fadeIn();
                     $('.command_selector').hide('slow');
                     init_form ()

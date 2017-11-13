@@ -72,6 +72,8 @@ class Filer{
 				convert_video_to_mp4(fileUploaded,function  (results) {
 
 					Intello.add_new_file(results,function  (response) {
+
+						results.id_file_mongoDB = response.last_inserted_id_on_mongoDb;
 						
 						Callback(results)
 					})
@@ -167,7 +169,7 @@ class Filer{
 	}
 
 
-	static update_description_file(file_description,Callback){
+	static update_description_file(file_description,Callback){ 
 
 		//We update data to intello
 		Intello.set_file_description(file_description,function  (response) {
@@ -284,8 +286,24 @@ module.exports = Filer;
 				    		}else{
 
 				    			extract_text_from_pdf(final_file,function  (text_extracted) {
+
+				    				var this_callback = {
+				    					'fileName':real_fileName,
+				    					'type':'office',
+				    					'media':'text',
+				    					'hashName':path.basename(final_file,path.extname(final_file)),
+				    					'thumbnail':results,
+				    					'size':getFilesizeInBytes(final_file),
+				    					'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,
+				    					'format':path.extname(final_file),
+				    					'format_initial':path.extname(file),
+				    					'text_extracted':text_extracted,
+				    					'title':fileUploaded.title,
+										'description':fileUploaded.description,
+										'tags':fileUploaded.tags
+				    				}
 			    	
-				    				Callback({'fileName':real_fileName,'type':'office','hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':results,'size':getFilesizeInBytes(final_file),'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,'format':path.extname(final_file),'format_initial':path.extname(file),'text_extracted':text_extracted})
+				    				Callback(this_callback)
 			    				})
 				    		}
 				    	})
@@ -343,9 +361,23 @@ module.exports = Filer;
 							//Delete the original video if is is not a MP4 video
 							fs.unlinkSync(temp_file);
 
-							call_back_json_metada({'fileName':real_fileName,'type':'video','hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
+							var this_callback = {	'fileName':real_fileName,
+													'media':'audio_video',
+													'type':'video',
+													'hashName':path.basename(final_file,path.extname(final_file)),
+													'duration':stdout.replace('\n',''),
+													'thumbnail':thumbnail,
+													'size':getFilesizeInBytes(final_file),
+													'format':path.extname(final_file),
+													'format_initial':path.extname(temp_file),
+													'title':fileUploaded.title,
+													'description':fileUploaded.description,
+													'tags':fileUploaded.tags
+												}
+
+							call_back_json_metada(this_callback);
 						}else{
-							console.log('err')
+							console.log(err)
 						}
 					});
 				})
@@ -378,7 +410,22 @@ module.exports = Filer;
 								
 								if(!err){
 
-									call_back_json_metada({'fileName':real_fileName,'type':'video','hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
+									var this_callback = {
+										'fileName':real_fileName,
+										'media':'audio_video',
+										'type':'video',
+										'hashName':path.basename(final_file,path.extname(final_file)),
+										'duration':stdout.replace('\n',''),
+										'thumbnail':thumbnail,
+										'size':getFilesizeInBytes(final_file),
+										'format':path.extname(final_file),
+										'format_initial':path.extname(temp_file),
+										'title':fileUploaded.title,
+										'description':fileUploaded.description,
+										'tags':fileUploaded.tags
+									}
+
+									call_back_json_metada(this_callback);
 								}else{
 									console.log('err')
 								}
@@ -415,7 +462,21 @@ module.exports = Filer;
 					//Delete the original audio if is is not a MP3 audio
 					fs.unlinkSync(temp_file);
 
-					call_back_json_metada({'fileName':real_fileName,'type':'audio','hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
+					var this_callback = {
+						'fileName':real_fileName,
+						'media':'audio_video',
+						'type':'audio',
+						'hashName':path.basename(final_file,path.extname(final_file)),
+						'duration':stdout.replace('\n',''),
+						'size':getFilesizeInBytes(final_file),
+						'format':path.extname(final_file),
+						'format_initial':path.extname(temp_file),
+						'title':fileUploaded.title,
+						'description':fileUploaded.description,
+						'tags':fileUploaded.tags
+					}
+
+					call_back_json_metada(this_callback);
 				}else{
 					console.log(err)
 				}
@@ -444,7 +505,21 @@ module.exports = Filer;
 								
 								if(!err){
 
-									call_back_json_metada({'fileName':real_fileName,'hashName':path.basename(final_file,path.extname(final_file)),'duration':stdout.replace('\n',''),'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'format_initial':path.extname(temp_file)});
+									var this_callback = {
+										'fileName':real_fileName,
+										'media':'audio_video',
+										'type':'audio',
+										'hashName':path.basename(final_file,path.extname(final_file)),
+										'duration':stdout.replace('\n',''),
+										'size':getFilesizeInBytes(final_file),
+										'format':path.extname(final_file),
+										'format_initial':path.extname(temp_file),
+										'title':fileUploaded.title,
+										'description':fileUploaded.description,
+										'tags':fileUploaded.tags
+									}
+
+									call_back_json_metada(this_callback);
 								}else{
 									console.log(err)
 								}
@@ -480,8 +555,22 @@ module.exports = Filer;
 			    generate_thumbnail(final_file,function  (thumbnail) {
 
 			    	extract_text_from_image(final_file,function  (text_extracted) {
+
+			    		var this_callback = {
+			    			'fileName':real_fileName,
+			    			'media':'image',
+			    			'type':'image',
+			    			'hashName':path.basename(final_file,path.extname(final_file)),
+			    			'thumbnail':thumbnail,
+			    			'size':getFilesizeInBytes(final_file),
+			    			'format':path.extname(final_file),
+			    			'text_extracted':text_extracted,
+			    			'title':fileUploaded.title,
+							'description':fileUploaded.description,
+							'tags':fileUploaded.tags
+			    		}
 			    	
-						Callback({'fileName':real_fileName,'type':'image','hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'format':path.extname(final_file),'text_extracted':text_extracted})
+						Callback(this_callback)
 			    	})
 			   	})
 			}
@@ -514,8 +603,23 @@ module.exports = Filer;
 			    	exec('pdfinfo '+final_file+' | grep ^Pages: ',function(error, stdout, stderr) {
 
 			    		extract_text_from_pdf(final_file,function  (text_extracted) {
+
+			    			var this_callback = {
+			    				'fileName':real_fileName,
+			    				'media':'text',
+			    				'type':'pdf',
+			    				'hashName':path.basename(final_file,path.extname(final_file)),
+			    				'thumbnail':thumbnail,
+			    				'size':getFilesizeInBytes(final_file),
+			    				'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,
+			    				'format':path.extname(final_file),
+			    				'text_extracted':text_extracted,
+			    				'title':fileUploaded.title,
+								'description':fileUploaded.description,
+								'tags':fileUploaded.tags
+			    			}
 			    	
-							Callback({'fileName':real_fileName,'type':'pdf','hashName':path.basename(final_file,path.extname(final_file)),'thumbnail':thumbnail,'size':getFilesizeInBytes(final_file),'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,'format':path.extname(final_file),'text_extracted':text_extracted})
+							Callback(this_callback)
 			    		})
 				    })
 			 	})
@@ -701,7 +805,6 @@ module.exports = Filer;
 
 			    	Callback(destination)
 			    }
-	    		
 	  		});
 		},400)
 	}

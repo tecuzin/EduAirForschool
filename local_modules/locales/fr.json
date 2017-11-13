@@ -43,8 +43,11 @@
 	"user_not_connected":"Vous devez vous connecter",
 	"upload_processing":"traitement...",
 	"File_type_Not_allowed": "Format de fichier non autorisé",
-	"upload_file":"Ajouter des fichiers"
-
-
+	"upload_file":"Ajouter des fichiers",
+	"search_results":"Resultats",
+	"no_results":"Aucun resultats",
+	"search_for":"pour",
+	"image_for":"images correspondant à",
+	"more_image":"plus d'images"
 
 }

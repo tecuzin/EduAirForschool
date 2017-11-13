@@ -43,6 +43,11 @@
 	"user_not_connected":"You shouls connect you",
 	"upload_processing":"processing...",
 	"File_type_Not_allowed": "File type Not allowed",
-	"upload_file":"upload file"
+	"upload_file":"upload file",
+	"search_results":"Results",
+	"no_results":"No results",
+	"search_for":"for",
+	"image_for":"images corresponding for",
+	"more_image":"more images"
 
 }

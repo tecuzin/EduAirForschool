@@ -36,6 +36,8 @@ var port 			= 80;
 var redis_port		= 27017;
 var TTL_session 	= 260 ; //24h 
 var protocol		="http://";
+var zim_port		= "8100";
+var zim_wikipedia	= "wikipedia_fr_all_11_2013";
 
 
 var media_library =path.join(__dirname, '.', 'private/');//Define the directory of media library
@@ -51,6 +53,7 @@ var language 	= require('./local_modules/language');
 var User 		= require('./models/User');//Model user
 var Admin 		= require('./models/Admin');//Model Admin
 var filer  		= require('./models/Filer');//Model to manage files
+var Intello  	= require('./models/Intello');//Model to manage files
 
 
 var app = express();
@@ -60,6 +63,7 @@ var app = express();
 app.set('view engine','ejs')
 
 app.use('/assets', express.static('public'))
+app.use('/assets_media', express.static('private'))
 app.use('/socket', express.static('node_modules/socket.io-client/dist'))
 
 app.use(language)
@@ -81,6 +85,9 @@ app.use(session({
   cookie: { secure: false },
   name : 'SessionIdent'
 }))
+
+
+
 
 
 //////////////////////////////////////////Format accepted in upload////////////////////////////////////////////////////////
@@ -461,11 +468,7 @@ app.post('/upload', (request, response) => {
 
 					    	var new_file = {'file_name':path.basename(file.name,path.extname(file.name)),'file_path':new_path}
 
-							filer.handelFile(new_file,function  (callback) {
-						
-								// Make action after finish completly. Like send notification, trigger something
-								io.sockets.emit('upload_treatment_ended',callback)
-							})
+					    	io.sockets.emit('upload_treatment_ended',new_file)
 
 							response.json({'statu':'success','file_url':final_file_name});
 						      
@@ -514,31 +517,154 @@ function generate_file_name_and_send_to_database(callback) {
 
 app.post('/send_description_file',(request,response)=>{ 
 
+
 	var data = request.body;
 
-	filer.update_description_file({'title':data.title,'description':data.description,'tags':data.tags,'hashName':data.hashName,'_id':data._id,'format':data.format},function  (results) {
-		
-		response.json(results)
+
+	var new_file = {'title':data.title,
+					'description':data.description,
+					'tags':data.tags,
+					'file_name':data.file_name,
+					'file_path':data.file_path
+				}
+
+	filer.handelFile(new_file,function  (results) {
+
+		response.json({'statu':'ok','hashName':results.hashName})
 	})
 
 })
 
 
-// app.get('/cancel_upload',(request,response)=>{
+////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
 
-// 	response.status(413);
-// 	response.set({"connection": 'close', "content-type": 'text/plain'});
-// 	response.json({'statu':'fail','message':'File Error'})
-// 	request.connection.destroy();
-// 		// response.redirect('/')
 
-// })
+
+
+
+/////////////////////////////////////////////////////////Get content///////////////////////////////////////////////
+
+io.sockets.on('connection', function (socket) {
+
+	socket.on('search',function  (data) { 
+	
+		data.ip_server = ip_server;
+		data.zim_port  = zim_port;
+		data.protocol  = protocol;
+		data.zim_wikipedia = zim_wikipedia;
+
+		Intello.search(data,function (results) { 
+
+			var statu = results.statu;
+
+			switch(statu){
+
+				case 'ok':
+					var data_page = {
+						'results': results,
+						'search_string':results.search_string,
+						'statu':'ok'
+					}
+
+					socket.emit('results',data_page)
+				break;
+
+				case 'fail':
+					var data_page = {
+						'search_string':results.search_string,
+						'statu':'ok'
+					}
+
+					socket.emit('results',data_page)
+				break;
+
+				case 'fatal_error':
+
+					var data_page = {
+						'statu':'fatal_error'
+					};
+					socket.emit('results',data_page)
+				break;
+			}
+		})
+	})
+
+
+
+	socket.on('search_ajax',function  (data) { 
+	
+		data.ip_server = ip_server;
+		data.zim_port  = zim_port;
+		data.protocol  = protocol;
+		data.zim_wikipedia = zim_wikipedia;
+
+		Intello.search(data,function (results) {
+
+			if(results.statu=='fail'){
+				var data_page = {
+					'search_string':results.search_string,
+					'statu':'fail',
+					'message':results.message
+				}
+			}else{
+				var data_page = {
+					'results': results,
+					'search_string':results.search_string,
+					'statu':'ok'
+				}
+			}
+			socket.emit('search_ajax',data_page)
+		})
+	})
+
+
+	socket.on('get_sample_image',function  (data) {
+		
+		Intello.get_sample_image(data,function  (results) {
+			
+			socket.emit('get_sample_image',results)
+		})
+	})
+})
+
+
+app.get('/results',(request,response)=>{
+	
+	var data_page = {
+		'title':request.__('search_results'),
+		'ip_server':ip_server,
+		'protocol':protocol,
+		'string': request.query.search
+	};
+
+	response.render('search_list',data_page)
+})
+
+
+
+app.get('/fatal_error',(request,response)=>{
+
+	var data_page = {
+		'title':request.__('no_results'),
+		'ip_server':ip_server,
+		'protocol':protocol
+	};
+
+	response.render('fatal_error',data_page)
+})
+
+
+
+
+
+
+
+
 
 
 
 
 app.get('/watch/:FileId',(request,response)=>{
-
 
 // 	var fs = require('fs');  // file system
 // var http = require('http');
@@ -608,11 +734,27 @@ app.get('/watch/:FileId',(request,response)=>{
 
 
 
+app.get('/no_results',(request,response)=>{
+
+
+		var data_page = {
+			'title':request.__('no_results'),
+			'ip_server':ip_server,
+			'protocol':protocol,
+			'search_string':'voici mon string'
+		};
+
+		response.render('fatal_error',data_page)
+	
+})
+
+
+/////////////////////////////////////////////////////////Get content///////////////////////////////////////////////
 
 
 
 
-////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
+
 
 
 

@@ -10,6 +10,9 @@ var MongoObjectID 	= require("mongodb").ObjectID;
 
 var Elastic = require('../models/Elastic');//Model file for Elastic search
 
+var request = require('request');
+var cheerio = require('cheerio');
+
 
 
 
@@ -101,46 +104,6 @@ class Intello{
 				})
 			}
     	})
-	}
-
-
-
-	static set_file_description(file_description,Callback){ 
-
-		db_connection(function(err, db){ 
-
-			if(err){
-
-				console.log(err)
-
-	        	call_back({'statu':'problem','message':'fatal_error in db_connection'})
-
-			}else{
-
-				db.collection("user_file").update(
-
-				    { _id: new MongoObjectID(file_description._id)},
-
-				    { $set: { 'description': file_description.description,'title':file_description.title,'tags':file_description.tags } },
-
-				    (err,results)=>{
-
-				    	if(!err){
-
-				    		//We update the file in elasticsearch
-							Elastic.set_file_description(file_description,function (results) {
-								
-								// body...
-								Callback(results)
-							})
-				    	}else{
-
-				    		console.log(err)
-				    	}
-				    }
-				)
-			}
-		})
 	}
 
 
@@ -238,10 +201,127 @@ class Intello{
     		}
     	});
 	}
+
+
+			
+	static search(data,Callback){ 
+
+		//First of all, I record the search term
+		record_search(data)
+
+		//In wich library should I search
+		var library = data.library;
+
+		switch(library){
+
+			case 'wikipedia':
+
+				request(data.protocol+data.ip_server+':'+data.zim_port+'/search?content='+data.zim_wikipedia+'&pattern='+data.term+'&start='+data.start+'&end='+data.end, function (error, response, html) {
+  					
+  					if (!error && response.statusCode == 200) { 
+    					
+    					var $ = cheerio.load(html);
+
+    					if($('.header').text().indexOf('No result were found')==-1){ //IF we have results
+
+				        	//1 We get the number of results
+					        var total_results = $(".results ul li").length;
+
+					        var all_results = [];
+
+					        for (var i = 0; i < total_results; i++) {
+
+					        	var this_results = [];//Results should be [title,link,cite]
+
+					        	this_results.push($('.results ul li a').eq(i).text())
+					        	this_results.push($('.results ul li a').eq(i).attr('href').replace(data.zim_wikipedia,'wp'))
+					        	this_results.push($('.results ul li cite').eq(i).text())
+
+					        	all_results.push(this_results)
+
+					        	if(total_results -1==i){ 
+
+					        		var wikipedia = {'search_string':data.term,'all_results':all_results};
+
+					        		////////////we get the start and the end of the pagination///////////////////////////////
+					        		var pagination = $('.header').text().replace(/[\r\n]/g, '').split(' ');
+
+					        		pagination = pagination[9];
+
+					        		pagination = pagination.split('-');
+
+					        		var start = pagination[0]*1-1+20;
+
+					        		var end   = pagination[1]*1+20;
+					        		////////////we get the start and the end of the pagination///////////////////////////////
+					        		
+					        		Callback({'statu':'ok','wikipedia':wikipedia,'library':library,'search_string':data.term,'start':start,'end':end})
+					        	}
+				        	}
+				        }else{
+
+				        	Callback({'statu':'fail','library':library,'search_string':data.term,'message':'no_result'})
+				       	}
+
+  					}else{
+
+  						Callback({'statu':'fatal_error'})
+				    		
+				    	console.log(error)
+  					}
+				});
+
+			break;
+
+			case 'image':
+				data.media ='image';
+				Elastic.search_these_media(data,function (results) {
+					
+					Callback({'statu':'ok','results':results,'library':library,'search_string':data.term,'start':data.start+20,'end':data.end+20})
+				})
+			break;
+
+			case 'audio_video':
+				data.media ='audio_video';
+				Elastic.search_these_media(data,function (results) {
+					
+					Callback({'statu':'ok','results':results,'library':library,'search_string':data.term,'start':data.start+20,'end':data.end+20})
+				})
+			break;
+
+			case 'document':
+				data.media='text';
+				Elastic.search_these_media(data,function (results) {
+					
+					Callback({'statu':'ok','results':results,'library':library,'search_string':data.term,'start':data.start+20,'end':data.end+20})
+				})
+			break;
+		}
+	}
+
+
+	static get_sample_image(data,Callback){
+
+		Elastic.get_sample_image(data,function (results) {
+					
+			Callback(results)
+		})	
+	}
 }
 
 
 module.exports = Intello;
+
+
+
+
+
+function record_search (data) {
+	
+	//If it's a new term ToDo
+
+	//Else, nothing
+}
 
 
 
