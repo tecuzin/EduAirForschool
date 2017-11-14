@@ -77,7 +77,8 @@ class Intello{
 				content.user_id				= 'anonyme';
 				content.view 				= 0;
 				content.last_view			= 0;
-				content.text_extracted 		= null;
+				content.text_extracted 		= '';
+				content.short_text			= '';
  				
 			    db.collection("user_file").insert(content,(err, results)=> {
 
@@ -85,7 +86,7 @@ class Intello{
 
 						console.log(err)
 
-					} else{
+					}else{
 
 						content 	= results.ops[0];
 
@@ -317,6 +318,15 @@ class Intello{
 			Callback(results);
 		})
 	}
+
+
+	static get_suggestion(search_string,Callback){
+
+		get_suggestion(search_string,function  (results) {
+			
+			Callback(results)
+		})
+	}
 }
 
 
@@ -356,6 +366,80 @@ function get_wikipedia_article (data,Callback) {
 		}else{
 			console.log(error)
 		}
+	})
+}
+
+
+function get_suggestion (data,Callback) {
+
+	//we get suggestions on wikipedia
+	
+	request(data.protocol+data.ip_server+':'+data.zim_port+'/search?content='+data.zim_wikipedia+'&pattern='+data.search_string.toLowerCase(), function (error, response, html) {
+  					
+		if (!error && response.statusCode == 200) { 
+		
+			var $ = cheerio.load(html);
+
+			if($('.header').text().indexOf('No result were found')==-1){ //IF we have results
+
+	        	//1 We get the number of results
+		        var total_results = $(".results ul li").length;
+
+		        if(total_results>0){
+
+		        	var all_results = [];
+
+			        for (var i = 0; i < total_results; i++) {
+
+			        	var this_results = [];//Results should be [title,link,cite]
+
+			        	this_results.push($('.results ul li a').eq(i).text())
+			        	this_results.push($('.results ul li a').eq(i).attr('href').replace(data.zim_wikipedia,'wp?url='))
+			        	this_results.push($('.results ul li cite').eq(i).text())
+
+			        	all_results.push(this_results)
+
+			        	if(total_results -1==i){ 
+
+			        		get_suggestion_media(data.search_string,function  (media_response) {
+			        			
+			        			Callback({'wikipedia':all_results,'media':media_response})
+			        		})
+			        	}
+		        	}
+		        }else{
+
+		        	get_suggestion_media(data.search_string,function  (media_response) {
+			        			
+			        	Callback({'wikipedia':[],'media':media_response})
+			        })
+		        }
+	        }else{
+
+	        	get_suggestion_media(data.search_string,function  (media_response) {
+		        			
+		        	Callback({'wikipedia':[],'media':media_response})
+		        })
+	       	}
+
+		}else{
+
+			get_suggestion_media(data.search_string,function  (media_response) {
+		        			
+		        Callback({'wikipedia':[],'media':media_response})
+		    })
+    		
+    		console.log(error)
+		}
+	});
+}
+
+
+function get_suggestion_media (search_string,Callback) {
+	
+	Elastic.get_suggestion_media(search_string,function  (results) {
+		
+		Callback(results)
 	})
 }
 

@@ -255,7 +255,7 @@ $(document).ready(function(){
 	    		  		html 	+='<img class="first_pic" src="assets_media/'+url_thumbnail+'">';
 	    		  		html	+='<div class="title blue-text text-darken-2 truncate">'+documents[i]._source.title+'</div>';
 	    		  		html	+='<span class="red-text text-darken-2 truncate description">'+description+'</span>';
-	    		  		html	+=' <div><span class="new badge blue" data-badge-caption="'+formatBytes(documents[i]._source.size)+'"></span></div>';
+	    		  		html	+=' <div><span class="new badge blue" data-badge-caption="'+window.formatBytes(documents[i]._source.size)+'"></span></div>';
 	    		  		html	+='<div class="black-text text-darken-2 data_file"><span class="views"><span class="number">'+documents[i]._source.view+'</span>&nbsp;';
 	    		  		html	+='<span class="view_lang">Views</span></span>&nbsp;.&nbsp;<span class="dateTime">'+moment(documents[i]._source.create_at).fromNow();+'</span></div></a>';
 
@@ -300,7 +300,7 @@ $(document).ready(function(){
 	    		  		html 	+='<img class="first_pic" src="assets_media/'+url_thumbnail+'">';
 	    		  		html	+='<div class="title blue-text text-darken-2 truncate">'+documents[i]._source.title+'</div>';
 	    		  		html	+='<span class="red-text text-darken-2 truncate description">'+description+'</span>';
-	    		  		html	+=' <div><span class="new badge blue" data-badge-caption="'+convertTime(documents[i]._source.duration)+'"></span></div>';
+	    		  		html	+=' <div><span class="new badge blue" data-badge-caption="'+window.convertTime(documents[i]._source.duration)+'"></span></div>';
 	    		  		html	+='<div class="black-text text-darken-2 data_file"><span class="views"><span class="number">'+documents[i]._source.view+'</span>&nbsp;';
 	    		  		html	+='<span class="view_lang">Views</span></span>&nbsp;.&nbsp;<span class="dateTime">'+moment(documents[i]._source.create_at).fromNow();+'</span></div></a>';
 
@@ -330,7 +330,7 @@ $(document).ready(function(){
 
 	    		  		if(documents[i]._source.description==''){
 
-	    		  			var description = documents[i]._source.text_page;
+	    		  			var description = documents[i]._source.short_text;
 	    		  		}else{
 	    		  			var description = documents[i]._source.description;
 	    		  		}
@@ -439,21 +439,9 @@ $(document).ready(function(){
 
 
 
-	var convertTime = function (input, separator) {
-	    var pad = function(input) {return input < 10 ? "0" + input : input;};
-	    return [
-	        pad(Math.floor(input / 3600)),
-	        pad(Math.floor(input % 3600 / 60)),
-	        pad(Math.floor(input % 60)),
-	    ].join(typeof separator !== 'undefined' ?  separator : ':' );
-	}
+	
 
 
-	function formatBytes(bytes) {
-	    if(bytes < 1024) return bytes + " Bytes";
-	    else if(bytes < 1048576) return(bytes / 1024).toFixed(3) + " KB";
-	    else if(bytes < 1073741824) return(bytes / 1048576).toFixed(3) + " MB";
-	    else return(bytes / 1073741824).toFixed(3) + " GB";
-	};
+	
 
 });

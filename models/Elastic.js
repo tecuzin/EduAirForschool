@@ -82,6 +82,16 @@ class Elastic{
 		})	
 	}
 
+
+
+	static get_suggestion_media(search_string,Callback){
+
+		get_suggestion_media(search_string,function  (results) {
+			
+			Callback(results)
+		})
+	}
+
 }
 
 
@@ -105,6 +115,8 @@ function add_pdf_file (content,Callback) {
 
 		var finalContent 	=  new Object();
 
+		var the_text		=  this_is_text[i].trim().replace(/[\r\n]/g, '').replace(/[^\x21-\x7E]+/g, ' ').replace(/^\s+|\s+$/g, '');
+
 		finalContent.fileName 	= content.fileName;
 		finalContent.media 		= content.media;
 		finalContent.type 		= content.type;
@@ -120,7 +132,8 @@ function add_pdf_file (content,Callback) {
 		finalContent.title		= content.title;
 		finalContent.description= content.description;
 		finalContent.tags		= content.tags;
-		finalContent.text_page	= this_is_text[i].trim().replace(/[\r\n]/g, '').replace(/[^\x21-\x7E]+/g, ' ').replace(/^\s+|\s+$/g, '');
+		finalContent.short_text = the_text.substr(0, 100);
+		finalContent.text_page	= the_text;
 		finalContent.page_number= page_number++;
 		finalContent.id_file_mongoDB= id_file_mongoDB;
 
@@ -255,50 +268,13 @@ function search_all_media(data,call_back) {
 				console.log(error)
 			}else{
 
-				if(data.media=='document'){
-					
-					keep_search_string_hightLighted(response.hits,function  (results) { 
-					
-						call_back(results)
-					})
-				}else{
-
-					call_back(response.hits)
-				}
+				call_back(response.hits)
 			}
 		}
 	)
 }
 
 
-function keep_search_string_hightLighted (results,call_back) {
-
-	//je commence la boucle
-	var all_results 	= results.hits;
-	var final_results 	= new Object();
-	final_results 		= all_results;
-
-	for(var i = 0; i < all_results.length; i++) {
-
-		var my_text =  final_results[i]._source.text_page;
-
-		delete final_results[i]._source.text_page;
-		
-		if(my_text.length>=100){ 
-
-			final_results[i]._source.text_page = my_text.substr(0, 100);
-
-		}else{ 
-			final_results[i]._source.text_page = my_text;
-		}
-		
-		if(all_results.length-1==i){
-
-			call_back(final_results)
-		}
-	}
-	
-}
 
 
 
@@ -364,16 +340,68 @@ function get_sample_image(data,call_back) {
 				console.log(error)
 			}else{
 
-				if(data.media=='document'){
-					
-					keep_search_string_hightLighted(response.hits,function  (results) { 
-					
-						call_back(results)
-					})
-				}else{
+				call_back(response.hits)
+			}
+		}
+	)
+}
 
-					call_back(response.hits)
-				}
+
+function get_suggestion_media (search_string,Callback) { 
+	
+	client.search({
+	  	index: 	index_db,
+	  	type: 	"file",
+	  	body:{
+	  			size: 20,
+    			from: 0,
+    			query:{
+
+			  		bool: {
+						must: [
+						      {
+						        query_string: {
+						          	query: search_string,
+						          	fields : ["title^5","tags^4","description^4"],
+              						use_dis_max : true
+						        }
+						      }
+						    ],
+						    should: [
+						    	{
+								    match_phrase: {
+	            						"title" : search_string
+	        						}
+	        					},
+        						{
+        						fuzzy_like_this: {
+							          	like_text: search_string,
+							          	fields : ["title"],
+							          	max_query_terms:5,
+							          	boost:0.5
+						        	}
+						    	}
+						    ]
+					}
+				},
+			  	rescore:{
+			  		window_size:50,
+			  		query:{
+			  			rescore_query:{
+						    match_phrase : {
+            					"title" : search_string
+        					}
+			  			}
+			  		}
+	  			} 	
+		}
+	},function(error, response,status) { 
+			
+			if (error) {
+				console.log(error)
+			}else{
+
+				Callback(response.hits)
 			}
 		}
 	)

@@ -139,23 +139,21 @@ $(document).ready(function(){
 
 		//We diplay result on finish
 		$('.suggestion,.suggestion_vid,.suggestion_mobile').html('<h1>Suggestions</h1><div class="collection"></div>');
-		demo();
-
 	}
 
-	function display_suggestion(title,description,first_letter,image,file_length,view,from,type){
+	window.display_suggestion = function(title,url,description,first_letter,image,file_length,view,from,type){
 
 		if(type=='wikipedia'){ //If it's wikipedia article
 
 			var info_length = '';
 			var sample 		= '<div class="first_letter blue lighten-2">'+first_letter+'</div>';
+			
 		}else{
 			var info_length = '<div><span class="new badge blue" data-badge-caption="'+file_length+'"></span></div>';
-			var sample		= '<img src="img/'+image+'" alt="" class="square responsive-img first_pic">';
-
+			var sample		= '<img src="assets_media/'+image+'" alt="" class="square responsive-img first_pic">';
 		}
 
-		var html ='<a href="#!" class="collection-item waves-effect waves-light">';
+		var html ='<a href="'+url+'" class="collection-item waves-effect waves-light">';
 			html +=sample;
 			html +='<div class="title blue-text text-darken-2 truncate">'+title+'</div>';
             html +='<span class="red-text text-darken-2 truncate description">'+description+'</span>';
@@ -167,28 +165,7 @@ $(document).ready(function(){
         $('.suggestion .collection,.suggestion_vid .collection,.suggestion_mobile .collection').append(html);
 	}
 
-	var type_file =['wikipedia','file'];
-
-	function demo () {
-		for (var i = 0; i <10; i++) {
-
-			var title = 'Bellow to generate a number to send to your corre dhhdh';
-			var description ='Payclass truncate to the tag which  ss truncate to the tag which conta ss truncatjdjjddhhd dhhddgd dggd gdgd';
-			var first_letter = 'T';
-			var image = 'image.jpg';
-			var file_length ='23 636';
-			var view = '34M';
-			var from ='Il y a 2 ans';
-			
-			var type = type_file[Math.floor((Math.random() * 2) + 0)];
-			if(type=='wikipedia'){
-				display_suggestion(title,description,first_letter,false,file_length,view,from,type)
-
-			}else{
-				display_suggestion(title,description,false,image,file_length,view,from,type)
-			}
-		};
-	}
+	
 
 
 	/////////////////////////managin suggestion style in responsive design////////////////////////////////////////////
@@ -218,6 +195,29 @@ $(document).ready(function(){
 		
 		suggestion_responsive()
 	})
+
+
+
+
+	//convert second to time
+	window.convertTime = function (input, separator) {
+	    var pad = function(input) {return input < 10 ? "0" + input : input;};
+	    return [
+	        pad(Math.floor(input / 3600)),
+	        pad(Math.floor(input % 3600 / 60)),
+	        pad(Math.floor(input % 60)),
+	    ].join(typeof separator !== 'undefined' ?  separator : ':' );
+	}
+
+
+
+	//Convert bit to Octet,megaoctet and Go
+	window.formatBytes = function(bytes) {
+	    if(bytes < 1024) return bytes + " Bytes";
+	    else if(bytes < 1048576) return(bytes / 1024).toFixed(3) + " KB";
+	    else if(bytes < 1073741824) return(bytes / 1048576).toFixed(3) + " MB";
+	    else return(bytes / 1073741824).toFixed(3) + " GB";
+	};
 
 
 

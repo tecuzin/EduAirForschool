@@ -625,6 +625,23 @@ io.sockets.on('connection', function (socket) {
 			socket.emit('get_sample_image',results)
 		})
 	})
+
+
+
+	socket.on('get_suggestion',function  (search_string) {
+
+		var data = [];
+		data.ip_server 		= ip_server;
+		data.zim_port 	 	= zim_port;
+		data.protocol  		= protocol;
+		data.zim_wikipedia 	= zim_wikipedia;
+		data.search_string	= search_string;
+		
+		Intello.get_suggestion(data,function  (results) {
+			
+			socket.emit('get_suggestion',results)
+		})
+	})
 })
 
 
@@ -683,6 +700,9 @@ app.get('/wp',(request,response)=>{
 		response.render('article',data_page)
 	})
 })
+
+
+
 
 
 
