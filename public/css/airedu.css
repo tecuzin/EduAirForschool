@@ -733,3 +733,7 @@ div.infobox_v3 {
     max-width: 325px;
     word-wrap: break-word;
 }
+
+.pointer_suggestion{
+  cursor: pointer;
+}

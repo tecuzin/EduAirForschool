@@ -112,41 +112,18 @@ $(document).ready(function(){
 
 
 
-	//This manages the suggestion on desktop or tablet
-	window.suggestion = function  () {
-		
-			get_suggestion()
-	}
-
-	function get_suggestion () {
-		
-		//ToDo
-		//All wille be in Ajax request base on latest search
-		$('.suggestion,.suggestion_vid').html('<center style="margin:5px;"><div class="progress"><div class="indeterminate"></div></div></center>');
-		$('.suggestion,.suggestion_vid').css({'min-height':$('.article_airedu').height()});
-		$('.suggestion,.suggestion_vid').fadeIn();
-
-		if(window.is_mobile() && $('.field').attr('article')=='yes'){ //If we are in mobile
-
-			$('.suggestion_mobile').html($('.suggestion').html())
-			$('.suggestion_mobile').fadeIn();
-
-			$('.suggestion').remove() 
-		}
-
-		//Suggestion venant de Wikipedia et les files
-		//We make request
-
-		//We diplay result on finish
-		$('.suggestion,.suggestion_vid,.suggestion_mobile').html('<h1>Suggestions</h1><div class="collection"></div>');
-	}
+	//T///////////////////////////////////////////This manages the suggestion on desktop or tablet
 
 	window.display_suggestion = function(title,url,description,first_letter,image,file_length,view,from,type){
+
+		$('.suggestion,.suggestion_vid').fadeIn();
+		
+		$('.loader_suggestion').hide()
 
 		if(type=='wikipedia'){ //If it's wikipedia article
 
 			var info_length = '';
-			var sample 		= '<div class="first_letter blue lighten-2">'+first_letter+'</div>';
+			var sample 		= '<div class="first_letter" style="background-color:'+window.set_background_first_letter()+'">'+first_letter+'</div>';
 			
 		}else{
 			var info_length = '<div><span class="new badge blue" data-badge-caption="'+file_length+'"></span></div>';
@@ -164,6 +141,38 @@ $(document).ready(function(){
 
         $('.suggestion .collection,.suggestion_vid .collection,.suggestion_mobile .collection').append(html);
 	}
+
+
+
+	$('.hide_suggestion').click(function  () { 
+		
+		$('.suggestion,.suggestion_vid').hide("slide", { direction: 'right' }, 250);
+		$('.suggestion,.suggestion_vid').removeClass('s12 m4 l4')
+
+		//We put article in the wide spage
+		$('.field').removeClass('s12 m8 l8')
+		$('.field').addClass('s12 m12 l12')
+
+		//We make a float buuton to show suggestion and we go to the top of the page
+		$('.show_suggestion').fadeIn()
+	})
+
+
+	$('.show_suggestion').click(function  () {
+		
+		$('.suggestion,.suggestion_vid').addClass('s12 m4 l4')
+		$('.suggestion,.suggestion_vid').show("slide", { direction: 'left' }, 250);
+
+		//We put article in the middle spage
+		$('.field').removeClass('s12 m12 l12')
+		$('.field').addClass('s12 m8 l8')
+
+		//We make a float button to show suggestion and we go to the top of the page
+		$('.show_suggestion').fadeOut()
+
+	})
+
+
 
 	
 
@@ -219,6 +228,18 @@ $(document).ready(function(){
 	    else return(bytes / 1073741824).toFixed(3) + " GB";
 	};
 
+
+
+	
+
+
+	//Design the first letter
+	window.set_background_first_letter = function  () { 
+
+		var things = ['#F44336', '#AF8BD2', '#F29400'];
+
+		return things[Math.floor(Math.random()*things.length)];
+	}
 
 
 	//This is for InfoxBox of any content (wikipedia an files)

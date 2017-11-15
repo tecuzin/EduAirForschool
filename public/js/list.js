@@ -213,7 +213,7 @@ $(document).ready(function(){
 	    		  	for (var i = 0; i < wikipedia.length; i++) {
 	    		  		
 	    		  		var html = '<a href="'+wikipedia[i][1]+'" class="collection-item waves-effect waves-light">';
-	    		  		html 	+='<span class="first_letter" style="background-color:'+set_background_first_letter()+'">'+wikipedia[i][0].charAt(0)+'</span>';
+	    		  		html 	+='<span class="first_letter" style="background-color:'+window.set_background_first_letter()+'">'+wikipedia[i][0].charAt(0)+'</span>';
 	    		  		html	+='<div class="title blue-text text-darken-2 truncate">'+wikipedia[i][0]+'</div>';
 	    		  		html	+='<span class="red-text text-darken-2 truncate description">'+wikipedia[i][2]+'</span></a>';
 
@@ -358,17 +358,6 @@ $(document).ready(function(){
 			}
 		}
 
-	}
-
-
-
-
-
-	function set_background_first_letter () {
-
-		var things = ['#F44336', '#AF8BD2', '#F29400'];
-
-		return things[Math.floor(Math.random()*things.length)];
 	}
 
 
