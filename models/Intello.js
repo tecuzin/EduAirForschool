@@ -72,13 +72,11 @@ class Intello{
 	        	call_back({'statu':'problem','message':'fatal_error in db_connection'})
 
 			}else{
-				var text_extracted 			= content.text_extracted;
 				content.create_at 			= date.getTime();
 				content.user_id				= 'anonyme';
 				content.view 				= 0;
 				content.last_view			= 0;
-				content.text_extracted 		= '';
-				content.short_text			= '';
+				content.text_extracted 		= content.text_extracted.trim().replace(/[\r\n]/g, '').replace(/[^\x21-\x7E]+/g, ' ').replace(/^\s+|\s+$/g, '').substr(0, 100);
  				
 			    db.collection("user_file").insert(content,(err, results)=> {
 
@@ -88,14 +86,7 @@ class Intello{
 
 					}else{
 
-						content 	= results.ops[0];
-
-						if(content.pages!=undefined || content.type=='image'){
-
-							content.text_extracted	= text_extracted;
-							// content.text_extracted	= JSON.parse(JSON.stringify(text_extracted))
-						}
-
+						content = results.ops[0];
 						 
 						Elastic.add_new_file(content,function  (response) { 
 							
@@ -217,7 +208,7 @@ class Intello{
 
 			case 'wikipedia':
 
-				request(data.protocol+data.ip_server+':'+data.zim_port+'/search?content='+data.zim_wikipedia+'&pattern='+data.term+'&start='+data.start+'&end='+data.end, function (error, response, html) {
+				request(data.protocol+data.ip_server+':'+data.zim_port+'/search?content='+data.zim_wikipedia+'&pattern='+data.term.toLowerCase()+'&start='+data.start+'&end='+data.end, function (error, response, html) {
   					
   					if (!error && response.statusCode == 200) { 
     					
@@ -323,6 +314,15 @@ class Intello{
 	static get_suggestion(search_string,Callback){
 
 		get_suggestion(search_string,function  (results) {
+			
+			Callback(results)
+		})
+	}
+
+
+	static go_get_media(media,Callback){
+
+		go_get_media(media,function  (results) {
 			
 			Callback(results)
 		})
@@ -441,6 +441,37 @@ function get_suggestion_media (search_string,Callback) {
 		
 		Callback(results)
 	})
+}
+
+
+function go_get_media (media,Callback) {
+	
+	db_connection(function(err, db){ 
+
+		if(err){
+
+			console.log(err)
+
+		}else{
+				db.collection("user_file").find({'hashName':media}).toArray((err, results)=> { 
+
+	        	if(err){
+	        		console.log(err)
+	        	}else{
+
+	        		if(results.length==0){
+
+	        			var data = {};
+	        			data.response='fail';
+
+		        		Callback(data)
+	        		}else{
+			        	Callback(results[0])
+	        		}
+	        	}
+			});
+		}
+    });
 }
 
 

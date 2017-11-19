@@ -705,12 +705,36 @@ app.get('/wp',(request,response)=>{
 
 
 
+app.get('/watch',(request,response)=>{
+
+	var media = request.query.media;
+
+	Intello.go_get_media(media,function  (data) { console.log(data)
+		
+		if(data.response==undefined){
+			var data_page = {
+				'title':data.title,
+				'ip_server':ip_server,
+				'protocol':protocol,
+				'hashName':data.hashName,
+				'description':data.description,
+				'view':data.view,
+				'create_at':data.create_at,
+				'user_id':data.user_id
+			};
+			response.render(data.media,data_page)
+		}else{
+			var data_page = {
+				'title':request.__('no_file_found'),
+				'ip_server':ip_server,
+				'protocol':protocol
+			};
+			response.render('no_file_found',data_page)
+		}
+		
+	})
 
 
-
-
-
-app.get('/watch/:FileId',(request,response)=>{
 
 // 	var fs = require('fs');  // file system
 // var http = require('http');
@@ -722,60 +746,55 @@ app.get('/watch/:FileId',(request,response)=>{
 // server.listen(8000, '127.0.0.1');  // start
 
 
-	// Exple: http://domain.edu/watch/Lyd_0_Idfile
-	var my_request = request.params.FileId;
+	// // Exple: http://domain.edu/watch/Lyd_0_Idfile
+	// var my_request = request.params.FileId;
 
-	my_request = my_request.split('_');
+	// my_request = my_request.split('_');
 
-	//If it's a file
-	if(my_request[0]=='Lyd'){
+	// //If it's a file
+	// if(my_request[0]=='Lyd'){
 
-		switch(my_request[1]){
+	// 	switch(my_request[1]){
 
-			//1) We read the file 2) We add data to the file in the database
+	// 		//1) We read the file 2) We add data to the file in the database
 
-			case '0':
-				var movieStream = fs.createReadStream(media_library+'video/'+my_request[2]);
-				movieStream.on('open', function () {
-				    res.writeHead(206, {
-				        "Content-Range": "bytes " + start + "-" + end + "/" + total,
-				            "Accept-Ranges": "bytes",
-				            "Content-Length": chunksize,
-				            "Content-Type": "video/mp4"
-				    });
-				    // This just pipes the read stream to the response object (which goes 
-				    //to the client)
-				    movieStream.pipe(response);
-				});
+	// 		case '0':
+	// 			var movieStream = fs.createReadStream(media_library+'video/'+my_request[2]);
+	// 			movieStream.on('open', function () {
+	// 			    res.writeHead(206, {
+	// 			        "Content-Range": "bytes " + start + "-" + end + "/" + total,
+	// 			            "Accept-Ranges": "bytes",
+	// 			            "Content-Length": chunksize,
+	// 			            "Content-Type": "video/mp4"
+	// 			    });
+	// 			    // This just pipes the read stream to the response object (which goes 
+	// 			    //to the client)
+	// 			    movieStream.pipe(response);
+	// 			});
 
-				movieStream.on('error', function (err) {
-				    response.end(err);
-				});
-			break;
+	// 			movieStream.on('error', function (err) {
+	// 			    response.end(err);
+	// 			});
+	// 		break;
 
-			case '1':
-			break;
+	// 		case '1':
+	// 		break;
 
-			case '2':
-			break;
+	// 		case '2':
+	// 		break;
 
-			default:
-			break;
-		}
-	}else{
-		//If it is a zim file we get the article
-	}
+	// 		default:
+	// 		break;
+	// 	}
+	// }else{
+	// 	//If it is a zim file we get the article
+	// }
 
-	//Glossary
-	//if id start by Lyd, its a video or picture or article. Exple: http://domain.edu/watch/Lyd_0_FileId (0 for video,1 for picture,2 for article)
-	//If id Lyd and
+	// //Glossary
+	// //if id start by Lyd, its a video or picture or article. Exple: http://domain.edu/watch/Lyd_0_FileId (0 for video,1 for picture,2 for article)
+	// //If id Lyd and
 
-	var data_page = {
-		'title':request.__('term'),
-		'ip_server':ip_server,
-		'protocol':protocol
-	};
-	response.render('upload',data_page)
+	
 })
 
 

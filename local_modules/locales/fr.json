@@ -48,6 +48,7 @@
 	"no_results":"Aucun resultats",
 	"search_for":"pour",
 	"image_for":"images correspondant à",
-	"more_image":"plus d'images"
+	"more_image":"plus d'images",
+	"no_file_found":"Le fichier n'existe pas"
 
 }

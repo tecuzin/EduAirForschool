@@ -19,32 +19,7 @@ class Elastic{
 
 		if(content.format=='.pdf'){
 
-			add_pdf_file(content,function  (results) {
-				
-				call_back(results)
-			})
-		}else{
-
-			if(content.type=='image'){
-
-				clean_text_extrated (content,function  (content_with_text_cleaned) {
-
-					client.index({ 
-
-				  		index: index_db,
-
-				  		type: 'file',
-
-				  		id:content._id.toString(),
-			  
-				  		body:content_with_text_cleaned
-
-						},function(err,resp,status) {
-			    	
-			    			call_back({'statu':'ok','message':resp})
-					})
-				})
-			}else{
+			add_pdf_file(content,function  (results) { 
 
 				client.index({ 
 
@@ -52,13 +27,73 @@ class Elastic{
 
 			  		type: 'file',
 
-			  		id:content._id.toString(),
+			  		id:results.id_file_mongoDB.toString(),
+		  
+			  		body:results
+
+					},function(err,resp,status) {
+
+						if(err){
+							console.log(err)
+							call_back({'statu':'fail'})
+						}else{
+							call_back({'statu':'ok','message':'PDF file of '+results.pages+' page(s) indexed'})
+						}
+				})
+			})
+		}else{
+
+			if(content.type=='image'){
+
+				clean_text_extrated (content,function  (content_with_text_cleaned) {console.log(content_with_text_cleaned)
+
+					content.id_file_mongoDB = content._id;
+					delete content._id;
+
+					client.index({ 
+
+				  		index: index_db,
+
+				  		type: 'file',
+
+				  		id:content.id_file_mongoDB.toString(),
+			  
+				  		body:content_with_text_cleaned
+
+						},function(err,resp,status) { 
+
+							if(err){
+								console.log(err)
+								call_back({'statu':'fail'})
+							}else{
+								call_back({'statu':'ok','message':resp})
+							}
+					})
+				})
+			}else{
+
+				content.id_file_mongoDB = content._id;
+				delete content._id;
+
+				client.index({ 
+
+			  		index: index_db,
+
+			  		type: 'file',
+
+			  		id:content.id_file_mongoDB.toString(),
 		  
 			  		body:content
 
 					},function(err,resp,status) {
 		    	
-		    			call_back({'statu':'ok','message':resp})
+		    			if(err){
+		    				console.log(err)
+		    				call_back({'statu':'fail'})
+							
+						}else{
+							call_back({'statu':'ok','message':resp})
+						}
 				})
 			}
 		}
@@ -101,53 +136,45 @@ module.exports = Elastic;
 
 
 //This function is to extract any page of the pdf file
-function add_pdf_file (content,Callback) { 
+function add_pdf_file (content,Callback) {
 
-	var this_is_text 	= content.text_extracted; 
-	var id_file_mongoDB = content._id;
+	var finalContent 	=  new Object(); 
 
-	var body_bulk = [];
-	
-	//We loop the number of the pages of the content
-	var page_number = 0;
+	finalContent.id_file_mongoDB 	= content._id;
+	finalContent.text_page			= content.text_extracted;
+	finalContent.fileName 			= content.fileName;
+	finalContent.media 				= content.media;
+	finalContent.type 				= content.type;
+	finalContent.hashName 			= content.hashName;
+	finalContent.thumbnail			= content.thumbnail;
+	finalContent.size				= content.size;
+	finalContent.pages				= content.pages;
+	finalContent.format				= content.format;
+	finalContent.create_at			= content.create_at;
+	finalContent.user_id			= content.user_id;
+	finalContent.view				= content.view;
+	finalContent.last_view			= content.last_view;
+	finalContent.title				= content.title;
+	finalContent.description		= content.description;
+	finalContent.tags				= content.tags;
 
-	for (var i = 0; i < this_is_text.length; i++) { 
+	client.create({
+	  	index: 'myindex',
+	  	type: 'mytype',
+	  	id: '1',
+	  	body: {
+	    	title: 'Test 1',
+	    	tags: ['y', 'z'],
+	    	published: true,
+	    	published_at: '2013-01-01',
+	    	counter: 1
+	  	}
+	}, function (error, response) {
+	  // ...
+	});
 
-		var finalContent 	=  new Object();
+	Callback(finalContent)
 
-		var the_text		=  this_is_text[i].trim().replace(/[\r\n]/g, '').replace(/[^\x21-\x7E]+/g, ' ').replace(/^\s+|\s+$/g, '');
-
-		finalContent.fileName 	= content.fileName;
-		finalContent.media 		= content.media;
-		finalContent.type 		= content.type;
-		finalContent.hashName 	= content.hashName;
-		finalContent.thumbnail	= content.thumbnail;
-		finalContent.size		= content.size;
-		finalContent.pages		= content.pages;
-		finalContent.format		= content.format;
-		finalContent.create_at	= content.create_at;
-		finalContent.user_id	= content.user_id;
-		finalContent.view		= content.view;
-		finalContent.last_view	= content.last_view;
-		finalContent.title		= content.title;
-		finalContent.description= content.description;
-		finalContent.tags		= content.tags;
-		finalContent.short_text = the_text.substr(0, 100);
-		finalContent.text_page	= the_text;
-		finalContent.page_number= page_number++;
-		finalContent.id_file_mongoDB= id_file_mongoDB;
-
-		delete finalContent.text_extracted; 
-
-		body_bulk.push({index:{}},finalContent);
-
-		if(this_is_text.length==i+1){
-
-			index_bulk_pdf(body_bulk);
-
-			Callback({'statu':'ok','message':'PDF file of '+page_number+' page(s) indexed'})
-		}
-	}
 }
 
 
@@ -171,28 +198,6 @@ function index_this_page (finalContent) {
 		type: 'file',
 	  
 		body:finalContent
-
-		},function(err,resp,status) {
-	    	
-	    	if(err){
-	    		console.log(err)
-	    	}
-
-	})
-}
-
-
-
-function index_bulk_pdf (body_bulk) { 
-	
-
-	client.bulk({ 
-
-		index: index_db,
-
-		type: 'file',
-	  
-		body:body_bulk
 
 		},function(err,resp,status) {
 	    	
@@ -234,23 +239,19 @@ function search_all_media(data,call_back) {
 	        						}
 	        					},
         						{
-        						fuzzy_like_this: {
-							          	like_text: data.term,
-							          	fields : ["title"],
-							          	max_query_terms:5,
-							          	boost:0.5
-						        	}
+        							multi_match : {  
+        								fields : ["title"],
+        								query : data.term,
+        								fuzziness : "AUTO",
+        								boost:0.5
+        							}
 						    	}
-						    ]
+						    ],
+						    filter: [
+               				 	{ term:  { "media": data.media }}
+            				]
 					}
 				},
-				filter : {
-			        bool : {
-			            must : [
-			                { term:  { "media": data.media }} 
-			            ]
-			        }
-	        	},
 			  	rescore:{
 			  		window_size:50,
 			  		query:{
@@ -306,23 +307,19 @@ function get_sample_image(data,call_back) {
 	        						}
 	        					},
         						{
-        						fuzzy_like_this: {
-							          	like_text: data.term,
-							          	fields : ["title"],
-							          	max_query_terms:5,
-							          	boost:0.5
-						        	}
+        							multi_match : {  
+        								fields : ["title"],
+        								query : data.term,
+        								fuzziness : "AUTO",
+        								boost:0.5
+        							}
 						    	}
-						    ]
+						    ],
+						    filter: [
+               				 	{ term:  { "media": 'image' }}
+            				]
 					}
 				},
-				filter : {
-			        bool : {
-			            must : [
-			                { term:  { "media": 'image' }} 
-			            ]
-			        }
-	        	},
 			  	rescore:{
 			  		window_size:50,
 			  		query:{
@@ -374,12 +371,12 @@ function get_suggestion_media (search_string,Callback) {
 	        						}
 	        					},
         						{
-        						fuzzy_like_this: {
-							          	like_text: search_string,
-							          	fields : ["title"],
-							          	max_query_terms:5,
-							          	boost:0.5
-						        	}
+        							multi_match : {  
+        								fields : ["title"],
+        								query : search_string,
+        								fuzziness : "AUTO",
+        								boost:0.5
+        							}
 						    	}
 						    ]
 					}

@@ -151,7 +151,7 @@ $(document).ready(function(){
 					var url_thumbnail 	= results.hits[i]._source.thumbnail.split('private/');
 		   			url_thumbnail		= url_thumbnail[1];	
 					
-					$('.suggest_image .container center').append('<li class="col s3"> <a href="/watch/'+results.hits[i]._source.hashName+'"> <img src="assets_media/'+url_thumbnail+'" class="responsive-img"> </a> </li>')
+					$('.suggest_image .container center').append('<li class="col s3"> <a href="/watch?media='+results.hits[i]._source.hashName+'"> <img src="assets_media/'+url_thumbnail+'" class="responsive-img"> </a> </li>')
 					
 					results.hits[i];
 
@@ -251,7 +251,7 @@ $(document).ready(function(){
 	    		  		url_thumbnail		= url_thumbnail[1];	
 
 	    		  		
-	    		  		var html = '<a href="/watch/'+documents[i]._source.hashName+'" class="collection-item waves-effect waves-light" id="'+documents[i]._id+'" >';
+	    		  		var html = '<a href="/watch?media='+documents[i]._source.hashName+'" class="collection-item waves-effect waves-light" id="'+documents[i]._id+'" >';
 	    		  		html 	+='<img class="first_pic" src="assets_media/'+url_thumbnail+'">';
 	    		  		html	+='<div class="title blue-text text-darken-2 truncate">'+documents[i]._source.title+'</div>';
 	    		  		html	+='<span class="red-text text-darken-2 truncate description">'+description+'</span>';
@@ -296,7 +296,7 @@ $(document).ready(function(){
 	    		  		url_thumbnail		= url_thumbnail[1];	
 
 	    		  		
-	    		  		var html = '<a href="/watch/'+documents[i]._source.hashName+'" class="collection-item waves-effect waves-light" id="'+documents[i]._id+'" >';
+	    		  		var html = '<a href="/watch?media='+documents[i]._source.hashName+'" class="collection-item waves-effect waves-light" id="'+documents[i]._id+'" >';
 	    		  		html 	+='<img class="first_pic" src="assets_media/'+url_thumbnail+'">';
 	    		  		html	+='<div class="title blue-text text-darken-2 truncate">'+documents[i]._source.title+'</div>';
 	    		  		html	+='<span class="red-text text-darken-2 truncate description">'+description+'</span>';
@@ -339,7 +339,7 @@ $(document).ready(function(){
 	    		  		url_thumbnail		= url_thumbnail[1];	
 
 	    		  		
-	    		  		var html = '<a href="/watch/'+documents[i]._source.hashName+'" class="collection-item waves-effect waves-light" id="'+documents[i]._id+'" >';
+	    		  		var html = '<a href="/watch?media='+documents[i]._source.hashName+'" class="collection-item waves-effect waves-light" id="'+documents[i]._id+'" >';
 	    		  		html 	+='<img class="first_pic" src="assets_media/'+url_thumbnail+'">';
 	    		  		html	+='<div class="title blue-text text-darken-2 truncate">'+documents[i]._source.title+'</div>';
 	    		  		html	+='<span class="red-text text-darken-2 truncate description">'+description+'</span>';
