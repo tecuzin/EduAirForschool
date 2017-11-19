@@ -737,3 +737,10 @@ div.infobox_v3 {
 .pointer_suggestion{
   cursor: pointer;
 }
+
+
+.show_suggestion{
+     position:fixed;
+     right:0;
+     float: right;
+}

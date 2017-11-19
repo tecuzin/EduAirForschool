@@ -39,6 +39,9 @@ $(document).ready(function(){
 	window.socket  = io.connect($('.ip_server').attr('protocol')+$('.ip_server').attr('ip')+':8083/');
 
 
+	$('.show_suggestion').css('bottom',$(window).height()/2) //For the buttons suggestion box
+
+
 	//Mobile Devices <= 600px	
 	//Tablet Devices <= 992px	
 	//Desktop Devices > 992px
