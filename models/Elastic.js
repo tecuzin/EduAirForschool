@@ -1,10 +1,14 @@
 
 "use strict"; 
 var elasticsearch 	= require('elasticsearch');
+var rest_client 	= require('node-rest-client').Client;
+var base64 = require('file-base64');
 
 //Init elastic search .The Librarian
+var hoster = 'localhost';
+var elastic_port = '9200';
 var client = new elasticsearch.Client({
-  host: 'localhost:9200',
+  host: hoster+':'+elastic_port,
   log: 'error'
 });
 
@@ -19,7 +23,8 @@ class Elastic{
 
 		if(content.format=='.pdf'){
 
-			add_pdf_file(content,function  (results) { 
+			ingest_pdf_file(content,function  (results) { 
+
 
 				client.index({ 
 
@@ -35,11 +40,52 @@ class Elastic{
 
 						if(err){
 							console.log(err)
+
 							call_back({'statu':'fail'})
 						}else{
-							call_back({'statu':'ok','message':'PDF file of '+results.pages+' page(s) indexed'})
+
+							var this_client = new rest_client();
+
+							var file_url = results.thumbnail.replace('thumbnails/','').replace('.png','.pdf');
+
+							base64.encode(file_url , function(err, base64String) { 
+
+								if(err){
+									console.log(err)
+								}else{
+
+									var data_ingest = {
+										headers: { "Content-Type": "application/json" },
+										'data':base64String
+									}
+									var exec = require('child_process').exec;	
+
+									exec('http://'+hoster+':'+elastic_port+'/'+index_db+'/file/'+results.id_file_mongoDB+'?pipeline=attachment -H "Content-Type: application/json" -d "{\"data\":'+base64String+'}"',function (error, stdout, stderr) {
+										
+										console.log(stderr)
+									})
+
+									// this_client.put('http://'+hoster+':'+elastic_port+'/'+index_db+'/file/'+results.id_file_mongoDB+'?pipeline=attachment',data_ingest, function (data, response){
+
+									// 	if(data.error){
+
+									// 		console.log(data)
+									// 	}else{
+									// 		call_back({'statu':'ok','message':'PDF file of '+results.pages+' page(s) indexed'})
+									// 	}
+									// })
+								}
+							});
+
+							
 						}
 				})
+
+				
+
+				
+
+			
 			})
 		}else{
 
@@ -135,6 +181,69 @@ class Elastic{
 module.exports = Elastic;
 
 
+
+//Ingest pdf file
+function ingest_pdf_file (content,Callback) {
+
+	var this_client = new rest_client();
+
+	var args = {
+    			data: {
+    				"description" : "Extract attachment information",
+  					"processors" : [{
+      					"attachment" : {
+        					"field" : "data"
+     					}
+    				}] 
+    			},
+    			headers: { "Content-Type": "application/json" }
+	}
+ 
+	this_client.put('http://'+hoster+':'+elastic_port+'/_ingest/pipeline/attachment', args, function (data, response) {
+	    // parsed response body as js object
+	    if(data.acknowledged==true){
+
+	    	var finalContent 	=  new Object(); 
+
+			finalContent.id_file_mongoDB 	= content._id;
+			finalContent.text_page			= content.text_extracted;
+			finalContent.fileName 			= content.fileName;
+			finalContent.media 				= content.media;
+			finalContent.type 				= content.type;
+			finalContent.hashName 			= content.hashName;
+			finalContent.thumbnail			= content.thumbnail;
+			finalContent.size				= content.size;
+			finalContent.pages				= content.pages;
+			finalContent.format				= content.format;
+			finalContent.create_at			= content.create_at;
+			finalContent.user_id			= content.user_id;
+			finalContent.view				= content.view;
+			finalContent.last_view			= content.last_view;
+			finalContent.title				= content.title;
+			finalContent.description		= content.description;
+			finalContent.tags				= content.tags;
+
+	    	Callback(finalContent)
+	    }else{
+	    	console.log(data)
+	    } 
+	});
+
+
+
+
+
+
+// curl -XPUT 'localhost:9200/my_index/my_type/my_id?pipeline=attachment&pretty' -H 'Content-Type: application/json' -d'
+// {
+//   "data": "e1xydGYxXGFuc2kNCkxvcmVtIGlwc3VtIGRvbG9yIHNpdCBhbWV0DQpccGFyIH0="
+// }
+// '
+// curl -XGET 'localhost:9200/my_index/my_type/my_id?pretty'
+
+}
+
+
 //This function is to extract any page of the pdf file
 function add_pdf_file (content,Callback) {
 
@@ -207,7 +316,6 @@ function index_this_page (finalContent) {
 
 	})
 }
-
 
 
 
