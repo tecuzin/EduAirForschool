@@ -60,7 +60,9 @@ class Intello{
     	});
 	}
 
-	
+
+
+
 	static add_new_file (content,call_back){ 
 
 		db_connection(function(err, db){ 
@@ -72,11 +74,13 @@ class Intello{
 	        	call_back({'statu':'problem','message':'fatal_error in db_connection'})
 
 			}else{
+				var text_extracted 			= content.text_extracted;
 				content.create_at 			= date.getTime();
 				content.user_id				= 'anonyme';
 				content.view 				= 0;
 				content.last_view			= 0;
-				content.text_extracted 		= content.text_extracted.trim().replace(/[\r\n]/g, '').replace(/[^\x21-\x7E]+/g, ' ').replace(/^\s+|\s+$/g, '').substr(0, 100);
+				content.text_extracted 		= '';
+				content.short_text			= '';
  				
 			    db.collection("user_file").insert(content,(err, results)=> {
 
@@ -86,7 +90,14 @@ class Intello{
 
 					}else{
 
-						content = results.ops[0];
+						content 	= results.ops[0];
+
+						if(content.pages!=undefined || content.type=='image'){
+
+							content.text_extracted	= text_extracted;
+							// content.text_extracted	= JSON.parse(JSON.stringify(text_extracted))
+						}
+
 						 
 						Elastic.add_new_file(content,function  (response) { 
 							

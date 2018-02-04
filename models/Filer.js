@@ -637,7 +637,7 @@ module.exports = Filer;
 
 	function extract_text_from_pdf(file,Callback){ //Ad current page to json file,also strea file before extract text,to the same function to photo
 
-		textract(file,{ splitPages: false },function (err, text) {
+		textract(file,function (err, text) {
 		  	
 		  	if (err) {
 
@@ -646,7 +646,7 @@ module.exports = Filer;
 		    	Callback('error')
 		  	}else{ 
 
-		  		Callback(text.join(" "))
+		  		Callback(text)
 		  	}
 		})
 	}

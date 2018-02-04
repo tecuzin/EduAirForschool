@@ -2,7 +2,8 @@
 "use strict"; 
 var elasticsearch 	= require('elasticsearch');
 var rest_client 	= require('node-rest-client').Client;
-var base64 = require('file-base64');
+var base64 	= require('file-base64');
+var exec 	= require('child_process').exec;
 
 //Init elastic search .The Librarian
 var hoster = 'localhost';
@@ -12,8 +13,11 @@ var client = new elasticsearch.Client({
   log: 'error'
 });
 
-var index_db 	= 'eduair';
-var type_bd		= 'file';
+
+var intire_file_db	= 'intire_file_db';
+var page_pdf_db		= 'page_pdf_db';
+
+
 
 
 
@@ -23,84 +27,25 @@ class Elastic{
 
 		if(content.format=='.pdf'){
 
-			ingest_pdf_file(content,function  (results) { 
-
-
-				client.index({ 
-
-			  		index: index_db,
-
-			  		type: 'file',
-
-			  		id:results.id_file_mongoDB.toString(),
-		  
-			  		body:results
-
-					},function(err,resp,status) {
-
-						if(err){
-							console.log(err)
-
-							call_back({'statu':'fail'})
-						}else{
-
-							var this_client = new rest_client();
-
-							var file_url = results.thumbnail.replace('thumbnails/','').replace('.png','.pdf');
-
-							base64.encode(file_url , function(err, base64String) { 
-
-								if(err){
-									console.log(err)
-								}else{
-
-									var data_ingest = {
-										headers: { "Content-Type": "application/json" },
-										'data':base64String
-									}
-									var exec = require('child_process').exec;	
-
-									exec('http://'+hoster+':'+elastic_port+'/'+index_db+'/file/'+results.id_file_mongoDB+'?pipeline=attachment -H "Content-Type: application/json" -d "{\"data\":'+base64String+'}"',function (error, stdout, stderr) {
-										
-										console.log(stderr)
-									})
-
-									// this_client.put('http://'+hoster+':'+elastic_port+'/'+index_db+'/file/'+results.id_file_mongoDB+'?pipeline=attachment',data_ingest, function (data, response){
-
-									// 	if(data.error){
-
-									// 		console.log(data)
-									// 	}else{
-									// 		call_back({'statu':'ok','message':'PDF file of '+results.pages+' page(s) indexed'})
-									// 	}
-									// })
-								}
-							});
-
-							
-						}
-				})
-
+			add_pdf_file(content,function  (results) {
 				
-
-				
-
-			
+				call_back(results)
 			})
+
 		}else{
 
 			if(content.type=='image'){
 
-				clean_text_extrated (content,function  (content_with_text_cleaned) {console.log(content_with_text_cleaned)
+				clean_text_extrated (content,function  (content_with_text_cleaned) {
 
 					content.id_file_mongoDB = content._id;
 					delete content._id;
 
 					client.index({ 
 
-				  		index: index_db,
+				  		index: intire_file_db,
 
-				  		type: 'file',
+				  		type: intire_file_db,
 
 				  		id:content.id_file_mongoDB.toString(),
 			  
@@ -123,9 +68,9 @@ class Elastic{
 
 				client.index({ 
 
-			  		index: index_db,
+			  		index: intire_file_db,
 
-			  		type: 'file',
+			  		type: intire_file_db,
 
 			  		id:content.id_file_mongoDB.toString(),
 		  
@@ -182,108 +127,67 @@ module.exports = Elastic;
 
 
 
-//Ingest pdf file
-function ingest_pdf_file (content,Callback) {
-
-	var this_client = new rest_client();
-
-	var args = {
-    			data: {
-    				"description" : "Extract attachment information",
-  					"processors" : [{
-      					"attachment" : {
-        					"field" : "data"
-     					}
-    				}] 
-    			},
-    			headers: { "Content-Type": "application/json" }
-	}
- 
-	this_client.put('http://'+hoster+':'+elastic_port+'/_ingest/pipeline/attachment', args, function (data, response) {
-	    // parsed response body as js object
-	    if(data.acknowledged==true){
-
-	    	var finalContent 	=  new Object(); 
-
-			finalContent.id_file_mongoDB 	= content._id;
-			finalContent.text_page			= content.text_extracted;
-			finalContent.fileName 			= content.fileName;
-			finalContent.media 				= content.media;
-			finalContent.type 				= content.type;
-			finalContent.hashName 			= content.hashName;
-			finalContent.thumbnail			= content.thumbnail;
-			finalContent.size				= content.size;
-			finalContent.pages				= content.pages;
-			finalContent.format				= content.format;
-			finalContent.create_at			= content.create_at;
-			finalContent.user_id			= content.user_id;
-			finalContent.view				= content.view;
-			finalContent.last_view			= content.last_view;
-			finalContent.title				= content.title;
-			finalContent.description		= content.description;
-			finalContent.tags				= content.tags;
-
-	    	Callback(finalContent)
-	    }else{
-	    	console.log(data)
-	    } 
-	});
-
-
-
-
-
-
-// curl -XPUT 'localhost:9200/my_index/my_type/my_id?pipeline=attachment&pretty' -H 'Content-Type: application/json' -d'
-// {
-//   "data": "e1xydGYxXGFuc2kNCkxvcmVtIGlwc3VtIGRvbG9yIHNpdCBhbWV0DQpccGFyIH0="
-// }
-// '
-// curl -XGET 'localhost:9200/my_index/my_type/my_id?pretty'
-
-}
-
-
 //This function is to extract any page of the pdf file
-function add_pdf_file (content,Callback) {
+function add_pdf_file (content,Callback) { 
 
-	var finalContent 	=  new Object(); 
+	var this_is_text 	= content.text_extracted; 
+	var id_file_mongoDB = content._id;
 
-	finalContent.id_file_mongoDB 	= content._id;
-	finalContent.text_page			= content.text_extracted;
-	finalContent.fileName 			= content.fileName;
-	finalContent.media 				= content.media;
-	finalContent.type 				= content.type;
-	finalContent.hashName 			= content.hashName;
-	finalContent.thumbnail			= content.thumbnail;
-	finalContent.size				= content.size;
-	finalContent.pages				= content.pages;
-	finalContent.format				= content.format;
-	finalContent.create_at			= content.create_at;
-	finalContent.user_id			= content.user_id;
-	finalContent.view				= content.view;
-	finalContent.last_view			= content.last_view;
-	finalContent.title				= content.title;
-	finalContent.description		= content.description;
-	finalContent.tags				= content.tags;
+	delete content.text_extracted;
 
-	client.create({
-	  	index: 'myindex',
-	  	type: 'mytype',
-	  	id: '1',
-	  	body: {
-	    	title: 'Test 1',
-	    	tags: ['y', 'z'],
-	    	published: true,
-	    	published_at: '2013-01-01',
-	    	counter: 1
-	  	}
-	}, function (error, response) {
-	  // ...
-	});
+	var body_bulk = [];
+	
+	//We loop the number of the pages of the content for recsearch inside the file
+	//We record the wide file
+	var page_number = 0;
 
-	Callback(finalContent)
+	for (var i = 0; i < this_is_text.length; i++) { 
 
+		var the_text			=  this_is_text[i].trim().replace(/[\r\n]/g, '').replace(/[^\x21-\x7E]+/g, ' ').replace(/^\s+|\s+$/g, '');
+	
+		var this_page_number	= page_number++;
+
+		body_bulk.push({ index:  { _index: page_pdf_db, _type: page_pdf_db} })
+		body_bulk.push({'text_page':the_text,'page_number':this_page_number,'id_file_mongoDB':id_file_mongoDB})
+
+		if(this_is_text.length==i+1){ 
+
+			var finalContent 		=  new Object();
+
+			finalContent.fileName 	= content.fileName;
+			finalContent.media 		= content.media;
+			finalContent.type 		= content.type;
+			finalContent.hashName 	= content.hashName;
+			finalContent.thumbnail	= content.thumbnail;
+			finalContent.size		= content.size;
+			finalContent.pages		= content.pages;
+			finalContent.format		= content.format;
+			finalContent.create_at	= content.create_at;
+			finalContent.user_id	= content.user_id;
+			finalContent.view		= content.view;
+			finalContent.last_view	= content.last_view;
+			finalContent.title		= content.title;
+			finalContent.description= content.description;
+			finalContent.tags		= content.tags;
+			finalContent.text 		= this_is_text.join().trim().replace(/[\r\n]/g, '').replace(/[^\x21-\x7E]+/g, ' ').replace(/^\s+|\s+$/g, '');
+			finalContent.short_text = this_is_text.join().trim().replace(/[\r\n]/g, '').replace(/[^\x21-\x7E]+/g, ' ').replace(/^\s+|\s+$/g, '').substr(0, 100);
+			
+
+			delete finalContent.text_extracted; 
+
+
+			// body_bulk.unshift({'index':{'_type':'book','_id':id_file_mongoDB}},finalContent)
+
+			// var parent = new object();
+			// parent = {'index':}
+
+
+			index_bulk_pdf(id_file_mongoDB,finalContent,body_bulk,function  (response) {
+				
+				Callback({'statu':'ok','message':'PDF file of '+finalContent.pages+' page(s) indexed'})
+			});
+		}
+	}
 }
 
 
@@ -297,14 +201,66 @@ function clean_text_extrated (content,Callback) {
 }
 
 
+
+
+function index_bulk_pdf (id_file_mongoDB,parent_content,child_content,Callback) { 
+
+	client.index({ 
+
+		index: intire_file_db,
+
+		type: intire_file_db,
+
+		id:id_file_mongoDB.toString(),
+
+		body:parent_content
+
+	},function(err) { 
+
+		if(err){
+
+			console.log(err)
+
+			Callback({'statu':'fail'})
+
+		}else{ 
+
+			if(parent_content.pages*1>1){ //If the document as more than one page we bulk it
+
+				client.bulk({
+
+					index: page_pdf_db,
+
+					type: page_pdf_db,
+
+					body:child_content
+
+					}, function (error,response,status) { 
+
+						if(!error){
+
+							Callback({'statu':'ok'})	
+						}else{
+							console.log(error)
+						}
+				})
+			}else{
+				Callback({'statu':'ok'})	
+			}
+		}
+	})
+}
+
+
+
 function index_this_page (finalContent) { 
 	
 
 	client.index({ 
 
-		index: index_db,
+		index: intire_file_db,
 
-		type: 'file',
+		type: intire_file_db,
 	  
 		body:finalContent
 
@@ -323,8 +279,8 @@ function index_this_page (finalContent) {
 function search_all_media(data,call_back) {
 	
 	client.search({
-	  	index: 	index_db,
-	  	type: 	"file",
+	  	index: 	intire_file_db,
+	  	type: 	intire_file_db,
 	  	body:{
 	  			size: 20,
     			from: data.start,
@@ -335,7 +291,7 @@ function search_all_media(data,call_back) {
 						      {
 						        query_string: {
 						          	query: data.term,
-						          	fields : ["text_page", "title^5","tags^4","description^4"],
+						          	fields : ["text", "title^5","tags^4","description^4","text_extracted"],
               						use_dis_max : true
 						        }
 						      }
@@ -391,8 +347,8 @@ function search_all_media(data,call_back) {
 function get_sample_image(data,call_back) {
 	
 	client.search({
-	  	index: 	index_db,
-	  	type: 	"file",
+	  	index: 	intire_file_db,
+	  	type: 	intire_file_db,
 	  	body:{
 	  			size: 5,
     			from: 0,
@@ -403,7 +359,7 @@ function get_sample_image(data,call_back) {
 						      {
 						        query_string: {
 						          	query: data.term,
-						          	fields : ["text_page", "title^5","tags^4","description^4"],
+						          	fields : ["text_extracted", "title^5","tags^4","description^4"],
               						use_dis_max : true
 						        }
 						      }
@@ -455,8 +411,8 @@ function get_sample_image(data,call_back) {
 function get_suggestion_media (search_string,Callback) { 
 	
 	client.search({
-	  	index: 	index_db,
-	  	type: 	"file",
+	  	index: 	intire_file_db,
+	  	type: 	intire_file_db,
 	  	body:{
 	  			size: 20,
     			from: 0,

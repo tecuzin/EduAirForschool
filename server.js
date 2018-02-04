@@ -709,7 +709,7 @@ app.get('/watch',(request,response)=>{
 
 	var media = request.query.media;
 
-	Intello.go_get_media(media,function  (data) { console.log(data)
+	Intello.go_get_media(media,function  (data) {
 		
 		if(data.response==undefined){
 			var data_page = {
@@ -721,7 +721,7 @@ app.get('/watch',(request,response)=>{
 				'view':data.view,
 				'create_at':data.create_at,
 				'user_id':data.user_id
-			};
+			};console.log(data.media)
 			response.render(data.media,data_page)
 		}else{
 			var data_page = {
@@ -733,69 +733,11 @@ app.get('/watch',(request,response)=>{
 		}
 		
 	})
-
-
-
-// 	var fs = require('fs');  // file system
-// var http = require('http');
-// var server = http.createServer(function (req, res) {
-//   // logic here to determine what file, etc
-//   var rstream = fs.createReadStream('existFile');
-//   rstream.pipe(res);
-// });
-// server.listen(8000, '127.0.0.1');  // start
-
-
-	// // Exple: http://domain.edu/watch/Lyd_0_Idfile
-	// var my_request = request.params.FileId;
-
-	// my_request = my_request.split('_');
-
-	// //If it's a file
-	// if(my_request[0]=='Lyd'){
-
-	// 	switch(my_request[1]){
-
-	// 		//1) We read the file 2) We add data to the file in the database
-
-	// 		case '0':
-	// 			var movieStream = fs.createReadStream(media_library+'video/'+my_request[2]);
-	// 			movieStream.on('open', function () {
-	// 			    res.writeHead(206, {
-	// 			        "Content-Range": "bytes " + start + "-" + end + "/" + total,
-	// 			            "Accept-Ranges": "bytes",
-	// 			            "Content-Length": chunksize,
-	// 			            "Content-Type": "video/mp4"
-	// 			    });
-	// 			    // This just pipes the read stream to the response object (which goes 
-	// 			    //to the client)
-	// 			    movieStream.pipe(response);
-	// 			});
-
-	// 			movieStream.on('error', function (err) {
-	// 			    response.end(err);
-	// 			});
-	// 		break;
-
-	// 		case '1':
-	// 		break;
-
-	// 		case '2':
-	// 		break;
-
-	// 		default:
-	// 		break;
-	// 	}
-	// }else{
-	// 	//If it is a zim file we get the article
-	// }
-
-	// //Glossary
-	// //if id start by Lyd, its a video or picture or article. Exple: http://domain.edu/watch/Lyd_0_FileId (0 for video,1 for picture,2 for article)
-	// //If id Lyd and
-
 	
 })
+
+
+
 
 
 

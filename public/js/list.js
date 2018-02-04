@@ -343,7 +343,7 @@ $(document).ready(function(){
 	    		  		html 	+='<img class="first_pic" src="assets_media/'+url_thumbnail+'">';
 	    		  		html	+='<div class="title blue-text text-darken-2 truncate">'+documents[i]._source.title+'</div>';
 	    		  		html	+='<span class="red-text text-darken-2 truncate description">'+description+'</span>';
-	    		  		html	+=' <div><span class="new badge blue" data-badge-caption="'+ documents[i]._source.page_number+'/'+ documents[i]._source.pages+' Pages"></span></div>';
+	    		  		html	+=' <div><span class="new badge blue" data-badge-caption="'+documents[i]._source.pages+' Pages"></span></div>';
 	    		  		html	+='<div class="black-text text-darken-2 data_file"><span class="views"><span class="number">'+documents[i]._source.view+'</span>&nbsp;';
 	    		  		html	+='<span class="view_lang">Views</span></span>&nbsp;.&nbsp;<span class="dateTime">'+moment(documents[i]._source.create_at).fromNow();+'</span></div></a>';
 
