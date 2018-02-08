@@ -1,0 +1,76 @@
+<% include parts/header %>
+
+    <body>
+      <% include parts/menu_top %>
+
+      <div class="player">
+      
+        <div class="row">
+          <div class="col s12 m8 l8 video_airedu">
+              <div id="wrap_video">
+                <div id="video_box">
+                  <video class="video_played" id="papa_is_back" src="/video?media=<%- hashName %><%- format %>" controls loop autoplay muted></video>
+                </div>
+              </div>
+            <div class="this_pub card-panel"  style="display:none">
+              
+            </div>
+            <div class="info_space"></div>
+
+            <div class="description_media">
+              <p class="description_text blue-text text-darken-2">
+                 <%- description %>
+              </p>
+            </div>
+          
+
+            <div class="commentor">
+              <h5>COMMENTAIRES.1238</h5>
+                <ul class="collection list_com">
+                  <li class="collection-item avatar">
+                    <img src="img/yuna.jpg" alt="" class="circle">
+                    <textarea class="text_comment"></textarea>
+                    <div class="right option_comment" style="display:none;">
+                      <a class="waves-effect waves-light btn-flat cancel">Annuler</a>
+                      <a class="waves-effect waves-light btn-flat send blue disabled">Ajouter un commentaire</a>
+                    </div>
+                  </li>
+                  <div class="divider"></div>
+                </ul>
+            </div>
+
+          </div>
+          <div class="col s12 m4 l4">
+            <center>
+              <div class="preloader-wrapper big active loader_suggestion">
+                <div class="spinner-layer spinner-blue-only">
+                  <div class="circle-clipper left">
+                    <div class="circle"></div>
+                  </div><div class="gap-patch">
+                    <div class="circle"></div>
+                  </div><div class="circle-clipper right">
+                    <div class="circle"></div>
+                  </div>
+                </div>
+              </div>
+            </center>
+            <div class="suggestion_vid card-panel" style="display:none">
+              <h1 class="pointer_suggestion hide_suggestion">Suggestions X</h1>
+              <div class="collection"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+       <div class="media_data" style="display:none" title="<%- title %>" type="<%- type %>" fileName="<%- hashName %>" views="<%- view %>" autor_id="<%- user_id %>" timestamp="<%- create_at %>" format="<%- format %>"></div>
+
+
+
+<% include parts/main_menu %>
+<% include parts/moment %>
+<% include parts/main_js %>
+<% include parts/pub %>
+<% include parts/video %>
+<% include parts/menu %>
+<% include parts/footer %>
+      

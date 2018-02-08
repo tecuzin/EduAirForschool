@@ -13,6 +13,9 @@ redisStore 		= require('connect-redis')(session),
 cookieParser    = require('cookie-parser'),
 bcrypt			= require('bcrypt-nodejs'),
 fs				= require('fs'),
+http			= require('http'),
+util 			= require('util'),
+
 mime 			= require('mime'),//Get type mime of file
 file_type_application = [	'application/pdf' ,
 								'application/vnd.ms-powerpoint', //ppt
@@ -38,6 +41,8 @@ var TTL_session 	= 260 ; //24h
 var protocol		="http://";
 var zim_port		= "8100";
 var zim_wikipedia	= "wikipedia_fr_all_11_2013";
+
+var port_video		=8000;
 
 
 var media_library =path.join(__dirname, '.', 'private/');//Define the directory of media library
@@ -572,7 +577,8 @@ io.sockets.on('connection', function (socket) {
 				case 'fail':
 					var data_page = {
 						'search_string':results.search_string,
-						'statu':'ok'
+						'statu':'fail',
+						'message':results.message
 					}
 
 					socket.emit('results',data_page)
@@ -671,6 +677,18 @@ app.get('/fatal_error',(request,response)=>{
 })
 
 
+app.get('/file_no_exist',(request,response)=>{
+
+	var data_page = {
+		'title':request.__('no_file_found'),
+		'ip_server':ip_server,
+		'protocol':protocol
+	};
+
+	response.render('fatal_error',data_page)
+})
+
+
 
 
 
@@ -709,7 +727,7 @@ app.get('/watch',(request,response)=>{
 
 	var media = request.query.media;
 
-	Intello.go_get_media(media,function  (data) {
+	Intello.go_get_media(media,function  (data) { 
 		
 		if(data.response==undefined){
 			var data_page = {
@@ -717,12 +735,16 @@ app.get('/watch',(request,response)=>{
 				'ip_server':ip_server,
 				'protocol':protocol,
 				'hashName':data.hashName,
+				'_id':data._id,
 				'description':data.description,
+				'type': data.type,
+				'format': data.format,
 				'view':data.view,
+				'tags':data.tags,
 				'create_at':data.create_at,
 				'user_id':data.user_id
-			};console.log(data.media)
-			response.render(data.media,data_page)
+			}; 
+			response.render(data.type,data_page)
 		}else{
 			var data_page = {
 				'title':request.__('no_file_found'),
@@ -734,6 +756,68 @@ app.get('/watch',(request,response)=>{
 		
 	})
 	
+})
+
+
+app.get('/video',(req,res)=>{
+
+	var media 	= req.query.media;
+
+	var path_file 	= __dirname+'/private/video/'+media;
+
+	fs.exists(path_file, function(exists) { 
+
+  		if (exists) { 
+
+   		 	var stat 	= fs.statSync(path_file);
+			var total 	= stat.size;
+			
+			if (req.headers['range']) {
+
+			    var range = req.headers.range;
+			    var parts = range.replace(/bytes=/, "").split("-");
+			    var partialstart = parts[0];
+			    var partialend = parts[1];
+
+			    var start = parseInt(partialstart, 10);
+			    var end = partialend ? parseInt(partialend, 10) : total-1;
+			    var chunksize = (end-start)+1;
+
+			    var file = fs.createReadStream(path_file, {start: start, end: end});
+			    res.writeHead(206, { 'Content-Range': 'bytes ' + start + '-' + end + '/' + total, 'Accept-Ranges': 'bytes', 'Content-Length': chunksize, 'Content-Type': 'video/mp4' });
+			    file.pipe(res);
+			}else{
+			    res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'video/mp4' });
+			    fs.createReadStream(path_file).pipe(res);
+			} 
+  		}else{
+  			res.redirect('/file_no_exist')
+  		}
+	});	
+})
+
+
+
+
+app.get('/image',(req,res)=>{
+
+	var media 		= req.query.media;
+
+	var path_file 	= __dirname+'/private/image/'+media;
+
+	fs.exists(path_file, function(exists) { 
+
+  		if (exists) {
+
+  			var stat 	= fs.statSync(path_file);
+			var total 	= stat.size; 
+
+   		 	res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'image/'+path.extname(path_file).replace('.','') });
+			fs.createReadStream(path_file).pipe(res); 
+  		}else{
+  			res.redirect('/file_no_exist')
+  		}
+	});
 })
 
 
@@ -756,7 +840,119 @@ app.get('/no_results',(request,response)=>{
 })
 
 
+
 /////////////////////////////////////////////////////////Get content///////////////////////////////////////////////
+
+
+
+
+///////////////////////////////////////////////Manage Comments//////////////////////////////////////////////////////
+
+
+app.post('/add_comment',(request,response)=>{ 
+
+		var data = request.body;
+
+		Intello.add_new_comment_to_the_file(data,function (results) { 
+
+			if(results.statu==true){
+
+				response.json({'statu':true,'this_comment_id':results.comment_id})
+			}else{
+				response.redirect('/fatal_error')
+			}	
+		})
+	
+})
+
+
+app.post('/get_comment',(request,response)=>{
+
+		var hashName = request.body.file_id; 
+
+		Intello.get_file_comments(hashName,function (results) { 
+
+			if(results.statu==true && results.comments){
+
+				response.json({'statu':true,'comment':results.comments})
+			}else{
+				if(results.statu==true){
+
+					response.json({'statu':false})
+				}else{
+					response.redirect('/fatal_error')
+				}
+			}	
+		})
+	
+})
+
+
+app.post('/delete_comment',(request,response)=>{
+
+		var comment_id = request.body.comment_id; 
+
+		Intello.delete_comment_to_the_file(comment_id,function (statu) {
+
+			if(statu.statu==true){
+
+				response.json({'statu':true})
+			}else{
+				response.redirect('/fatal_error')
+			}	
+		})
+})
+
+
+app.post('/update_comment',(request,response)=>{
+
+		var comment = request.body; 
+
+		Intello.update_comment_to_the_file(comment,function (statu) { 
+
+			if(statu.statu==true){
+
+				response.json({'statu':true})
+			}else{
+				response.redirect('/fatal_error')
+			}	
+		})
+	
+})
+
+
+app.post('/delete_response',(request,response)=>{
+
+		var comment = request.body;
+
+		Intello.delete_response_to_the_file_comment(comment,function (statu) { 
+
+			if(statu.statu==true){
+
+				response.json({'statu':true})
+			}else{
+				response.redirect('/fatal_error')
+			}	
+		})
+})
+
+
+app.post('/update_response',(request,response)=>{
+
+		var comment = request.body; 
+
+		Intello.update_response_to_the_file_comment(comment,function (statu) { 
+
+			if(statu.statu==true ){
+
+				response.json({'statu':true})
+			}else{
+				response.redirect('/fatal_error')
+			}	
+		})
+})
+///////////////////////////////////////////////Manage Comments//////////////////////////////////////////////////////
+
 
 
 

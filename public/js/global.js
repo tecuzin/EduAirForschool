@@ -1,6 +1,8 @@
 
 $(document).ready(function(){ 
 
+	window.user_id = '489345'; //Only for test
+
 	//Config system
 
 	//Pub
@@ -78,6 +80,10 @@ $(document).ready(function(){
 
 
 
+	var date = new Date();
+
+
+
 	$('.chips').material_chip();//Initiate chip
 	
 
@@ -117,6 +123,62 @@ $(document).ready(function(){
 
 	//T///////////////////////////////////////////This manages the suggestion on desktop or tablet
 
+	window.socket.on('get_suggestion',function  (data) {
+
+		//display_suggestion(title,url,description,first_letter,image,file_length,view,from,type)
+
+		if(data.media.total!=0 || data.wikipedia.length!=0){
+
+			var media_data = data.media.hits;
+		
+			for (var i = 0; i < media_data.length; i++) {
+
+				switch(media_data[i]._source.media){
+
+					case 'audio_video':
+						var file_length = window.convertTime(media_data[i]._source.duration)
+					break;
+
+					case 'text':
+					 	var file_length = media_data[i]._source.page_number+'/'+ media_data[i]._source.pages+' Pages';
+					break;
+
+					case 'image':
+						var file_length = window.formatBytes(media_data[i]._source.size)
+					break;
+				}
+
+				var url_thumbnail 	= media_data[i]._source.thumbnail.split('private/');
+
+		    	url_thumbnail		= url_thumbnail[1];
+
+		    	//We prevent that the media which is displaying is not the same than hich one e want to display in suggestion
+		    	if($('.media_data').attr('MongoDbFileId')!=media_data[i]._source.id_file_mongoDB){
+
+					window.display_suggestion(media_data[i]._source.title,media_data[i]._source.hashName,media_data[i]._source.description,'',url_thumbnail,file_length,media_data[i]._source.view,'','media')
+		    	}
+
+			}
+
+			for (var i = 0; i < data.wikipedia.length; i++) { 
+
+				if(window.location.href.indexOf(data.wikipedia[i][1])==-1){
+
+					window.display_suggestion(data.wikipedia[i][0],data.wikipedia[i][1],data.wikipedia[i][2],data.wikipedia[i][0].charAt(0),'','','','','wikipedia')
+				}
+			}
+		}else{
+
+			$('.suggestion,.suggestion_vid').hide()
+			$('.suggestion,.suggestion_vid').removeClass('s12 m4 l4')
+
+			$('.field').removeClass('s12 m8 l8')
+			$('.field').addClass('s12 m12 l12')
+		}
+		
+	})
+
+
 	window.display_suggestion = function(title,url,description,first_letter,image,file_length,view,from,type){
 
 		$('.suggestion,.suggestion_vid').fadeIn();
@@ -127,10 +189,12 @@ $(document).ready(function(){
 
 			var info_length = '';
 			var sample 		= '<div class="first_letter" style="background-color:'+window.set_background_first_letter()+'">'+first_letter+'</div>';
+			var view 		= '';
 			
 		}else{
 			var info_length = '<div><span class="new badge blue" data-badge-caption="'+file_length+'"></span></div>';
 			var sample		= '<img src="assets_media/'+image+'" alt="" class="square responsive-img first_pic">';
+			var view 		= '<span class="views"><span class="number">'+view+'</span>&nbsp;<span class="view_lang">Views</span></span>&nbsp;.&nbsp;';
 		}
 
 		var html ='<a href="'+url+'" class="collection-item waves-effect waves-light">';
@@ -139,7 +203,7 @@ $(document).ready(function(){
             html +='<span class="red-text text-darken-2 truncate description">'+description+'</span>';
             html +=info_length;
             html +='<div class="black-text text-darken-2 data_file">';
-            html +='<span class="views"><span class="number">'+view+'</span>&nbsp;<span class="view_lang">Views</span></span>&nbsp;.&nbsp;'
+            html +=view;
             html +='<span class="dateTime">'+from+'</span></div></a><div class="divider"></div>';
 
         $('.suggestion .collection,.suggestion_vid .collection,.suggestion_mobile .collection').append(html);
@@ -322,72 +386,350 @@ $(document).ready(function(){
 
 	})
 
+
+	$('.add_comment').click(function () {
+		
+		if($('.text_comment').val().length>0){
+
+			add_comment (user_id,$('.text_comment').val(),$('.media_data').attr('MongoDbFileId'),false)
+		}
+
+	})
+
+
+	function add_comment (user_id,user_text,file_id,comment_id) {
+		
+		$.ajax({
+			type: "POST",
+			url: "/add_comment",
+			dataType: "json",
+			data: {'user_id':user_id,'user_text':user_text,'file_id':file_id,'comment_id':comment_id},
+			error: function  (error) {
+				
+				console.log(error)
+			},
+			success: function  (data) { 
+				
+				if(data.statu==true){
+
+					if(comment_id){ //If we comment a comment
+
+						window.display_ans(user_id,user_text,comment_id,$('.ul_com_'+comment_id+' li').length, moment.unix(date.getTime()/1000).fromNow(),date.getTime())
+						
+						//We wipe text form
+						$('.this_text_area').val('') 
+					}else{
+						window.display_com(user_id,user_text,data.this_comment_id,moment.unix(date.getTime()/1000).fromNow(),false)
+
+						//We wipe text form
+						$('.this_text_area').val('')
+						$('.add_comment').addClass('disabled')
+					}
+				}else{
+					window.display_popup("Your comment can't be added for unknow reason.")
+				}
+			}
+		});
+	}
+
 	
 
 	//Verify if the user can apply the text
 	$('.text_comment').keyup(function  () {
 		
 		if($(this).val().length==0){
-			$('.commentor .btn-flat').addClass('disabled')
+			$('.add_comment').addClass('disabled')
 		}else{
-			$('.commentor .btn-flat').removeClass('disabled')
+			$('.add_comment').removeClass('disabled')
 		}
 	})
 
 
-	//display comment
-	window.display_com = function(user_name,user_pic,user_id,user_text,user_text_id,user_timestamp_text) {
+	//display comment             
+	window.display_com = function(user_id,user_text,user_text_id,user_timestamp_text,there_is_response) {
+
+		if(there_is_response){
+			var displaying_list_of_response = '<a href="#" class="all_of_com_this" id_com="'+user_text_id+'">Réponses ('+there_is_response+')</a>';
+		}else{
+			var displaying_list_of_response = '';
+		}
+
+		if(window.user_id==user_id){
+
+			var manage_comment ='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" action="update" type="comment" class="manage_this" id_com="'+user_text_id+'"><i class="material-icons tiny">edit</i></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" action="delete" type="comment" class="manage_this" id_com="'+user_text_id+'"><i class="material-icons tiny">delete</i></a>';
+		}
 		
-		var html 	='<li class="collection-item avatar">';
-			html	+='<a href="'+user_id+'"><img src="img/'+user_pic+'" alt="" class="circle"></a>';
-			html	+='<span class="title"><a href="'+user_id+'">'+user_name+'</a></span>&nbsp;<span class="timestamper">'+user_timestamp_text+'</span>';
-			html	+='<p>'+user_text+'</p><a href="#" class="com_this" id_com="'+user_text_id+'">Répondre</a>';
-			html	+='<div class="hidden_form com_form_'+user_text_id+'" style="display:none;"><textarea class="text_comment_'+user_text_id+'"></textarea>';
+		var html 	='<li class="collection-item avatar li_comment_'+user_text_id+'">';
+			html	+='<a href="'+user_id+'"><img src="'+get_user_pic(user_id)+'" alt="" class="circle"></a>';
+			html	+='<span class="title"><a href="'+user_id+'">'+get_user_name(user_id)+'</a></span>&nbsp;<span class="timestamper">'+user_timestamp_text+'</span>';
+			html	+='<p class="comment_text_'+user_text_id+'">'+user_text+'</p><a href="#" class="com_this" id_com="'+user_text_id+'">Répondre</a>&nbsp;&nbsp;'+displaying_list_of_response+manage_comment;
+			html	+='<div class="hidden_form com_form_'+user_text_id+'" style="display:none;"><textarea class="this_text_area text_comment_'+user_text_id+'"></textarea>';
 			html	+='<div class="right"><a class="waves-effect waves-light btn-flat cancel">Annuler</a>';
 			html	+='<a class="waves-effect waves-light btn-flat send_com blue" id_com="'+user_text_id+'">Répondre</a></div></div><ul class="ul_com_'+user_text_id+'"></ul></li>';
 
-			$('.list_com').append(html)
+			$('.list_comments').prepend(html)
 	}
 
-	window.display_ans = function(user_name,user_pic,user_id,user_text,user_text_id,user_timestamp_text) {
+	window.display_ans = function(user_id,user_text,user_text_id,index_response,user_timestamp_text,real_timestamp) { 
+
+		if(window.user_id==user_id){
+
+			var manage_comment ='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" action="update" type="response" index="'+index_response+'" class="manage_this" id_com="'+user_text_id+'" real_timestamp="'+real_timestamp+'"><i class="material-icons tiny">edit</i></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" action="delete" type="response" index="'+index_response+'" class="manage_this" id_com="'+user_text_id+'" real_timestamp="'+real_timestamp+'"><i class="material-icons tiny">delete</i></a>';
+		}
 		
-		var html 	='<li class="collection-item avatar">';
-			html	+='<a href="'+user_id+'"><img src="img/'+user_pic+'" alt="" class="circle"></a>';
-			html	+='<span class="title"><a href="'+user_id+'">'+user_name+'</a></span>&nbsp;<span class="timestamper">'+user_timestamp_text+'</span>';
-			html	+='<p>'+user_text+'</p>';
+		var html 	='<li class="collection-item avatar li_response_'+user_text_id+'_'+index_response+'">';
+			html	+='<a href="'+user_id+'"><img src="'+get_user_pic(user_id)+'" alt="" class="circle"></a>';
+			html	+='<span class="title"><a href="'+user_id+'">'+get_user_name(user_id)+'</a></span>&nbsp;<span class="timestamper">'+user_timestamp_text+'</span>';
+			html	+='<p class="response_'+user_text_id+'_'+index_response+'">'+user_text+'</p>';
+			html	+=manage_comment;
 			html	+='</li>';
 
-			$('.ul_com_'+user_text_id).append(html)
+			$('.ul_com_'+user_text_id).prepend(html)
 	}
 
-	//demo comments
-	for (var i = 0; i < 10; i++) {
-		var text = 'There are 3 main button types described in material design. The raised button is a standard button that signify actions and seek to give depth to a mostly flat page';
-		window.display_com('Stephane','yuna.jpg',12,text,i,'Il y a 2 ans');
 
-		if(i==1){
-			for (var y = 0; y < 3; y++) {
-				var text = 'There are 3 main button types described in material design. The raised button is a standard button that signify actions and seek to give depth to a mostly flat page';
-				window.display_ans('Stephane','yuna.jpg',12,text,i,'Il y a 2 ans');
+
+	var responses_to_comment__ID_of_comments 		= new Array();//This variable keep ID comments in order to display after by a click
+	var responses_to_comment__responses_to_comments = new Array();//This variable keep response to comments in order to display after by a click
+	
+	window.get_file_comments = function (file_id) { 
+		
+		$.ajax({
+			type: "POST",
+			url: "/get_comment",
+			dataType: "json",
+			data: {'file_id':file_id},
+			error: function  (error) {
+				
+				console.log(error)
+			},
+			success: function  (data) { 
+				
+				if(data.statu==true){
+
+					if(data.comment.length>0){ //Display comments
+
+						$('.all_comments').text(data.comment.length)
+
+						for (var i = 0; i < data.comment.length; i++) {
+
+							var this_comment  =  data.comment[i];
+
+							if(this_comment.comment.length>0){
+
+								var there_is_response = this_comment.comment.length;
+							}else{
+								var there_is_response = false;
+							}
+
+							window.display_com(this_comment.user_id,this_comment.user_text,this_comment._id,moment.unix(this_comment.create_at*1/1000).fromNow(),there_is_response)
+
+							if(this_comment.comment.length>0){
+								responses_to_comment__ID_of_comments.push(this_comment._id)
+								responses_to_comment__responses_to_comments.push(this_comment.comment)
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+
+
+	//Click to respond a comment
+	$(document).on('click','.com_this', {} ,function(e){
+  		
+  		var this_id =  $(this).attr('id_com');
+
+  		$('.hidden_form').hide()
+
+  		$('.com_form_'+this_id).fadeIn()
+
+  		return false;
+	})
+
+
+	$(document).on('click','.send_com', {} ,function(e){
+  		
+  		var this_id =  $(this).attr('id_com');
+
+  		if($('.text_comment_'+this_id).val().length>0){ //If there is comment we comment it
+
+  			//We send response
+  			add_comment(user_id,$('.text_comment_'+this_id).val(),$('.media_data').attr('MongoDbFileId'),this_id)
+  		}
+
+  		return false;
+	}) 
+
+
+	//Display responses to comment
+	$(document).on('click','.all_of_com_this', {} ,function(e){  
+  		
+  		var this_id =  	$(this).attr('id_com'); 
+
+  		get_index_on_object(this_id,responses_to_comment__ID_of_comments,function  (index) { 
+  			
+  			get_responses_of_comment(index,responses_to_comment__responses_to_comments,function  (responses) {
+  				
+				display_response_to_comments(this_id,responses);
+
+  			})
+  		})
+
+  		$(this).hide();
+
+  		return false;
+	})
+
+
+	//Display responses to comment
+	$(document).on('click','.manage_this', {} ,function(e){  
+  		
+
+		if($(this).attr('action') =='delete'){
+
+			var confimation = confirm($('.media_data').attr('delete_confirmation'));
+
+			if(confimation == true) {
+			    
+			    if($(this).attr('type')=='comment'){
+					manage_comments_and_responses_on_file($(this).attr('action'),$(this).attr('type'),$(this).attr('id_com'),false,false,false,false)
+				}else{
+					manage_comments_and_responses_on_file($(this).attr('action'),$(this).attr('type'),$(this).attr('id_com'),$(this).attr('index'),false,$('.response_'+$(this).attr('id_com')+'_'+$(this).attr('index')).text(),$(this).attr('real_timestamp'))
+				}
+			}
+		}else{
+
+			if($(this).attr('type')=='comment'){
+
+				$('.text_to_update').val($('.comment_text_'+$(this).attr('id_com')).text())
+
+				window.text_to_update = {'action':$(this).attr('action'),'type':$(this).attr('type'),'comment_id':$(this).attr('id_com'),'response_index':false};
+
+				open_popup_edit();
+			}else{
+				$('.text_to_update').val($('.response_'+$(this).attr('id_com')+'_'+$(this).attr('index')).text())
+				
+				window.text_to_update = {'action':$(this).attr('action'),'type':$(this).attr('type'),'comment_id':$(this).attr('id_com'),'response_index':$(this).attr('index'),'real_timestamp':$(this).attr('real_timestamp')};
+				
+				open_popup_edit();
 			}
 		}
 
-		if(i==9){
-			$(document).ready(function(){
-				$('.com_this,.send_com').unbind('click');
-				$('.com_this').click(function  () {
-					$('.com_this').show()
-					$('.hidden_form').hide();
-					$('.com_form_'+$(this).attr('id_com')).show();
-					$('.text_comment_'+$(this).attr('id_com')).focus()
-					$(this).hide();
-					return false;
-				})
-			}) 
-		}
+		return false;
+	})
+
+
+	//Form to validate editing comment or responses
+	$('.go_edit_it').click(function  () {
+		
+		manage_comments_and_responses_on_file(window.text_to_update.action,window.text_to_update.type,window.text_to_update.comment_id,window.text_to_update.response_index,$('.text_to_update').val(),$('.text_to_update').val(),window.text_to_update.real_timestamp)
+	})
+
+
+	$('#modal_edit').modal();// Initiating modal window
+
+
+	function open_popup_edit(){
+
+		$('.ok_icon').hide()
+		$('.text_to_update').show()
+		$('#modal_edit').modal('open')
 	}
 
 
+	function close_popup_edit(){
+
+		$('.ok_icon').show()
+		$('.text_to_update').hide()
+
+		setTimeout(function  () {
+			$('#modal_edit').modal('close')
+		},1000)
+	}
+
+
+	//Popup to edit text
+
+	function manage_comments_and_responses_on_file(action,type,comment_id,response_index,comment_text,response_text,real_timestamp) {
+		
+		var parcel = {'user_id':user_id,'comment_id':comment_id,'response_index':response_index,'comment_text':comment_text,'response_text':response_text,'real_timestamp':real_timestamp};
+		
+		console.log(parcel)
+		$.ajax({
+			type: "POST",
+			url: "/"+action+"_"+type,
+			dataType: "json",
+			data: parcel,
+			error: function  (error) {
+				
+				window.display_popup($('.media_data').attr('fatal_error'))
+
+				console.log(error)
+			},
+			success: function  (data) { 
+				
+				if(data.statu==true){
+
+					if(action=='delete'){
+
+						if(type=='comment'){
+							$('.li_comment_'+comment_id).fadeOut()
+						}else{
+							$('.li_response_'+comment_id+'_'+response_index).fadeOut()
+						}
+
+					}else{
+
+						close_popup_edit();
+
+						if(type=='comment'){
+							$('.comment_text_'+comment_id).html(comment_text)
+						}else{
+							$('.response_'+comment_id+'_'+response_index).html(response_text)
+						}
+					}
+				}
+			}
+		})
+	}
+
+
+	function get_index_on_object (this_id,object,CallBack) {
+		
+		$.each(object, function( index, entry ) {
+			
+			if(entry==this_id){
+
+				CallBack(index);
+			} 
+		})
+	}
+
+
+	function get_responses_of_comment (index_comment,responses,CallBack) {
+		
+		$.each(responses, function( index, entry ) { 
+			
+			if(index==index_comment){
+
+				CallBack(entry);
+			} 
+		})
+	}
+
+
+
+	function display_response_to_comments (id_comment,responses) { 
+	 	
+
+		$.each(responses, function( index, entry ) { 
+
+			window.display_ans(entry['user_id'],entry['user_text'],id_comment,index,moment.unix(entry['create_at']*1/1000).fromNow(),entry['create_at']) 
+		})
+	} 
+	
 
 
 
@@ -395,4 +737,18 @@ $(document).ready(function(){
 		
   		Materialize.toast(message, 10000);
 	}
+
+
+	window.get_user_name = function (user_id){
+		return 'Yann';
+	}
+
+	window.get_user_pic = function(user_id){
+
+		return 'assets/img/yuna.jpg';
+	}
+
+
+
+
 });

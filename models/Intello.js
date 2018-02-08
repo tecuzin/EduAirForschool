@@ -112,39 +112,6 @@ class Intello{
 
 
 
-
-	static set_file_view (content,call_back){ 
-
-		db_connection(function(error, db){ 
-
-			if(error){
-
-				console.log(error)
-
-	        	call_back({'statu':'problem','message':'fatal_error in db_connection'})
-
-			}else{
-				var objToFind     = { _id: new MongoObjectID(content.file_id) }; // Objet qui va nous servir pour effectuer la recherche
-
-				db.collection("user_file").update(objToFind,{ $set: {last_view: date.getTime()}},{ $inc: { view: 1 } },(error,results)=>{
-
-					if(error){
-		        		console.log(error)
-
-	        			call_back({'statu':'problem','message':'file no inserted'})
-
-		        	}else{
-
-		        		call_back({'statu':results})
-		        	}
-				})
-			}
-    	});
-	}
-
-
-
-
 	static get_file (content,call_back){ 
 
 		db_connection(function(err, db){ 
@@ -219,7 +186,7 @@ class Intello{
 
 			case 'wikipedia':
 
-				request(data.protocol+data.ip_server+':'+data.zim_port+'/search?content='+data.zim_wikipedia+'&pattern='+data.term.toLowerCase()+'&start='+data.start+'&end='+data.end, function (error, response, html) {
+				request(data.protocol+data.ip_server+':'+data.zim_port+'/search?content='+data.zim_wikipedia+'&pattern='+RemoveAccents(data.term.toLowerCase())+'&start='+data.start+'&end='+data.end, function (error, response, html) {
   					
   					if (!error && response.statusCode == 200) { 
     					
@@ -338,6 +305,222 @@ class Intello{
 			Callback(results)
 		})
 	}
+
+
+	static add_new_comment_to_the_file(comment,Callback){ //{'user_id':user_id,'user_text':user_text,'file_id':file_id,'comment_id':comment_id}
+
+		db_connection(function(err, db){ 
+
+			if(err){
+
+				console.log(err)
+
+	        	call_back({'statu':'problem','message':'fatal_error in db_connection'})
+
+			}else{
+				
+				comment.create_at = date.getTime(); 
+
+				if(comment.comment_id!='false'){ //If the user respond to a comment comment.comment_id
+
+					db.collection("user_file_comment").update({_id:new MongoObjectID(comment.comment_id)}, {$push: {"comment":comment}},(err, results)=> {
+
+						if(err){
+
+							console.log(err)
+
+						}else{ 
+
+							Callback({'statu':true,'comment_id':comment.comment_id})
+						}
+					})
+				}else{ //if ot is a new comment
+					comment.comment = []; //We prepare other comments to this comment
+
+					db.collection("user_file_comment").insert(comment,(err, results)=> {
+
+						if(err){
+
+							console.log(err)
+
+							Callback({'statu':false})
+						}else{
+							
+							Callback({'statu':true,'comment_id':results.insertedIds[0]})
+						}
+					})
+				}
+			}
+    	})
+	}
+
+
+	static delete_comment_to_the_file(comment_id,call_back){
+
+		// structure { user_id: '489345',comment_id: '5a797858bcabde07b567ed06',response_index:0,comment_text: 'text',response_text: 'text','real_timestamp':'real_timestamp' }
+		
+		db_connection(function(err, db){ 
+
+			if(err){
+
+				console.log(err)
+
+	        	call_back({'statu':'problem'})
+
+			}else{
+
+				db.collection("user_file_comment").remove({_id:new MongoObjectID(comment_id)}, null, function(error, result) {
+
+					if(error) {
+
+		    			console.log(error)
+
+		    			call_back({'statu':false,'message':'I have a problem to delete comment'})
+		    		}else{
+		    			call_back({'statu':true})
+		    		}
+				})
+			}
+    	});
+	}
+
+
+
+
+
+	static update_comment_to_the_file(new_comment,call_back){ 
+
+		// structure { user_id: '489345',comment_id: '5a797858bcabde07b567ed06',response_index:0,comment_text: 'text',response_text: 'text','real_timestamp':'real_timestamp' }
+	
+		db_connection(function(err, db){ 
+
+			if(err){
+
+				console.log(err)
+
+	        	call_back({'statu':'problem'})
+
+			}else{
+
+				db.collection("user_file_comment").update({_id:new MongoObjectID(new_comment.comment_id)}, { $set: {"user_text": new_comment.comment_text} }, function(error, result) {
+
+					if(error) {
+
+		    			console.log(error)
+
+		    			call_back({'statu':false,'message':'I have a problem to update comment'})
+		    		}else{
+		    			call_back({'statu':true})
+		    		}
+				})
+			}
+    	});
+	}
+
+
+
+	static delete_response_to_the_file_comment(response,call_back){ 
+
+		// structure { user_id: '489345',comment_id: '5a797858bcabde07b567ed06',response_index:0,comment_text: 'text',response_text: 'text','real_timestamp':'real_timestamp' }
+
+		db_connection(function(err, db){ 
+
+			if(err){
+
+				console.log(err)
+
+	        	call_back({'statu':'problem'})
+
+			}else{
+
+				db.collection("user_file_comment").update( {_id:new MongoObjectID(response.comment_id)}, { $pull: { comment: {user_text:response.response_text,create_at:response.real_timestamp*1 } }},function  (error,result) {
+					
+					if(error) {
+
+		    			console.log(error)
+
+		    			call_back({'statu':false,'message':'I have a problem to delete response'})
+		    		}else{
+		    			call_back({'statu':true})
+		    		}
+				});
+			}
+    	});
+	}
+
+
+
+
+
+	static update_response_to_the_file_comment(new_response,call_back){
+
+		// structure { user_id: '489345',comment_id: '5a797858bcabde07b567ed06',response_index:0,comment_text: 'text',response_text: 'text','real_timestamp':'real_timestamp' }
+		
+		db_connection(function(err, db){ 
+
+			if(err){
+
+				console.log(err)
+
+	        	call_back({'statu':'problem'})
+
+			}else{
+
+				var this_index =  new_response.response_index;
+
+				var setModifier = { $set: {} }; //Comment[0].user_text
+
+				setModifier.$set['comment.'+this_index+'.user_text'] = new_response.response_text;
+
+				db.collection("user_file_comment").update({_id:new MongoObjectID(new_response.comment_id)}, setModifier, function(error, result) {
+
+					if(error) {
+
+		    			console.log(error)
+
+		    			call_back({'statu':false,'message':'I have a problem to update comment'})
+		    		}else{
+		    			call_back({'statu':true})
+		    		}
+				})
+			}
+    	});
+	}
+
+
+
+	static get_file_comments (file_id,call_back){ 
+
+		db_connection(function(err, db){ 
+
+			if(err){
+
+				console.log(err)
+
+	        	call_back({'statu':'problem'})
+
+			}else{
+
+				db.collection("user_file_comment").find({"file_id":file_id}).toArray(function(error, result) { 
+		    		
+		    		if (error) {
+
+		    			console.log(error)
+
+		    			call_back({'statu':false,'message':'I have a problem to get file'})
+		    		}else{
+
+		    			if(result==null){
+		    				call_back({'statu':true,'comments':false})
+		    			}else{
+		    				call_back({'statu':true,'comments':result})
+		    			}
+		    			
+		    		}
+				})
+			}
+    	});
+	}
 }
 
 
@@ -352,6 +535,25 @@ function record_search (data) {
 	//If it's a new term ToDo
 
 	//Else, nothing
+}
+
+
+
+
+function RemoveAccents(strAccents) {
+		var strAccents = strAccents.split('');
+		var strAccentsOut = new Array();
+		var strAccentsLen = strAccents.length;
+		var accents = 'ÀÁÂÃÄÅàáâãäåÒÓÔÕÕÖØòóôõöøÈÉÊËèéêëðÇçÐÌÍÎÏìíîïÙÚÛÜùúûüÑñŠšŸÿýŽž';
+		var accentsOut = "AAAAAAaaaaaaOOOOOOOooooooEEEEeeeeeCcDIIIIiiiiUUUUuuuuNnSsYyyZz";
+		for (var y = 0; y < strAccentsLen; y++) {
+			if (accents.indexOf(strAccents[y]) != -1) {
+				strAccentsOut[y] = accentsOut.substr(accents.indexOf(strAccents[y]), 1);
+			} else
+				strAccentsOut[y] = strAccents[y];
+		}
+		strAccentsOut = strAccentsOut.join('');
+		return strAccentsOut;
 }
 
 
@@ -477,12 +679,37 @@ function go_get_media (media,Callback) {
 
 		        		Callback(data)
 	        		}else{
+
+	        			set_file_view(results[0]._id,media)
+
+	        			//We update views number
+	        			// db.collection("user_file").update({"hashName":media},{$inc:{"view":1}})
 			        	Callback(results[0])
 	        		}
 	        	}
 			});
 		}
     });
+}
+
+
+
+
+
+function set_file_view (file_id,hashName,call_back){ 
+
+		db_connection(function(error, db){ 
+
+			if(error){
+
+				console.log(error)
+			}else{
+
+				db.collection("user_file").update({"hashName":hashName},{$inc:{"view":1}},{ $set: {"last_view": date.getTime()}})
+
+				Elastic.set_file_view(file_id)
+			}
+    	});
 }
 
 

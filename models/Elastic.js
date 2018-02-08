@@ -118,6 +118,34 @@ class Elastic{
 		})
 	}
 
+
+
+
+	static set_file_view (file_id) { 
+	
+		client.update({ 
+
+			"index": intire_file_db,
+
+			"type": intire_file_db,
+		  
+			"id":file_id.toString(),
+
+			"body":{
+
+				"script": "ctx._source.view++"
+			}
+
+			},function(err,resp,status) { 
+		    	
+		    	if(err){
+		    		console.log(err)
+		    	}
+
+		})
+	}
+
+
 }
 
 
@@ -272,6 +300,9 @@ function index_this_page (finalContent) {
 
 	})
 }
+
+
+
 
 
 

@@ -107,6 +107,9 @@ $(document).ready(function(){
 
 
 
+
+
+
 	window.socket.on('results',function  (data) { 
 
 		shower = false; 
@@ -392,7 +395,7 @@ $(document).ready(function(){
 	
 
 
-	window.socket.on('search_ajax',function  (data) {
+	window.socket.on('search_ajax',function  (data) { console.log(data)
 
 		hide_loader_scroll()
 

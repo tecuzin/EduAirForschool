@@ -49,6 +49,13 @@
 	"search_for":"for",
 	"image_for":"images corresponding for",
 	"more_image":"more images",
-	"no_file_found":"The file doesn't exist"
+	"no_file_found":"The file doesn't exist",
+	"comments":"comments",
+	"respond":"respond",
+	"cancel":"Cancel",
+	"add_comment":"Add comment",
+	"suggestion":"Suggestion",
+	"confirm_delete":"Do you really want to delete this message ?"
+	
 
 }

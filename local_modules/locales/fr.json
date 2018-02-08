@@ -49,6 +49,12 @@
 	"search_for":"pour",
 	"image_for":"images correspondant à",
 	"more_image":"plus d'images",
-	"no_file_found":"Le fichier n'existe pas"
+	"no_file_found":"Le fichier n'existe pas",
+	"comments":"commenatires",
+	"respond":"répondre",
+	"cancel":"Annuler",
+	"add_comment":"Ajouter un commentaire",
+	"suggestion":"Suggestion",
+	"confirm_delete":"Voulez vous vraiment supprimer ce message ?"
 
 }
