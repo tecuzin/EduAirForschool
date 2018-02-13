@@ -393,7 +393,7 @@ app.get('/upload',(request,response)=>{
 	if(request.session.user_id){
 
 		var data_page = {
-			'title':request.__('term'),
+			'title':request.__('upload_file'),
 			'ip_server':ip_server,
 			'protocol':protocol
 		};
@@ -405,6 +405,27 @@ app.get('/upload',(request,response)=>{
 		response.redirect('/connect')
 	}
 	
+})
+
+
+
+app.get('/upload_bulk',(request,response)=>{
+
+	if(request.session.user_id){
+
+		var data_page = {
+			'title':request.__('upload_file'),
+			'ip_server':ip_server,
+			'protocol':protocol,
+			'stat':request.query.stat
+		};
+		response.render('upload_bulk',data_page)
+	}else{
+
+		request.session.page_requested = '/upload_bulk';
+
+		response.redirect('/connect')
+	}
 })
 
 
@@ -445,14 +466,13 @@ app.post('/upload', (request, response) => {
 
 				case 'video':
 				case 'image':
-				case 'audio':
 				case 'application':
 
 					if(file_type=='application' && file_type_application.indexOf(file_type_mime)!=-1){
 
 					}else{
 
-						if(file_type=='video' || file_type=='audio' || file_type=='image'){
+						if(file_type=='video' ||  file_type=='image'){
 
 							
 						}else{

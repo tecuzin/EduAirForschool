@@ -303,7 +303,7 @@ $(document).ready(function(){
                 if(data.statu=='ok'){
 
                     //We change the bar statu
-                    $('.statu_upload').html('<div class="link_uploaded"><i class="material-icons">done</i> Votre fichier est diponible <a href="'+$('.ip_server').attr('protocol')+$('.ip_server').attr('ip')+'/watch/'+data.hashName+'" class="my_link"><span class="blue-text text-darken-2">ici</span></a></div>')
+                    $('.statu_upload').html('<div class="link_uploaded"><i class="material-icons">done</i> '+$('.notif').attr('file_ready')+' <a href="'+$('.ip_server').attr('protocol')+$('.ip_server').attr('ip')+'/watch?media='+data.hashName+'" class="my_link"><span class="blue-text text-darken-2">'+$('.notif').attr('file_here')+'</span></a></div>')
                     $('.statu_upload').fadeIn()
 
                     //we show the upload form and hide input text

@@ -55,7 +55,11 @@
 	"cancel":"Cancel",
 	"add_comment":"Add comment",
 	"suggestion":"Suggestion",
-	"confirm_delete":"Do you really want to delete this message ?"
+	"confirm_delete":"Do you really want to delete this message ?",
+	"not_allowed":"Soms files are not compatible",
+	"file_ready":"Your file is ",
+	"file_here":"here"
+
 	
 
 }

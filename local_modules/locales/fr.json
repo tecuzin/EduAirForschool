@@ -55,6 +55,9 @@
 	"cancel":"Annuler",
 	"add_comment":"Ajouter un commentaire",
 	"suggestion":"Suggestion",
-	"confirm_delete":"Voulez vous vraiment supprimer ce message ?"
+	"confirm_delete":"Voulez vous vraiment supprimer ce message ?",
+	"not_allowed":"Des fichiers ne sont pas compatibles",
+	"file_ready":"Votre fichier est diponible",
+	"file_here":"ici"
 
 }
