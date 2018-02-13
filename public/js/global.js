@@ -418,7 +418,7 @@ $(document).ready(function(){
 				
 				console.log(error)
 			},
-			success: function  (data) { 
+			success: function  (data) {  console.log(data)
 				
 				if(data.statu==true){
 
@@ -436,7 +436,12 @@ $(document).ready(function(){
 						$('.add_comment').addClass('disabled')
 					}
 				}else{
-					window.display_popup("Your comment can't be added for unknow reason.")
+					if(data.message=='not_connected'){
+						window.display_popup('<a class="btn-flat toast-action waves-effect waves-light btn blue white-text" href="/connect?url='+document.location+'">'+$('.language').attr('not_connected')+'</a>')
+					}else{
+						window.display_popup($('.language').attr('unknow'))
+					}
+					
 				}
 			}
 		});
@@ -699,6 +704,12 @@ $(document).ready(function(){
 						}else{
 							$('.response_'+comment_id+'_'+response_index).html(response_text)
 						}
+					}
+				}else{
+					if(data.message=='not_connected'){
+						window.display_popup('<a class="btn-flat toast-action waves-effect waves-light btn blue white-text" href="/connect?url='+document.location+'">'+$('.language').attr('not_connected')+'</a>')
+					}else{
+						window.display_popup($('.language').attr('unknow'))
 					}
 				}
 			}

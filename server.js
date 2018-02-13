@@ -9,6 +9,7 @@ formidable		= require("formidable"),
 path			= require("path"),
 //client 		= redis.createClient(),
 session 		= require('express-session'),
+flash 			= require('req-flash'),
 redisStore 		= require('connect-redis')(session),
 cookieParser    = require('cookie-parser'),
 bcrypt			= require('bcrypt-nodejs'),
@@ -98,6 +99,9 @@ app.use(session({
 }))
 
 
+app.use(flash());
+
+
 
 
 
@@ -157,6 +161,11 @@ app.get('fatal_error/',(request,response)=>{
 //For SignIn and SignUp
 app.get('/connect',(request,response)=>{
 
+	if(request.query.url){
+
+		request.session.page_requested = request.query.url;
+	}
+
 	if(request.session.user_id){
 
 		response.redirect('/')
@@ -200,16 +209,12 @@ app.post('/connect_form',(request,response)=>{
 						results.results.user_form_pass	= undefined;//We arase the password for security
 
 						//We redirect the user if he requested a page
-						if(request.session.url===undefined){
+						if(request.session.page_requested===undefined){
 
 							response.json({'statu':true,'user':results.results[0],'url':'/'})
 						}else{
-							if(request.session.url===undefined){
-							
-								response.json({'statu':true,'user':results.results[0],'url':'/'})
-							}else{
-								response.json({'statu':true,'user':results.results[0],'url':request.session.url})
-							}
+
+							response.json({'statu':true,'user':results.results[0],'url':request.session.page_requested})
 						}
 					}else{
 						response.json({'statu':false,'message':request.__('error_user_or_password')})
@@ -242,11 +247,11 @@ app.post('/connect_form',(request,response)=>{
 
 								response.send({'statu':true,'user':this_user,'url':'/'})
 							}else{
-								if(request.session.url===undefined){
+								if(request.session.page_requested===undefined){
 								
 									response.send({'statu':true,'user':this_user,'url':'/'})
 								}else{
-									response.send({'statu':true,'user':this_user,'url':request.session.url})
+									response.send({'statu':true,'user':this_user,'url':request.session.page_requested})
 								}
 							}
 						}else{
@@ -267,6 +272,20 @@ app.post('/connect_form',(request,response)=>{
 		}
 	}
 })
+
+
+app.get('/disconnection',(request,response)=>{
+
+	request.session.user_id 		= undefined;
+	request.session.user_full_name 	= undefined;
+
+	response.redirect('/')
+})
+
+
+
+
+
 
 
 app.get('/who',(request,response)=>{
@@ -371,146 +390,162 @@ app.get('/contributor/:id',(request,response)=>{
 
 app.get('/upload',(request,response)=>{
 
-	var data_page = {
-		'title':request.__('term'),
-		'ip_server':ip_server,
-		'protocol':protocol
-	};
-	response.render('upload',data_page)
+	if(request.session.user_id){
+
+		var data_page = {
+			'title':request.__('term'),
+			'ip_server':ip_server,
+			'protocol':protocol
+		};
+		response.render('upload',data_page)
+	}else{
+
+		request.session.page_requested = '/upload';
+
+		response.redirect('/connect')
+	}
+	
 })
 
 
 app.post('/upload', (request, response) => {
 
-	///////////////////////:ToDo///////////////////////////////////////////
-	//Restrict extention and size
-	///////////////////////:ToDo///////////////////////////////////////////
 
-	var form = new formidable.IncomingForm();
+	if(request.session.user_id){
+
+		///////////////////////:ToDo///////////////////////////////////////////
+		//Restrict extention and size
+		///////////////////////:ToDo///////////////////////////////////////////
+
+		var form = new formidable.IncomingForm();
 
 
-	//settings
-	form.multiples = true;
-	form.keepExtensions = true;
-	form.uploadDir = media_library+'temp';
-	form.maxFieldsSize = MaxFieldSize;
-    form.maxFields = MaxFields;
+		//settings
+		form.multiples = true;
+		form.keepExtensions = true;
+		form.uploadDir = media_library+'temp';
+		form.maxFieldsSize = MaxFieldSize;
+	    form.maxFields = MaxFields;
 
-	form.on("fileBegin", function(field, file){ 
+		form.on("fileBegin", function(field, file){ 
 
-		var file 			= file.name;
+			var file 			= file.name;
 
-		var file_type 		= mime.lookup(file);
+			var file_type 		= mime.lookup(file);
 
-		var file_type_mime 	= file_type;
+			var file_type_mime 	= file_type;
 
-		file_type 			= file_type.split('/');
+			file_type 			= file_type.split('/');
 
-		var file_extension 	= file_type[1];
+			var file_extension 	= file_type[1];
 
-		file_type 			= file_type[0];
+			file_type 			= file_type[0];
 
-		switch(file_type){
+			switch(file_type){
 
-			case 'video':
-			case 'image':
-			case 'audio':
-			case 'application':
+				case 'video':
+				case 'image':
+				case 'audio':
+				case 'application':
 
-				if(file_type=='application' && file_type_application.indexOf(file_type_mime)!=-1){
+					if(file_type=='application' && file_type_application.indexOf(file_type_mime)!=-1){
 
-				}else{
-
-					if(file_type=='video' || file_type=='audio' || file_type=='image'){
-
-						
 					}else{
-						response.status(413);
-						response.set({"connection": 'close', "content-type": 'text/plain'});
-						response.json({'statu':'fail','message':'format not allowed'});
-						request.connection.destroy();
-            			form._error (new Error ('format not allowed'));
+
+						if(file_type=='video' || file_type=='audio' || file_type=='image'){
+
+							
+						}else{
+							response.status(413);
+							response.set({"connection": 'close', "content-type": 'text/plain'});
+							response.json({'statu':'fail','message':'format not allowed'});
+							request.connection.destroy();
+	            			form._error (new Error ('format not allowed'));
+						}
 					}
-				}
 
-			break;
+				break;
 
-			default:
-				response.status(413);
-				response.set({"connection": 'close', "content-type": 'text/plain'});
-				response.json({'statu':'fail','message':'format not allowed'});
-				request.connection.destroy();
-				form._error (new Error ('format not allowed'));
-			break;
-		}
+				default:
+					response.status(413);
+					response.set({"connection": 'close', "content-type": 'text/plain'});
+					response.json({'statu':'fail','message':'format not allowed'});
+					request.connection.destroy();
+					form._error (new Error ('format not allowed'));
+				break;
+			}
 
-	});
-
-	form.on('error', function(err) { 
-		console.log(err)
-	});
-
-
-	form.on('abort', function(err) {
-
-		response.status(413);
-		response.set({"connection": 'close', "content-type": 'text/plain'});
-		response.json({'statu':'fail','message':'File Error'})
-		request.connection.destroy();
-	});
-
-
-	form.on('end', function(fields,files) { 
-
-		var file = this.openedFiles[0];
-		
-		generate_file_name_and_send_to_database(function (final_file_name) { 
-
-			var new_path = path.join(form.uploadDir, final_file_name+path.extname(file.name));
-			// var new_path = path.join(form.uploadDir, crypto.createHash('sha1').update(current_date + random).digest('hex')+'__'+file.name.replace(/ /g,'_').replace(/[&\/\\#,+()$~%'":*?<>{}]/g, ''));
-
-			fs.rename(file.path, new_path,function  (err) {
-				
-				if(!err){
-
-					fs.stat(new_path, function fsStat(err, stats) {
-
-					    if(!err){
-
-					    	var new_file = {'file_name':path.basename(file.name,path.extname(file.name)),'file_path':new_path}
-
-					    	io.sockets.emit('upload_treatment_ended',new_file)
-
-							response.json({'statu':'success','file_url':final_file_name});
-						      
-					    }
-  					});
-				}
-			})
 		});
-	});
+
+		form.on('error', function(err) { 
+			console.log(err)
+		});
+
+
+		form.on('abort', function(err) {
+
+			response.status(413);
+			response.set({"connection": 'close', "content-type": 'text/plain'});
+			response.json({'statu':'fail','message':'File Error'})
+			request.connection.destroy();
+		});
+
+
+		form.on('end', function(fields,files) { 
+
+			var file = this.openedFiles[0];
+			
+			generate_file_name_and_send_to_database(function (final_file_name) { 
+
+				var new_path = path.join(form.uploadDir, final_file_name+path.extname(file.name));
+				// var new_path = path.join(form.uploadDir, crypto.createHash('sha1').update(current_date + random).digest('hex')+'__'+file.name.replace(/ /g,'_').replace(/[&\/\\#,+()$~%'":*?<>{}]/g, ''));
+
+				fs.rename(file.path, new_path,function  (err) {
+					
+					if(!err){
+
+						fs.stat(new_path, function fsStat(err, stats) {
+
+						    if(!err){
+
+						    	var new_file = {'file_name':path.basename(file.name,path.extname(file.name)),'file_path':new_path}
+
+						    	io.sockets.emit('upload_treatment_ended',new_file)
+
+								response.json({'statu':'success','file_url':final_file_name});
+							      
+						    }
+	  					});
+					}
+				})
+			});
+		});
 
 
 
-    form.on ('progress', function (bytesReceived, bytesExpected) {
-        //console.log (bytesReceived, bytesExpected);
-        if(bytesReceived > MaxUploadSize)
-        {
-            console.log ('*** TOO BIG');
+	    form.on ('progress', function (bytesReceived, bytesExpected) {
+	        //console.log (bytesReceived, bytesExpected);
+	        if(bytesReceived > MaxUploadSize)
+	        {
+	            console.log ('*** TOO BIG');
 
-            // ***HACK*** see Formidable lib/incoming_form.js
-            // forces close files then triggers error in form.parse below
-            // bonus: removes temporary files
-            // --> use throttling in Chrome while opening /tmp in nautilus
-            //     and watch the files disappear
-            form.__2big__ = true;
-            form._error (new Error ('too big'));
+	            // ***HACK*** see Formidable lib/incoming_form.js
+	            // forces close files then triggers error in form.parse below
+	            // bonus: removes temporary files
+	            // --> use throttling in Chrome while opening /tmp in nautilus
+	            //     and watch the files disappear
+	            form.__2big__ = true;
+	            form._error (new Error ('too big'));
 
-            //req.connection.destroy (); --- moved to form.parse
-        }
-    });
+	            //req.connection.destroy (); --- moved to form.parse
+	        }
+	    });
 
-	form.parse(request);
+		form.parse(request);
+	}else{
+		//Not connected
+		response.json({'statu':'fail','message':'not_connected'});
+	}
 });
 
 
@@ -529,21 +564,22 @@ function generate_file_name_and_send_to_database(callback) {
 app.post('/send_description_file',(request,response)=>{ 
 
 
-	var data = request.body;
+	if(request.session.user_id){
 
+		var data 	 = request.body;
+		var new_file = {'title':data.title,
+						'description':data.description,
+						'tags':data.tags,
+						'file_name':data.file_name,
+						'file_path':data.file_path,
+						'user_id':request.session.user_id
+					}
 
-	var new_file = {'title':data.title,
-					'description':data.description,
-					'tags':data.tags,
-					'file_name':data.file_name,
-					'file_path':data.file_path
-				}
+		filer.handelFile(new_file,function  (results) {
 
-	filer.handelFile(new_file,function  (results) {
-
-		response.json({'statu':'ok','hashName':results.hashName})
-	})
-
+			response.json({'statu':'ok','hashName':results.hashName})
+		})
+	}
 })
 
 
@@ -892,7 +928,9 @@ app.get('/no_results',(request,response)=>{
 ///////////////////////////////////////////////Manage Comments//////////////////////////////////////////////////////
 
 
-app.post('/add_comment',(request,response)=>{ 
+app.post('/add_comment',(request,response)=>{
+
+	if(request.session.user_id){
 
 		var data = request.body;
 
@@ -902,36 +940,45 @@ app.post('/add_comment',(request,response)=>{
 
 				response.json({'statu':true,'this_comment_id':results.comment_id})
 			}else{
-				response.redirect('/fatal_error')
+				response.json({'statu':false,'message':'unknow'})
+				
 			}	
 		})
+	}else{
+		response.json({'statu':false,'message':'not_connected'})
+	}
+
+		
 	
 })
 
 
 app.post('/get_comment',(request,response)=>{
 
-		var hashName = request.body.file_id; 
+	var hashName = request.body.file_id; 
 
-		Intello.get_file_comments(hashName,function (results) { 
+	Intello.get_file_comments(hashName,function (results) { 
 
-			if(results.statu==true && results.comments){
+		if(results.statu==true && results.comments){
 
-				response.json({'statu':true,'comment':results.comments})
+			response.json({'statu':true,'comment':results.comments})
+		}else{
+			if(results.statu==true){
+
+				response.json({'statu':false})
 			}else{
-				if(results.statu==true){
-
-					response.json({'statu':false})
-				}else{
-					response.redirect('/fatal_error')
-				}
-			}	
-		})
+				response.redirect('/fatal_error')
+			}
+		}	
+	})
+	
 	
 })
 
 
 app.post('/delete_comment',(request,response)=>{
+
+	if(request.session.user_id){
 
 		var comment_id = request.body.comment_id; 
 
@@ -944,10 +991,15 @@ app.post('/delete_comment',(request,response)=>{
 				response.redirect('/fatal_error')
 			}	
 		})
+	}else{
+		response.json({'statu':false,'message':'not_connected'})
+	}
 })
 
 
 app.post('/update_comment',(request,response)=>{
+
+	if(request.session.user_id){
 
 		var comment = request.body; 
 
@@ -960,12 +1012,16 @@ app.post('/update_comment',(request,response)=>{
 				response.redirect('/fatal_error')
 			}	
 		})
+	}else{
+		response.json({'statu':false,'message':'not_connected'})
+	}
 	
 })
 
 
 app.post('/delete_response',(request,response)=>{
 
+	if(request.session.user_id){
 		var comment = request.body;
 
 		Intello.delete_response_to_the_file_comment(comment,function (statu) { 
@@ -977,10 +1033,15 @@ app.post('/delete_response',(request,response)=>{
 				response.redirect('/fatal_error')
 			}	
 		})
+	}else{
+		response.json({'statu':false,'message':'not_connected'})
+	}
 })
 
 
 app.post('/update_response',(request,response)=>{
+
+	if(request.session.user_id){
 
 		var comment = request.body; 
 
@@ -993,6 +1054,9 @@ app.post('/update_response',(request,response)=>{
 				response.redirect('/fatal_error')
 			}	
 		})
+	}else{
+		response.json({'statu':false,'message':'not_connected'})
+	}
 })
 ///////////////////////////////////////////////Manage Comments//////////////////////////////////////////////////////
 

@@ -76,7 +76,6 @@ class Intello{
 			}else{
 				var text_extracted 			= content.text_extracted;
 				content.create_at 			= date.getTime();
-				content.user_id				= 'anonyme';
 				content.view 				= 0;
 				content.last_view			= 0;
 				content.text_extracted 		= '';

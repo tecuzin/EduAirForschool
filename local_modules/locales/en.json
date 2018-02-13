@@ -1,4 +1,4 @@
-{
+
 	"slogan": "Internet or not, we enjoy the technological age in our own way.",
 	"connexion": "Connection",
 	"advised": "I read the terms of use",
@@ -40,7 +40,7 @@
 	"professional":"Professional",
 	"visitors":"Visitors",
 	"user_choose_school":"Wich school or exam?",
-	"user_not_connected":"You shouls connect you",
+	"user_not_connected":"Connect you",
 	"upload_processing":"processing...",
 	"File_type_Not_allowed": "File type Not allowed",
 	"upload_file":"upload file",

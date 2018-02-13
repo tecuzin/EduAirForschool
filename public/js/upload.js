@@ -241,7 +241,7 @@ $(document).ready(function(){
 
                 return xhr;
             },
-            success: function(data){
+            success: function(data){console.log(data.message)
 
                 if(data.statu=='success'){
 
@@ -254,14 +254,18 @@ $(document).ready(function(){
 
                 }else{
 
-                    //We change the bar statu
-                    $('.statu_upload').html('<div class="link_uploaded"><i class="material-icons">close</i><span class="red-text text-darken-2"> '+data.message+'</span></div>')
-                    $('.statu_upload').fadeIn()
+                    if(data.message=='not_connected'){
+                        document.location.href='/connect';
+                    }else{
+                         //We change the bar statu
+                        $('.statu_upload').html('<div class="link_uploaded"><i class="material-icons">close</i><span class="red-text text-darken-2"> '+data.message+'</span></div>')
+                        $('.statu_upload').fadeIn()
 
-                    //we hide the upload form and show input text
-                    $(".selector").fadeIn();
-                    $('.command_selector').hide();
-                    init_form ()
+                        //we hide the upload form and show input text
+                        $(".selector").fadeIn();
+                        $('.command_selector').hide();
+                        init_form ()
+                    }
                 }
             }
         })

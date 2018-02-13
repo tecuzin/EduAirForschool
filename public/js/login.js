@@ -168,7 +168,7 @@ $(document).ready(function(){
 	       		console.log(err)
 	       	},
 
-	       	success : function  (data) { console.log(data)
+	       	success : function  (data) { 
 	       		
 	       		if(data.statu==false){
 
