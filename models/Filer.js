@@ -254,7 +254,7 @@ module.exports = Filer;
 
 			var real_fileName 			= fileUploaded.file_name;
 
-			var final_file 				= media_library+right_folder+'/pdf/'+path.basename(fileUploaded.file_path,path.extname(fileUploaded.file_path))+'.pdf';
+			var final_file 				= media_library+'pdf/'+path.basename(fileUploaded.file_path,path.extname(fileUploaded.file_path))+'.pdf';
 
 			var source_pdf 				= fs.createReadStream(file_converted_in_root);
 

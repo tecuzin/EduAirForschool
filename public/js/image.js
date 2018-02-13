@@ -10,6 +10,12 @@ $(document).ready(function(){
 		$('.player').addClass('container');
 	}
 
+	if(window.is_desktop() || window.is_tablet()){
+		$('.img_target').attr('width','70%')
+	}else{
+		$('.img_target').attr('width','100%')
+	}
+
 
 	
 

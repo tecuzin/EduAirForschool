@@ -10,6 +10,7 @@
   "author": "kwiizi",
   "license": "ISC",
   "dependencies": {
+    "base64-img": "^1.0.3",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.16.0",
     "cheerio": "^0.22.0",
@@ -36,13 +37,17 @@
     "node-tesseract": "^0.2.7",
     "nodemon": "^1.11.0",
     "password-hash": "^1.2.2",
-    "pdf-image": "^1.1.0",
+    "pdf-image": "^1.0.5",
     "pdf-text-extract": "^1.5.0",
+    "pdf2img": "^0.5.0",
     "pdftohtmljs": "^0.4.2",
     "redis": "^2.6.5",
     "request": "^2.83.0",
     "socket.io": "^2.0.3",
     "utf8": "^2.1.2",
     "video-thumb": "0.0.3"
+  },
+  "devDependencies": {
+    "video.js": "^6.6.3"
   }
 }

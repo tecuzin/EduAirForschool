@@ -15,6 +15,7 @@ bcrypt			= require('bcrypt-nodejs'),
 fs				= require('fs'),
 http			= require('http'),
 util 			= require('util'),
+base64Img 		= require('base64-img'),
 
 mime 			= require('mime'),//Get type mime of file
 file_type_application = [	'application/pdf' ,
@@ -24,6 +25,10 @@ file_type_application = [	'application/pdf' ,
 								'application/vnd.openxmlformats-officedocument.wordprocessingml.document'//docx
 								];
 var crypto 			= require('crypto'); //Generate a random hash
+
+var media_library =path.join(__dirname, '..', 'private/');//Define the directory of media library
+
+var exec = require('child_process').exec;	
 
 console.log('eduair loaded')
 
@@ -70,6 +75,7 @@ app.set('view engine','ejs')
 app.use('/assets', express.static('public'))
 app.use('/assets_media', express.static('private'))
 app.use('/socket', express.static('node_modules/socket.io-client/dist'))
+app.use('/video', express.static('node_modules/video.js/dist'))
 
 app.use(language)
 
@@ -648,7 +654,43 @@ io.sockets.on('connection', function (socket) {
 			socket.emit('get_suggestion',results)
 		})
 	})
+
+
+
+
+
+
+	socket.on('get_pdf_page',function  (page) { 
+		
+		var pdf_file_hashName 	= page.hashName;
+		var page 				= page.page;
+		var user_id				= page.user_id;
+		var input				= media_library+'pdf/'+pdf_file_hashName+'.pdf';
+		var output 				= media_library +'pdf/reader/'+pdf_file_hashName+'_'+user_id+'_'+page
+
+		
+		// We convert the given page into image
+		exec('pdftoppm -png -f '+page+' -singlefile '+input+' '+output,function(error, stdout, stderr){
+
+			base64Img.base64(output+'.png', function(err, data64) {
+
+				socket.emit('get_pdf_page',{'page':page,'image':data64})//send in base64
+
+				fs.unlinkSync(output+'.png');
+			})
+		})
+	})
+
+
+
+
+
 })
+
+
+
+
+
 
 
 app.get('/results',(request,response)=>{
@@ -742,7 +784,8 @@ app.get('/watch',(request,response)=>{
 				'view':data.view,
 				'tags':data.tags,
 				'create_at':data.create_at,
-				'user_id':data.user_id
+				'user_id':data.user_id,
+				'pages':data.pages
 			}; 
 			response.render(data.type,data_page)
 		}else{

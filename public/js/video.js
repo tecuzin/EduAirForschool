@@ -8,12 +8,12 @@ $(document).ready(function(){
 	// window.suggestion()
 
 	//Resize video for responsive
-	if(window.is_tablet()){ 
-		$('video').width($('.video_airedu').width())
-	}
-
 	if(window.is_desktop()){
 		$('.player').addClass('container');
+	}
+
+	if(window.is_desktop() || window.is_tablet()){
+		$('.papa_is_back').height($(window).height*3/4)
 	}
 
 
@@ -23,7 +23,7 @@ $(document).ready(function(){
 	var infos 	= 
 	{
 		'image':$('.media_data').attr('fileName'),
-		'views':$('.media_data').attr('views'),
+		'views':$('.media_data').attr('views')+' <i class="material-icons">visibility</i>',
 		'autor_name_linked':'Epiphany',
 		'subsription_link':'essai',
 		'number_of_subscriptions':673,
@@ -37,6 +37,13 @@ $(document).ready(function(){
 	var type_media ='video';
 	var if_wikipedia = false;
 	window.infobox(infos,type_media,if_wikipedia)
+
+
+	$('.my_pic_comment').attr('src',window.get_user_pic('user_id')) //dipsplay picture user side of of comment
+
+	window.get_file_comments($('.media_data').attr('MongoDbFileId'))
+
+	window.socket.emit('get_suggestion',$('.media_data').attr('title'))
 
 
 

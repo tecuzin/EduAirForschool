@@ -9,7 +9,11 @@
           <div class="col s12 m8 l8 video_airedu">
               <div id="wrap_video">
                 <div id="video_box">
-                  <video class="video_played" id="papa_is_back" src="/video?media=<%- hashName %><%- format %>" controls loop autoplay muted></video>
+                  <center>
+                    <video class="video_played no_bruh video-js vjs-default-skin vjs-16-9" id="papa_is_back" data-setup="{}" controls loop autoplay>
+                      <source src="/video?media=<%- hashName %><%- format %>" type="video/mp4">
+                    </video>
+                  </center>
                 </div>
               </div>
             <div class="this_pub card-panel"  style="display:none">
@@ -23,19 +27,22 @@
               </p>
             </div>
           
-
             <div class="commentor">
-              <h5>COMMENTAIRES.1238</h5>
+              <h5 style="text-transform: uppercase"><%= __('comments')%>. <span class="all_comments"></span></h5>
                 <ul class="collection list_com">
                   <li class="collection-item avatar">
-                    <img src="img/yuna.jpg" alt="" class="circle">
-                    <textarea class="text_comment"></textarea>
+                    <img src="" alt="" class="circle my_pic_comment" >
+                    <textarea class="this_text_area text_comment"></textarea>
                     <div class="right option_comment" style="display:none;">
-                      <a class="waves-effect waves-light btn-flat cancel">Annuler</a>
-                      <a class="waves-effect waves-light btn-flat send blue disabled">Ajouter un commentaire</a>
+                      <a class="waves-effect waves-light btn-flat cancel"><%= __('cancel')%></a>
+                      <a class="waves-effect waves-light btn-flat send blue disabled add_comment"><%= __('add_comment')%></a>
                     </div>
                   </li>
                   <div class="divider"></div>
+                </ul>
+
+                <ul class="collection list_com list_comments">
+                 
                 </ul>
             </div>
 
@@ -62,11 +69,12 @@
         </div>
       </div>
 
-       <div class="media_data" style="display:none" title="<%- title %>" type="<%- type %>" fileName="<%- hashName %>" views="<%- view %>" autor_id="<%- user_id %>" timestamp="<%- create_at %>" format="<%- format %>"></div>
+      <div class="media_data" style="display:none" title="<%- title %>" type="<%- type %>" fileName="<%- hashName %>" views="<%- view %>" autor_id="<%- user_id %>" timestamp="<%- create_at %>" format="<%- format %>" MongoDbFileId="<%- _id %>" delete_confirmation="<%= __('confirm_delete')%>" fatal_error="<%= __('fatal_error')%>"></div>
 
 
 
 <% include parts/main_menu %>
+<% include parts/videoJs_framwork %>
 <% include parts/moment %>
 <% include parts/main_js %>
 <% include parts/pub %>

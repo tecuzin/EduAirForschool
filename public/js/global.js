@@ -116,6 +116,15 @@ $(document).ready(function(){
 
 
 
+	////////////////////diseable right click on a div///////////////////////////////////////
+	$('.no_bruh').bind('contextmenu', function(e) {
+    	return false;
+	}); 
+	////////////////////diseable right click on a div///////////////////////////////////////
+
+
+
+
 
 
 
@@ -123,7 +132,7 @@ $(document).ready(function(){
 
 	//T///////////////////////////////////////////This manages the suggestion on desktop or tablet
 
-	window.socket.on('get_suggestion',function  (data) {
+	window.socket.on('get_suggestion',function  (data) { 
 
 		//display_suggestion(title,url,description,first_letter,image,file_length,view,from,type)
 
@@ -140,7 +149,7 @@ $(document).ready(function(){
 					break;
 
 					case 'text':
-					 	var file_length = media_data[i]._source.page_number+'/'+ media_data[i]._source.pages+' Pages';
+					 	var file_length = media_data[i]._source.pages+' Pages';
 					break;
 
 					case 'image':
@@ -153,7 +162,7 @@ $(document).ready(function(){
 		    	url_thumbnail		= url_thumbnail[1];
 
 		    	//We prevent that the media which is displaying is not the same than hich one e want to display in suggestion
-		    	if($('.media_data').attr('MongoDbFileId')!=media_data[i]._source.id_file_mongoDB){
+		    	if($('.media_data').attr('MongoDbFileId')!=media_data[i]._id){
 
 					window.display_suggestion(media_data[i]._source.title,media_data[i]._source.hashName,media_data[i]._source.description,'',url_thumbnail,file_length,media_data[i]._source.view,'','media')
 		    	}
@@ -195,6 +204,7 @@ $(document).ready(function(){
 			var info_length = '<div><span class="new badge blue" data-badge-caption="'+file_length+'"></span></div>';
 			var sample		= '<img src="assets_media/'+image+'" alt="" class="square responsive-img first_pic">';
 			var view 		= '<span class="views"><span class="number">'+view+'</span>&nbsp;<span class="view_lang">Views</span></span>&nbsp;.&nbsp;';
+			url 			= '/watch?media='+url;
 		}
 
 		var html ='<a href="'+url+'" class="collection-item waves-effect waves-light">';
