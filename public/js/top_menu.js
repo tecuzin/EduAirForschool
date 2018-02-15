@@ -2,9 +2,6 @@
 $(document).ready(function(){ 
 
 
-
-	
-
 	window.minimum_lenght_search_string = 2;
 
 	
@@ -52,7 +49,7 @@ $(document).ready(function(){
 
 
 
-
+// my_submit
 	$('#search-box').submit(function  (e) { 
 		
 		e.preventDefault(e);

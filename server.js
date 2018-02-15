@@ -603,6 +603,18 @@ app.post('/send_description_file',(request,response)=>{
 })
 
 
+
+
+app.post('/get_all_files',(request,response)=>{ 
+
+	Intello.get_all_files(function  (results) {
+
+		response.json(results)
+	})
+})
+
+
+
 ////////////////////////////////////////////////////Upload file//////////////////////////////////////////////////
 
 

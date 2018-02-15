@@ -172,6 +172,41 @@ class Intello{
 	}
 
 
+
+	static get_all_files (call_back){ 
+
+		db_connection(function(err, db){ 
+
+			if(err){
+
+				console.log(err)
+
+	        	call_back({'statu':'problem'})
+
+			}else{
+
+				db.collection("user_file").find({}).toArray(function(error, result) { 
+		    		
+		    		if (error) {
+
+		    			console.log(error)
+
+		    			call_back({'statu':false,'message':'I have a problem to get all files'})
+		    		}else{
+
+		    			if(result==null){
+		    				call_back({'statu':true,'files':false})
+		    			}else{
+		    				call_back({'statu':true,'files':result})
+		    			}
+		    			
+		    		}
+				})
+    		}
+    	});
+	}
+
+
 			
 	static search(data,Callback){ 
 

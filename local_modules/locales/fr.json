@@ -10,7 +10,7 @@
 	"noted_password": "J'ai retenu et noté mon mot de passe",
 	"ok_done": "Ok c'est fait",
 	"full_name": "Nom complet",
-	"number": "Téléphone ou Matricule",
+	"number": "Pseudo ou Matricule",
 	"password": "Mot de passe",
 	"password_conf": "Reécrivez votre mot de passe",
 	"no_complet": "Vous devez remplir tous les champs",
@@ -58,6 +58,7 @@
 	"confirm_delete":"Voulez vous vraiment supprimer ce message ?",
 	"not_allowed":"Des fichiers ne sont pas compatibles",
 	"file_ready":"Votre fichier est diponible",
-	"file_here":"ici"
+	"file_here":"ici",
+	"home":"Accueil"
 
 }

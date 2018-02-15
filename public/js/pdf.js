@@ -91,7 +91,7 @@ $(document).ready(function(){
 
 	function take_image_pdf_page (user_id,page,file_hashName) { 
 		
-		window.socket.emit('get_pdf_page',{'user_id':user_id,'page':page,'hashName':file_hashName})
+		window.socket.emit('get_pdf_page',{'user_id':window.user_id,'page':page,'hashName':file_hashName})
 	}
 
 

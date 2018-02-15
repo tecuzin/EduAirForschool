@@ -10,7 +10,7 @@
 	"noted_password": "I remembered and noted my password",
 	"ok_done": "Ok it's done",
 	"full_name": "full name",
-	"number": "Phone or registration id",
+	"number": "Pseudo or registration id",
 	"password": "Password",
 	"password_conf": "Rewrite your password",
 	"no_complet": "You must fill in all fields",
@@ -58,7 +58,9 @@
 	"confirm_delete":"Do you really want to delete this message ?",
 	"not_allowed":"Soms files are not compatible",
 	"file_ready":"Your file is ",
-	"file_here":"here"
+	"file_here":"here",
+	"home":"Home"
+
 
 	
 

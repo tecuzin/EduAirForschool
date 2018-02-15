@@ -1,76 +1,115 @@
 
 $(document).ready(function(){ 
 
-	//To truncate text
+	
 
 
-	//Display cards at home page
 
-	function big_card (time_page,pic,title,autor,view,since) {
+	function get_all_files () {
+		
+		$.ajax({
 
-		var width_card,floater;
+            url: '/get_all_files',
 
-		if(window.is_mobile()){
-			width_card = '90%';
-			floater = '';
-		}else{
-  			width_card = '400px';
-  			floater =';float:left;margin-left:20px';
-		}
+            type: 'POST',
 
-		var html = '<div class="card this_card" style="width:'+width_card+floater+'">';
-		html +=	'<div class="card-image"><img src="assets/img/image.jpg"><span class="card-title">'+time_page+'</span></div>';
-		html +=	'<div class="card-content"><div class="title blue-text text-darken-2 truncate_title_big">'+window.card_title(title)+'</div>';
-		html +=	'<div class="info_file"><div class="red-text text-darken-2 data_file truncate">'+autor+'</div>';
-		html +=	'<div class="black-text text-darken-2 data_file"><span class="views"><span class="number">'+view+'</span>&nbsp;';
-		html +=	'<span class="view_lang">Views</span></span>&nbsp;.&nbsp;<span class="dateTime">'+since+'</span></div></div></div></div>';
+            processData: false,
 
-		$('.all_card').append(html);
+            contentType: false,
 
-		if(title.length>window.maxi_character_title_card){
-			$('.truncate_title_big').succinct({'size':window.maxi_character_title_card});
-		}
+            dataType: 'json',
 
+            error: function  (err) {
+              console.log(err)
+            },
+            success: function(data){ console.log(data)
+
+            	if(data.statu && data.files){
+
+            		manage_result(data.files)
+            	}else{
+
+            		$('.recommended-grids').html('<center><img src="assets/img/new.png" /></center>')
+            	}
+                
+            }
+        })
 	}
+	get_all_files();
+
+
+
+	var number_of_files_to_display_at_home_page = 50;
+	var index_of_number_of_files_to_display_at_home_page = 0;
+
+	function manage_result (files) {
+
+		if(files.length>0 && index_of_number_of_files_to_display_at_home_page < number_of_files_to_display_at_home_page){
+
+			var rand = files[Math.floor(Math.random() * files.length)]; //We get radom index
+
+			//We display it
+			display_this_file(rand)
+
+			//And we remove it
+			files.splice(rand, 1)
+
+			//We increment index
+			index_of_number_of_files_to_display_at_home_page++
+
+			//And we call the function again
+			manage_result(files)
+		}
+	}
+
+
+	function display_this_file (file) {
+
+		$('.this_is_loader').remove()//We remove the loading image
+
+		if(file.thumbnail!=undefined){
+
+
+
+			var url_thumbnail 	= file.thumbnail.split('private/');
+
+			url_thumbnail		= url_thumbnail[1];
+
+			switch(file.media){
+
+				case 'audio_video':
+					var file_length = window.convertTime(file.duration)
+				break;
+
+				case 'text':
+				 	var file_length =file.pages+' Pages';
+				break;
+
+				case 'image':
+					var file_length = window.formatBytes(file.size)
+				break;
+			}
+			
+			var html ='<div class="col-md-3 resent-grid recommended-grid"><div class="resent-grid-img recommended-grid-img">';
+			html	+='<a href="/watch?media='+file.hashName+'"><img src="assets_media/'+url_thumbnail+'" alt="" /></a>';
+			html	+='<div class="time small-time"><p class="label label-primary">'+file_length+'</p></div></div>';
+			html	+='<div class="resent-grid-info recommended-grid-info video-info-grid">';
+			html	+='<h5><a href="/watch?media='+file.hashName+'" class="title">'+file.title+'</a></h5>';
+			html	+='<ul><li><p class="author author-info"><a href="#" class="author">'+window.get_user_name(file.user_id)+'</a></p></li>';
+			html 	+='<li class="right-list"><p class="views views-info">'+file.view+'</p></li></ul></div></div>';
+
+			$('.recommended-grids').append(html)
+
+			console.log($('.recommended-grid').length % 4)
+
+			if($('.recommended-grid').length % 4 ==0){
+
+				$('.recommended-grids').append('<div class="clearfix"> </div><br>')
+			}
+		}
+	}
+
+
 
 	
-	function small_cards (time_page,pic,title,autor,view,since,index) {
-
-		var width_card;
-
-		if(window.is_mobile()){
-			width_card = window.width_card_mobile;
-		}else{
-  			width_card = window.width_card_not_mobile;
-		}
-
-		var html = '<div class="card this_card" style="width:'+width_card+'">';
-		html +=	'<div class="card-image"><img src="assets/img/image.jpg"><span class="card-title">'+time_page+'</span></div>';
-		html +=	'<div class="card-content"><div class="title blue-text text-darken-2 truncate_title_'+index+'">'+window.card_title(title)+'</div>';
-		html +=	'<div class="info_file"><div class="red-text text-darken-2 data_file truncate">'+autor+'</div>';
-		html +=	'<div class="black-text text-darken-2 data_file"><span class="views"><span class="number">'+view+'</span>&nbsp;';
-		html +=	'<span class="view_lang">Views</span></span>&nbsp;.&nbsp;<span class="dateTime">'+since+'</span></div></div></div></div>';
-
-		$('.all_card').append(html);
-
-		if(title.length>window.maxi_character_title_card){
-			$('.truncate_title_'+index).succinct({'size':window.maxi_character_title_card});
-		}
-	}
-
-	//Repliacte the card
-	var init = big_card('3:50 Vilain','ras','In the previous examples, we only defined the size for small screens using "col s12". This is fine if we want a ','Stephane','50M','il y a 5 jours');
-	var nbre = 50;
-
-	for (var i = 0; i < nbre; i++) {
-		
-		small_cards('3:50','ras','In the previous examples, we only defined the size for small screens using "col s12". This is fine if we want a ','Stephane','50M','il y a 5 jours',i)
-	 	
-	 	if(i==1){
-	 		window.pub_home()
-	 	}
-	};
-
-
-
 });
