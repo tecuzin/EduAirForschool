@@ -17,6 +17,7 @@ fs				= require('fs'),
 http			= require('http'),
 util 			= require('util'),
 base64Img 		= require('base64-img'),
+diskspace 		= require('diskspace'),
 
 mime 			= require('mime'),//Get type mime of file
 file_type_application = [	'application/pdf' ,
@@ -30,6 +31,8 @@ var crypto 			= require('crypto'); //Generate a random hash
 var media_library =path.join(__dirname, '..', 'private/');//Define the directory of media library
 
 var exec = require('child_process').exec;	
+ 
+var directoryPath_for_background = path.join(__dirname, 'public/img/background');
 
 console.log('eduair loaded')
 
@@ -747,6 +750,32 @@ io.sockets.on('connection', function (socket) {
 				fs.unlinkSync(output+'.png');
 			})
 		})
+	})
+
+
+	socket.on('get_disk_space',function  () { 
+		
+		diskspace.check('/', function (err, result){ 
+
+		    socket.emit('get_disk_space',result)
+		})
+	})
+
+
+
+
+	socket.on('get_background',function () { //This function get all the background image off eduair lolo on home page
+		
+		//passsing directoryPath and callback function
+		fs.readdir(directoryPath_for_background, function (err, files) {
+		    //handling error
+		    if (err) {
+		        return console.log('Unable to scan directory: ' + err);
+		    }else{
+
+		    	socket.emit('get_background',files)
+		    } 
+		});
 	})
 
 

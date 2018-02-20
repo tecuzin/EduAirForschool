@@ -59,7 +59,11 @@
 	"not_allowed":"Soms files are not compatible",
 	"file_ready":"Your file is ",
 	"file_here":"here",
-	"home":"Home"
+	"home":"Home",
+	"disk_space":"Disk space",
+	"free":"free on"
+
+
 
 
 	

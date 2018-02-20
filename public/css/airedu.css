@@ -248,6 +248,46 @@ border-width: 0;
 cursor: pointer;
 }
 
+.truncate_title,.this_name{
+  font-weight: bold;
+}
+
+.max_caracter{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 50px;
+    font-weight: bold;
+}
+
+.all_card .card{
+
+  padding-left: 0px;
+}
+
+.card .card-action a:not(.btn):not(.btn-large):not(.btn-large):not(.btn-floating){
+  text-transform: lowercase;
+}
+
+
+.logo_brand {
+    position: relative;
+}
+
+.logo_brand img {
+    position: absolute;
+    bottom: 15px;
+    right: 2px;
+}
+
+
+.my_flex_card{
+ height: 220px;
+}
+
+
+.page-footer {
+   background-color: #64B5F6;
+}
 
 
 

@@ -1,6 +1,12 @@
 
 $(document).ready(function(){ 
 
+
+	if(window.is_desktop()){
+
+		$('.big_home').addClass('container')
+	}
+
 	
 
 
@@ -22,20 +28,51 @@ $(document).ready(function(){
             error: function  (err) {
               console.log(err)
             },
-            success: function(data){ console.log(data)
+            success: function(data){ 
 
             	if(data.statu && data.files){
 
             		manage_result(data.files)
             	}else{
 
-            		$('.recommended-grids').html('<center><img src="assets/img/new.png" /></center>')
+            		$('.all_card').html('<center class="col s12 this_is_loader" ><img src="assets/img/new.png" /></center>')
             	}
                 
             }
         })
 	}
 	get_all_files();
+
+
+	setTimeout(function  () {
+		
+		$('.logo_brand').height($('.logo_brand').width()) //For log of Eduaie on home page
+	},2000)
+	
+
+
+	window.socket.emit('get_disk_space')
+
+
+	window.socket.on('get_disk_space',function  (data) { 
+		
+		$('.rest').html(formatFileSize(data.free))
+
+		$('.total').html(formatFileSize(data.total))
+
+		$('.space').attr('style','width:'+data.used*100/data.total+'%')
+	})
+
+
+
+	function formatFileSize(bytes,decimalPoint) {
+	   	if(bytes == 0) return '0 Bytes';
+	   	var k = 1000,
+	       dm = decimalPoint || 2,
+	       sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+	       i = Math.floor(Math.log(bytes) / Math.log(k));
+	   	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+	}
 
 
 
@@ -89,27 +126,27 @@ $(document).ready(function(){
 					var file_length = window.formatBytes(file.size)
 				break;
 			}
-			
-			var html ='<div class="col-md-3 resent-grid recommended-grid"><div class="resent-grid-img recommended-grid-img">';
-			html	+='<a href="/watch?media='+file.hashName+'"><img src="assets_media/'+url_thumbnail+'" alt="" /></a>';
-			html	+='<div class="time small-time"><p class="label label-primary">'+file_length+'</p></div></div>';
-			html	+='<div class="resent-grid-info recommended-grid-info video-info-grid">';
-			html	+='<h5><a href="/watch?media='+file.hashName+'" class="title">'+file.title+'</a></h5>';
-			html	+='<ul><li><p class="author author-info"><a href="#" class="author">'+window.get_user_name(file.user_id)+'</a></p></li>';
-			html 	+='<li class="right-list"><p class="views views-info">'+file.view+'</p></li></ul></div></div>';
 
-			$('.recommended-grids').append(html)
+			var html='<div class="col s12 m6 l4 my_flex_card"><div class="card horizontal "><div class="card-image valign-wrapper">';
+			html	+='<a href="/watch?media='+file.hashName+'"><img src="assets_media/'+url_thumbnail+'" width="100%"></a></div>';
+			html	+='<div class="card-stacked"><div class="card-content"><div class="max_caracter"><p><a href="/watch?media='+file.hashName+'" style="color:black">'+file.title+'</a></p></div>';
+			html	+='<span class="new badge blue" data-badge-caption="'+file_length+'"></span><span class="right" >'+file.view+' <i class="material-icons">visibility</i></span>';
+			html	+='</div><div class="card-action"><a href="/watch?media='+file.hashName+'">'+window.get_user_name(file.user_id)+'</a></div></div></div></div>';
 
-			console.log($('.recommended-grid').length % 4)
-
-			if($('.recommended-grid').length % 4 ==0){
-
-				$('.recommended-grids').append('<div class="clearfix"> </div><br>')
-			}
+			$('.all_card').append(html)
 		}
 	}
 
 
+
+	//Here we get all the background image off eduair lolo on home page
+	window.socket.emit('get_background')
+	window.socket.on('get_background',function  (files) {
+		
+		// We select Random image
+		var indexed_file = Math.floor(Math.random() * (files.length-1 - 0) + 0);
+		$('.logo_brand').attr('style','background-image:url(assets/img/background/'+files[indexed_file] +');background-size:contain;background-repeat: no-repeat')
+	})
 
 	
 });

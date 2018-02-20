@@ -59,6 +59,8 @@
 	"not_allowed":"Des fichiers ne sont pas compatibles",
 	"file_ready":"Votre fichier est diponible",
 	"file_here":"ici",
-	"home":"Accueil"
+	"home":"Accueil",
+	"disk_space":"Espace disque",
+	"free":"libre sur"
 
 }
