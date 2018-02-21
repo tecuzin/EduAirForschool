@@ -5,14 +5,16 @@
 
         <div class="row">
           <div class="col s12 m8 l8 video_airedu">
+
+            <div class="info_space"></div>
             
-              <div class="page_pdf_display no_bruh">
-                <div class="has_it_page_1 z-depth-4 my_pdf_page" response="yes"></div><br>
-              </div>
+            <div class="page_pdf_display no_bruh">
+              <div class="has_it_page_1 z-depth-4 my_pdf_page" response="yes"></div><br>
+            </div>
             <div class="this_pub card-panel"  style="display:none">
               
             </div>
-            <div class="info_space"></div>
+            
 
             <div class="description_media">
               <p class="description_text blue-text text-darken-2">
@@ -64,7 +66,7 @@
           </div>
         </div>
 
-        <div class="media_data" style="display:none" title="<%- title %>" type="<%- type %>" fileName="<%- hashName %>" views="<%- view %>" autor_id="<%- user_id %>" timestamp="<%- create_at %>" format="<%- format %>" MongoDbFileId="<%- _id %>" delete_confirmation="<%= __('confirm_delete')%>" fatal_error="<%= __('fatal_error')%>" pages="<%- pages %>"></div>
+        <div class="media_data" style="display:none" title="<%- title %>" type="<%- type %>" fileName="<%- hashName %>" views="<%- view %>" autor_id="<%- user_id %>" timestamp="<%- create_at %>" format="<%- format %>" MongoDbFileId="<%- _id %>" delete_confirmation="<%= __('confirm_delete')%>" fatal_error="<%= __('fatal_error')%>" pages="<%- pages %>" no_mobile="<%= __('no_mobile')%>"></div>
 
         <div class="loader_page" style="display:none">
           <div class="preloader-wrapper big active">

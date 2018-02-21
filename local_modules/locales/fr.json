@@ -61,6 +61,8 @@
 	"file_here":"ici",
 	"home":"Accueil",
 	"disk_space":"Espace disque",
-	"free":"libre sur"
+	"free":"libre sur",
+	"many_up":"Cliquez ici pour envoyer plusieurs fichiers simultanément",
+	"no_mobile":"Désolé. Utilisez votre PC pour ouvrir ce fichier"
 
 }

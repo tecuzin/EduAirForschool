@@ -82,7 +82,7 @@ $(document).ready(function(){
 	       		form_error($('.notif').attr('fatal_error'))
 	       	},
 
-	       	success : function  (data) { console.log(data)
+	       	success : function  (data) {
 	       		
 	       		if(data.statu==false){
 
@@ -92,7 +92,10 @@ $(document).ready(function(){
 	       			form_ok_validated()
 
 	       			//We store cookies in localStorage HTML5
-	       			$.jStorage.set('user', data.user, {TTL: window.session_TTL});
+	       			$.jStorage.set('my_user_id', data.user._id, {TTL: window.session_TTL});
+	       			$.jStorage.set('my_picture', data.user.user_avatar, {TTL: window.session_TTL});
+	       			$.jStorage.set('my_user_name', data.user.user_full_name, {TTL: window.session_TTL});
+
 
 	       			setTimeout(function  () {
 	       				

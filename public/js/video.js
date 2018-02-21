@@ -27,7 +27,7 @@ $(document).ready(function(){
 		'autor_name_linked':'Epiphany',
 		'subsription_link':'essai',
 		'number_of_subscriptions':673,
-		'download_link':'ici',
+		'download_link':'/get_it?media='+$('.media_data').attr('fileName')+$('.media_data').attr('format')+'&dir='+$('.media_data').attr('type')+'&title='+$('.media_data').attr('title'),
 		'share_link':'click',
 		'timestamp':moment.unix($('.media_data').attr('timestamp')*1/1000).fromNow(),
 		'autor':'Gabriel',
@@ -39,7 +39,7 @@ $(document).ready(function(){
 	window.infobox(infos,type_media,if_wikipedia)
 
 
-	$('.my_pic_comment').attr('src',window.get_user_pic('user_id')) //dipsplay picture user side of of comment
+	$('.my_pic_comment').attr('src',$.jStorage.get('my_picture',window.default_avatar)) //dipsplay picture user side of of comment
 
 	window.get_file_comments($('.media_data').attr('MongoDbFileId'))
 

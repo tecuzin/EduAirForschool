@@ -23,7 +23,7 @@ $(document).ready(function(){
 		'autor_name_linked':'Epiphany',
 		'subsription_link':'essai',
 		'number_of_subscriptions':673,
-		'download_link':'ici',
+		'download_link':'/get_it?media='+$('.media_data').attr('fileName')+$('.media_data').attr('format')+'&dir='+$('.media_data').attr('type')+'&title='+$('.media_data').attr('title'),
 		'share_link':'click',
 		'timestamp':moment.unix($('.media_data').attr('timestamp')*1/1000).fromNow(),
 		'autor':'Gabriel',
@@ -36,7 +36,7 @@ $(document).ready(function(){
 
 
 
-	$('.my_pic_comment').attr('src',window.get_user_pic('user_id')) //dipsplay picture user side of of comment
+	$('.my_pic_comment').attr('src',$.jStorage.get('my_picture',window.default_avatar)) //dipsplay picture user side of of comment
 
 	window.get_file_comments($('.media_data').attr('MongoDbFileId'))
 
@@ -85,8 +85,24 @@ $(document).ready(function(){
 
 
 	//We display the first page
-	take_image_pdf_page(window.user_id,1,$('.media_data').attr('fileName'))
-	$('.has_it_page_1').html('<center>'+ $('.loader_page').html()+'</center>')
+	if(window.activate_downloads){ //If download are activated
+
+		take_image_pdf_page(window.user_id,1,$('.media_data').attr('fileName'))
+		$('.has_it_page_1').html('<center>'+ $('.loader_page').html()+'</center>')
+	}else{
+
+		if(!window.is_mobile()){ //If we are not on mobile
+
+			take_image_pdf_page(window.user_id,1,$('.media_data').attr('fileName'))
+			$('.has_it_page_1').html('<center>'+ $('.loader_page').html()+'</center>')
+
+		}else{
+
+			$('.has_it_page_1').html('<center><div class="card-panel red lighten-2 white-text text-darken-2">'+$('.media_data').attr('no_mobile')+'</div></center>')
+		}
+
+	}
+	
 
 
 	function take_image_pdf_page (user_id,page,file_hashName) { 

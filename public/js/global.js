@@ -1,12 +1,13 @@
 
 $(document).ready(function(){ 
 
-	window.user_id = '489345'; //Only for test
 
 	//Config system
 
 	//Pub
 	window.activate_pub 				= false;
+	window.activate_downloads			= true;
+	window.simple_infos_file			= true; //Remove autor and other data to the page displaying file if true
 	window.sell_plateform 				= 'Whatsapp';
 	window.sell_contact   				= '678335503';
 
@@ -36,6 +37,9 @@ $(document).ready(function(){
 
 	// For video call
 	window.video_caller_height			= 90; //In percent %
+
+
+	window.default_avatar				= 'assets/img/avatar/avatar.png';
 
 
 	window.socket  = io.connect($('.ip_server').attr('protocol')+$('.ip_server').attr('ip')+':8083/');
@@ -329,13 +333,13 @@ $(document).ready(function(){
 			infos.image = window.wikipedia_image;
 		}
 
-		if(type_media=='video' ||type_media=='audio' || type_media=='photo'){
+		if(window.activate_downloads){
 
-			var link_to_download = '';
+			var link_to_download = '<a class="blue-text text-darken-2 waves-effect waves-light download" type_media="'+type_media+'" download="'+infos.title+'" href="'+infos.download_link+'"><i class="material-icons">file_download</i></a>';
 		}else{
-			//download_link is a id of file
-			var link_to_download = '<a class="blue-text text-darken-2 waves-effect waves-light download" type_media="'+type_media+'" href="'+infos.download_link+'"><i class="material-icons">file_download</i></a>';
+			var link_to_download = '';
 		}
+
 
 		if(type_media=='text'){
 
@@ -359,17 +363,29 @@ $(document).ready(function(){
 			var this_class	='badge_video';
 			title 			='<h1>'+infos.title+'</h1>'
 		}
+
+		if(window.simple_infos_file){ //If it is a box for foundation
+
+			autor ='';
+			subsription_link='';
+
+		}else{
+			var autor = '<div class="truncate"><a href="'+infos.id_autor+'"><span class="nom bold">'+infos.autor+'</span></a></div>';
+
+			var subsription_link = '<div><span class="abon"><a href="'+infos.subsription_link+'"><span class="new badge blue" data-badge-caption="S\'abonner"></span></a>';
+			subsription_link	+= '</span>&nbsp;<span class="nom">'+infos.number_of_subscriptions+'</span></div>'
+			
+		}
 		
 		var html ='<div class="card '+this_class+' '+position+'" style="width:'+width+'">';
 		html	+=image_card;
 		html	+='<div class="card-content">'+title+'<h3 class="right">'+infos.views+'</h3><div class="info_file black-text text-darken-2 data_file">';
 		html	+='<div class="black-text text-darken-2 data_file truncate"><span class="nom">'+infos.timestamp+'</span></div>';
-		html	+='<div class="truncate"><a href="'+infos.id_autor+'"><span class="nom bold">'+infos.autor+'</span></a></div>';
-		html	+='<div><span class="abon"><a href="'+infos.subsription_link+'"><span class="new badge blue" data-badge-caption="S\'abonner"></span></a>';
-		html	+='</span>&nbsp;<span class="nom">'+infos.number_of_subscriptions+'</span></div>';
+		html	+=autor;
+		html	+=subsription_link;
 		html	+='<div class="divider"></div><div class="article_option">';
 		html	+=link_to_download;
-		html	+=' <a class="blue-text text-darken-2 waves-effect waves-light"><i class="material-icons">share</i></a></div></div></div></div>';
+		html	+='</div></div></div></div>';
 
 		if(type_media=='text'){
 
@@ -413,7 +429,7 @@ $(document).ready(function(){
 			type: "POST",
 			url: "/add_comment",
 			dataType: "json",
-			data: {'user_id':user_id,'user_text':user_text,'file_id':file_id,'comment_id':comment_id},
+			data: {'user_id':user_id,'user_name':$.jStorage.get('my_user_name'),'user_pic':$.jStorage.get('my_picture',window.default_avatar),'user_text':user_text,'file_id':file_id,'comment_id':comment_id},
 			error: function  (error) {
 				
 				console.log(error)
@@ -429,7 +445,7 @@ $(document).ready(function(){
 						//We wipe text form
 						$('.this_text_area').val('') 
 					}else{
-						window.display_com(user_id,user_text,data.this_comment_id,moment.unix(date.getTime()/1000).fromNow(),false)
+						window.display_com(user_id,$.jStorage.get('my_user_name'),$.jStorage.get('my_picture',window.default_avatar),user_text,data.this_comment_id,moment.unix(date.getTime()/1000).fromNow(),false)
 
 						//We wipe text form
 						$('.this_text_area').val('')
@@ -461,7 +477,7 @@ $(document).ready(function(){
 
 
 	//display comment             
-	window.display_com = function(user_id,user_text,user_text_id,user_timestamp_text,there_is_response) {
+	window.display_com = function(user_id,user_name,user_pic,user_text,user_text_id,user_timestamp_text,there_is_response) {
 
 		if(there_is_response){
 			var displaying_list_of_response = '<a href="#" class="all_of_com_this" id_com="'+user_text_id+'">Réponses ('+there_is_response+')</a>';
@@ -475,8 +491,8 @@ $(document).ready(function(){
 		}
 		
 		var html 	='<li class="collection-item avatar li_comment_'+user_text_id+'">';
-			html	+='<a href="'+user_id+'"><img src="'+get_user_pic(user_id)+'" alt="" class="circle"></a>';
-			html	+='<span class="title"><a href="'+user_id+'">'+get_user_name(user_id)+'</a></span>&nbsp;<span class="timestamper">'+user_timestamp_text+'</span>';
+			html	+='<a href="'+user_id+'"><img src="'+user_pic+'" alt="" class="circle"></a>';
+			html	+='<span class="title"><a href="'+user_id+'">'+user_name+'</a></span>&nbsp;<span class="timestamper">'+user_timestamp_text+'</span>';
 			html	+='<p class="comment_text_'+user_text_id+'">'+user_text+'</p><a href="#" class="com_this" id_com="'+user_text_id+'">Répondre</a>&nbsp;&nbsp;'+displaying_list_of_response+manage_comment;
 			html	+='<div class="hidden_form com_form_'+user_text_id+'" style="display:none;"><textarea class="this_text_area text_comment_'+user_text_id+'"></textarea>';
 			html	+='<div class="right"><a class="waves-effect waves-light btn-flat cancel">Annuler</a>';
@@ -485,7 +501,7 @@ $(document).ready(function(){
 			$('.list_comments').prepend(html)
 	}
 
-	window.display_ans = function(user_id,user_text,user_text_id,index_response,user_timestamp_text,real_timestamp) { 
+	window.display_ans = function(user_id,user_name,user_pic,user_text,user_text_id,index_response,user_timestamp_text,real_timestamp) { 
 
 		if(window.user_id==user_id){
 
@@ -493,8 +509,8 @@ $(document).ready(function(){
 		}
 		
 		var html 	='<li class="collection-item avatar li_response_'+user_text_id+'_'+index_response+'">';
-			html	+='<a href="'+user_id+'"><img src="'+get_user_pic(user_id)+'" alt="" class="circle"></a>';
-			html	+='<span class="title"><a href="'+user_id+'">'+get_user_name(user_id)+'</a></span>&nbsp;<span class="timestamper">'+user_timestamp_text+'</span>';
+			html	+='<a href="'+user_id+'"><img src="'+user_pic+'" alt="" class="circle"></a>';
+			html	+='<span class="title"><a href="'+user_id+'">'+user_name+'</a></span>&nbsp;<span class="timestamper">'+user_timestamp_text+'</span>';
 			html	+='<p class="response_'+user_text_id+'_'+index_response+'">'+user_text+'</p>';
 			html	+=manage_comment;
 			html	+='</li>';
@@ -537,7 +553,7 @@ $(document).ready(function(){
 								var there_is_response = false;
 							}
 
-							window.display_com(this_comment.user_id,this_comment.user_text,this_comment._id,moment.unix(this_comment.create_at*1/1000).fromNow(),there_is_response)
+							window.display_com(this_comment.user_id,this_comment.user_name,this_comment.user_pic,this_comment.user_text,this_comment._id,moment.unix(this_comment.create_at*1/1000).fromNow(),there_is_response)
 
 							if(this_comment.comment.length>0){
 								responses_to_comment__ID_of_comments.push(this_comment._id)
@@ -760,14 +776,23 @@ $(document).ready(function(){
 	}
 
 
-	window.get_user_name = function (user_id){
-		return 'Yann';
+
+
+
+
+	window.make_user_id = function() {
+		  
+		var text = "";
+		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+		for (var i = 0; i < 20; i++)
+		    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+		  return text;
 	}
 
-	window.get_user_pic = function(user_id){
+	window.user_id = $.jStorage.get('my_user_id',window.make_user_id()); //Only for test
 
-		return 'assets/img/yuna.jpg';
-	}
 
 
 

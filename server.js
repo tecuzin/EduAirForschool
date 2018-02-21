@@ -36,6 +36,8 @@ var directoryPath_for_background = path.join(__dirname, 'public/img/background')
 
 console.log('eduair loaded')
 
+var activate_download = true;//To activating download file
+
 
 var MaxFieldSize = 1000 * 1000,
     MaxFields = 100,
@@ -206,8 +208,9 @@ app.post('/connect_form',(request,response)=>{
 
 					if(results.statu=='ok'){
 
-						request.session.user_id		= results.results[0]._id;
-						request.session.username 	= results.results[0].user_full_name;
+						request.session.user_id			= results.results[0]._id;
+						request.session.user_full_name 	= results.results[0].user_full_name;
+						request.session.user_avatar 	= results.results[0].user_avatar;
 
 						results.results.user_form_pass	= undefined;//We arase the password for security
 
@@ -232,6 +235,8 @@ app.post('/connect_form',(request,response)=>{
 
 					data.user_form_pass =  bcrypt.hashSync(data.user_form_pass); //Hash password
 
+					data.user_avatar = 'assets/img/avatar/avatar.png'; //Set default avatar
+
 					User.registrar(data,function (results) { 
 
 						if(results.statu=='ok'){
@@ -239,10 +244,11 @@ app.post('/connect_form',(request,response)=>{
 							//We store data on session
 							var this_user = results.results.ops[0];
 
-							request.session.user_id		= this_user._id;
-							request.session.username 	= this_user.user_full_name;
-							this_user.user_form_pass	= undefined;
-				 			this_user.is_connect		= undefined;
+							request.session.user_id			= this_user._id;
+							request.session.user_full_name 	= results.results[0].user_full_name;
+							request.session.user_avatar 	= results.results[0].user_avatar;
+							this_user.user_form_pass		= undefined;
+				 			this_user.is_connect			= undefined;
 
 
 							//We redirect the user if he requested a page
@@ -595,7 +601,9 @@ app.post('/send_description_file',(request,response)=>{
 						'tags':data.tags,
 						'file_name':data.file_name,
 						'file_path':data.file_path,
-						'user_id':request.session.user_id
+						'user_id':request.session.user_id,
+						'user_name':request.session.user_full_name,
+						'user_pic':request.session.user_avatar
 					}
 
 		filer.handelFile(new_file,function  (results) {
@@ -958,6 +966,45 @@ app.get('/image',(req,res)=>{
   			res.redirect('/file_no_exist')
   		}
 	});
+})
+
+
+
+app.get('/get_it',(req,res)=>{
+
+	var path_file 	= __dirname+'/private/'+req.query.dir+'/'+req.query.media;
+
+	fs.exists(path_file, function(exists) { 
+
+  		if (exists && activate_download) {
+
+  			res.download(path_file,req.query.title+path.extname(req.query.media));
+  		}else{
+  			res.redirect('/file_no_exist')
+  		}
+	});
+})
+
+
+app.post('/get_user_name',(request,response)=>{
+
+	var data = request.body;
+
+	User.get_user_name(data.user_id,function (results) { 
+
+		response.json(results)	
+	})
+})
+
+
+app.post('/get_user_pic',(request,response)=>{
+
+	var data = request.body;
+
+	User.get_user_pic(data.user_id,function (results) { 
+
+		response.json(results)	
+	})
 })
 
 

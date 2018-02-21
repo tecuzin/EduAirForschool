@@ -32,19 +32,6 @@ $(document).ready(function(){
 
 
 
-	window.make_user_id = function() {
-		  
-		var text = "";
-		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-		for (var i = 0; i < 20; i++)
-		    text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-		  return text;
-	}
-
-
-
 	var default_library = 'wikipedia';
 
 	var starter_pagination 	= 0;
@@ -194,7 +181,7 @@ $(document).ready(function(){
 
 	function display_results (is_it_scroll,all_results) { // Is it scroll determines if we are display results while scrolling or nor. It takes 2 values (true or false)
 		
-		if(all_results!=false){
+		if(all_results!=false){ 
 
 			$('#search-text').val(all_results.search_string)
 			$('.library_'+default_library).attr('start',all_results.start)
@@ -395,7 +382,7 @@ $(document).ready(function(){
 	
 
 
-	window.socket.on('search_ajax',function  (data) { console.log(data)
+	window.socket.on('search_ajax',function  (data) { 
 
 		hide_loader_scroll()
 

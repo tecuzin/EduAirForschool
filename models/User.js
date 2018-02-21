@@ -151,8 +151,6 @@ class User{
 
 	static get_my_profil (content,call_back){ 
 
-		var objToFind     = { _id: new MongoObjectID(content.user_id) }; // Objet qui va nous servir pour effectuer la recherche
-
 		db_connection(function(err, db){ 
 
 			if(err){
@@ -175,7 +173,6 @@ class User{
 			}
     	});
 	}
-
 
 	
 	

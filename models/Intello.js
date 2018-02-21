@@ -248,17 +248,12 @@ class Intello{
 					        		var wikipedia = {'search_string':data.term,'all_results':all_results};
 
 					        		////////////we get the start and the end of the pagination///////////////////////////////
-					        		var pagination = $('.header').text().replace(/[\r\n]/g, '').split(' ');
+					     
+					        		var start = data.start+20;
 
-					        		pagination = pagination[9];
-
-					        		pagination = pagination.split('-');
-
-					        		var start = pagination[0]*1-1+20;
-
-					        		var end   = pagination[1]*1+20;
+					        		var end   = start+20;
 					        		////////////we get the start and the end of the pagination///////////////////////////////
-					        		
+
 					        		Callback({'statu':'ok','wikipedia':wikipedia,'library':library,'search_string':data.term,'start':start,'end':end})
 					        	}
 				        	}
