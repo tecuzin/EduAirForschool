@@ -131,7 +131,7 @@ $(document).ready(function(){
 			html	+='<a href="/watch?media='+file.hashName+'"><img src="assets_media/'+url_thumbnail+'" width="100%"></a></div>';
 			html	+='<div class="card-stacked"><div class="card-content"><div class="max_caracter"><p><a href="/watch?media='+file.hashName+'" style="color:black">'+file.title+'</a></p></div>';
 			html	+='<span class="new badge blue" data-badge-caption="'+file_length+'"></span><span class="right" >'+file.view+' <i class="material-icons">visibility</i></span>';
-			html	+='</div><div class="card-action"><a href="/watch?media='+file.hashName+'">'file.user_name+'</a></div></div></div></div>';
+			html	+='</div><div class="card-action"><a href="/watch?media='+file.hashName+'">'+file.user_name+'</a></div></div></div></div>';
 
 			$('.all_card').append(html)
 		}

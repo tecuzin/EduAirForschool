@@ -791,7 +791,15 @@ $(document).ready(function(){
 		  return text;
 	}
 
-	window.user_id = $.jStorage.get('my_user_id',window.make_user_id()); //Only for test
+	window.user_id = $.jStorage.get('my_user_id',window.make_user_id()); 
+
+
+
+	//Hide comment space for foundations
+	if(window.simple_infos_file){
+
+		$('.commentor').remove()
+	}
 
 
 
