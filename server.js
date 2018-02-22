@@ -135,10 +135,18 @@ var file_type_application = [	'application/pdf' ,
 //For SignIn and SignUp
 app.get('/',(request,response)=>{
 
+	if(request.session.user_id){
+
+		var admin = true;
+	}else{
+		var admin = false;
+	}
+
 	var data_page = {
 		'title':'Welcome',
 		'ip_server':ip_server,
-		'protocol':protocol
+		'protocol':protocol,
+		'admin':admin
 	};
 
 	response.render('welcome',data_page) 
@@ -375,14 +383,23 @@ app.post('/set_my_profil',(request,response)=>{
 
 
 
-app.get('/contributor/:id',(request,response)=>{
+app.get('/contributor',(request,response)=>{
 
-	var data_page = {
-		'title':'Contributor',
-		'ip_server':ip_server,
-		'protocol':protocol
-	};
-	response.render('contributor',data_page)
+	if(request.session.user_id){
+
+		var admin = true;
+
+		var data_page = {
+			'title':'Contributor',
+			'ip_server':ip_server,
+			'protocol':protocol,
+			'admin':true
+		};
+
+		response.render('contributor',data_page)
+	}else{
+		response.redirect('/connect');
+	}
 })
 
 
@@ -404,7 +421,8 @@ app.get('/upload',(request,response)=>{
 		var data_page = {
 			'title':request.__('upload_file'),
 			'ip_server':ip_server,
-			'protocol':protocol
+			'protocol':protocol,
+			'admin':true
 		};
 		response.render('upload',data_page)
 	}else{
@@ -426,7 +444,8 @@ app.get('/upload_bulk',(request,response)=>{
 			'title':request.__('upload_file'),
 			'ip_server':ip_server,
 			'protocol':protocol,
-			'stat':request.query.stat
+			'stat':request.query.stat,
+			'admin':true
 		};
 		response.render('upload_bulk',data_page)
 	}else{
@@ -799,12 +818,20 @@ io.sockets.on('connection', function (socket) {
 
 
 app.get('/results',(request,response)=>{
+
+	if(request.session.user_id){
+
+		var admin = true;
+	}else{
+		var admin = false;
+	}
 	
 	var data_page = {
 		'title':request.__('search_results'),
 		'ip_server':ip_server,
 		'protocol':protocol,
-		'string': request.query.search
+		'string': request.query.search,
+		'admin':admin
 	};
 
 	response.render('search_list',data_page)
@@ -843,7 +870,14 @@ app.get('/file_no_exist',(request,response)=>{
 
 
 
-app.get('/wp',(request,response)=>{ 
+app.get('/wp',(request,response)=>{
+
+	if(request.session.user_id){
+
+		var admin = true;
+	}else{
+		var admin = false;
+	} 
 
 	var data = {};
 
@@ -859,7 +893,8 @@ app.get('/wp',(request,response)=>{
 			'title':results.title,
 			'text':results.text,
 			'ip_server':ip_server,
-			'protocol':protocol
+			'protocol':protocol,
+			'admin':admin
 		}
 
 		response.render('article',data_page)
@@ -871,6 +906,13 @@ app.get('/wp',(request,response)=>{
 
 
 app.get('/watch',(request,response)=>{
+
+	if(request.session.user_id){
+
+		var admin = true;
+	}else{
+		var admin = false;
+	}
 
 	var media = request.query.media;
 
@@ -890,7 +932,8 @@ app.get('/watch',(request,response)=>{
 				'tags':data.tags,
 				'create_at':data.create_at,
 				'user_id':data.user_id,
-				'pages':data.pages
+				'pages':data.pages,
+				'admin':admin
 			}; 
 			response.render(data.type,data_page)
 		}else{
@@ -907,6 +950,7 @@ app.get('/watch',(request,response)=>{
 })
 
 
+//Streaming video
 app.get('/video',(req,res)=>{
 
 	var media 	= req.query.media;
@@ -947,6 +991,7 @@ app.get('/video',(req,res)=>{
 
 
 
+//Streaming image
 app.get('/image',(req,res)=>{
 
 	var media 		= req.query.media;
@@ -970,6 +1015,7 @@ app.get('/image',(req,res)=>{
 
 
 
+//Download file
 app.get('/get_it',(req,res)=>{
 
 	var path_file 	= __dirname+'/private/'+req.query.dir+'/'+req.query.media;
