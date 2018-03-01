@@ -253,8 +253,8 @@ app.post('/connect_form',(request,response)=>{
 							var this_user = results.results.ops[0];
 
 							request.session.user_id			= this_user._id;
-							request.session.user_full_name 	= results.results[0].user_full_name;
-							request.session.user_avatar 	= results.results[0].user_avatar;
+							request.session.user_full_name 	= this_user.user_full_name;
+							request.session.user_avatar 	= this_user.user_avatar;
 							this_user.user_form_pass		= undefined;
 				 			this_user.is_connect			= undefined;
 
@@ -385,7 +385,7 @@ app.post('/set_my_profil',(request,response)=>{
 
 app.get('/contributor',(request,response)=>{
 
-	if(request.session.user_id){
+	// if(request.session.user_id){
 
 		var admin = true;
 
@@ -397,9 +397,9 @@ app.get('/contributor',(request,response)=>{
 		};
 
 		response.render('contributor',data_page)
-	}else{
-		response.redirect('/connect');
-	}
+	// }else{
+	// 	response.redirect('/connect');
+	// }
 })
 
 
@@ -803,6 +803,15 @@ io.sockets.on('connection', function (socket) {
 		    	socket.emit('get_background',files)
 		    } 
 		});
+	})
+
+
+	socket.on('get_my_file',function  () {
+		
+		Intello.get_my_file(function  (results) {
+			
+			socket.emit('get_my_file',results)
+		})
 	})
 
 

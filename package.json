@@ -26,6 +26,7 @@
     "ffmpeg": "0.0.4",
     "file-base64": "^1.0.0",
     "filepreview": "^1.0.12",
+    "forever": "^0.15.3",
     "formidable": "^1.1.1",
     "get-json": "0.0.3",
     "i18n": "^0.8.3",

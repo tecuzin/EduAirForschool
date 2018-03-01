@@ -1,48 +1,68 @@
 
 $(document).ready(function(){ 
 
-	//fixe the size of the uploader
-	$('.user_background').height((window.user_backgound_height*$(window).height())/100)
+	$('.img_user_pic').height($('.marketing_account').height()*2/3)
 
-	 $('select').material_select();//Moderation
+	$('.contact_me').height($('.marketing_account').height()*2/10)
+
+	$('.mini_pic_user').height($('.marketing_account').height()*1/10)
+
+	$('ul.tabs').tabs();
 
 
-	//Display card
-	function small_cards (time_page,pic,title,autor,view,since,index) {
+	function display_tabs (hashName,thumbnail,title,view,file_id,tab) { console.log('eee')
+		
+		var html ='<tr class="this_file_'+file_id+'"><td><a href="/watch?media='+hashName+'"><img src="'+thumbnail+'">';
+		html	+='<p>'+title+'</p></a></td><td><p>'+view+'</p></td><td>';
+		html	+='<a href="'+file_id+'" class="delete_this_file"><i class="material-icons left">close</i></a></td></tr>';
 
-		var width_card;
-
-		if(window.is_mobile()){
-			width_card = window.width_card_mobile;
-		}else{
-  			width_card = window.width_card_not_mobile;
-		}
-
-		var html = '<div class="card this_card" style="width:'+width_card+'">';
-		html +=	'<div class="card-image"><img src="assets/img/image.jpg"><span class="card-title">'+time_page+'</span></div>';
-		html +=	'<div class="card-content"><div class="title blue-text text-darken-2 truncate_title_'+index+'">'+window.card_title(title)+'</div>';
-		html +=	'<div class="info_file"><div class="red-text text-darken-2 data_file truncate">'+autor+'</div>';
-		html +=	'<div class="black-text text-darken-2 data_file"><span class="views"><span class="number">'+view+'</span>&nbsp;';
-		html +=	'<span class="view_lang">Views</span></span>&nbsp;.&nbsp;<span class="dateTime">'+since+'</span></div></div></div></div>';
-
-		$('.all_card').append(html);
-
-		if(title.length>window.maxi_character_title_card){
-			$('.truncate_title_'+index).succinct({'size':window.maxi_character_title_card});
-		}
+		$('#tab_'+tab).append(html)
 	}
 
-	//Repliacte the card
-	var nbre = 50;
 
-	for (var i = 0; i < nbre; i++) {
+	window.socket.emit('get_my_file')
+
+	window.socket.on('get_my_file',function  (data) { 
+
+		$('.this_list_progress').remove()
 		
-		small_cards('3:50','ras','In the previous examples, we only defined the size for small screens using "col s12". This is fine if we want a ','Stephane','50M','il y a 5 jours',i)
-	 	
-	 	if(i==1){
-	 		window.pub_home()
-	 	}
-	};
+		var recent = data.recent;
+		var popular= data.popular;
+
+		if(recent.length<0){
+
+			$('#recent,#popular').html('<div class="card-panel red-text text-darken-2">'+$('.user_note').attr('no_file')+'</div>');
+
+		}else{
+
+			for (var i = 0; i < recent.length; i++) {
+
+				var this_entry = recent[i];
+
+				display_tabs(this_entry.fileName,this_entry.thumbnail,this_entry.title,this_entry.view,this_entry.file_id,'recent')
+
+			};
+
+			for (var i = 0; i < popular.length; i++) {
+				
+				var this_entry = popular[i];
+
+				display_tabs(this_entry.fileName,this_entry.thumbnail,this_entry.title,this_entry.view,this_entry.file_id,'popular')
+			};
+		}
+	})
+
+
+	$('.delete_this_file').on('click',function  () {
+		
+		window.socket.emit('delete_file',$(this).attr('href'))
+	})
+
+	window.socket.on('delete_file',function  (file_id) {
+		
+		$('.this_file_'+file_id).fadeOut()
+	})
+
 
 
 });

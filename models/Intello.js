@@ -141,7 +141,7 @@ class Intello{
 
 
 
-	static delete_file (content,call_back){ 
+	static delete_file (file_id,call_back){ 
 
 		db_connection(function(err, db){ 
 
@@ -155,7 +155,7 @@ class Intello{
 
 				db.collection('user_file', {}, function(err, file) {
 
-			        file.remove({_id: ObjectID(content.file_id)}, function(err, result) {
+			        file.remove({_id: ObjectID(file_id)}, function(err, result) {
 
 			            if (err) {
 			                console.log(err);
@@ -163,6 +163,7 @@ class Intello{
 		    				call_back({'statu':'problem','message':'I have a problem to delete file on database'})
 
 			            }else{
+			            	//Delete file on elasticsearch
 			            	call_back(result);
 			            }
 			        });
@@ -550,6 +551,60 @@ class Intello{
 			}
     	});
 	}
+
+
+	static get_my_file (call_back){ 
+
+		db_connection(function(err, db){ 
+
+			if(err){
+
+				console.log(err)
+
+	        	call_back({'statu':false})
+
+			}else{
+
+				db.collection("user_file").find({}).sort({ "create_at": -1}).toArray(function(error, recent) { 
+		    		
+		    		if (error) {
+
+		    			console.log(error)
+
+		    			call_back({'statu':false,'message':'I have a problem to get file'})
+		    		}else{
+
+		    			if(recent==null){
+
+		    				call_back({'statu':false})
+		    			}else{
+
+		    				db.collection("user_file").find({}).sort({ "view": -1}).toArray(function(error, popular) { 
+		    		
+					    		if (error) {
+
+					    			console.log(error)
+
+					    			call_back({'statu':false,'message':'I have a problem to get file'})
+					    		}else{
+
+					    			if(popular==null){
+					    				call_back({'statu':false})
+					    			}else{
+					    				call_back({'recent':recent,'popular':popular})
+					    			}
+					    		}
+							})
+		    			}
+		    		}
+				})
+			}
+    	});
+	}
+
+
+
+
 }
 
 

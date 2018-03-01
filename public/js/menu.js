@@ -1,5 +1,5 @@
 
-$(document).ready(function(){
+$(document).ready(function(){ 
 
 	if($('.fixed-action-btn').length>0){
 		

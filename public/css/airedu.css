@@ -530,7 +530,7 @@ video,.img_target{
 
 /*For user profil*/
 .marketing_account{
-  background-image: url('../img/banner.jpg');
+  background-image: url('banner.jpg');
   height: 170px;
   position: relative;
 }
@@ -583,6 +583,10 @@ video,.img_target{
 .user_page_channel .tabs .tab .active{
   color: #000000;
   font-weight: bold;
+}
+
+.this_list_file img{
+  height: 90px;
 }
 
 

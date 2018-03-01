@@ -63,6 +63,14 @@
 	"disk_space":"Espace disque",
 	"free":"libre sur",
 	"many_up":"Cliquez ici pour envoyer plusieurs fichiers simultanément",
-	"no_mobile":"Désolé. Utilisez votre PC pour ouvrir ce fichier"
+	"no_mobile":"Désolé. Utilisez votre PC pour ouvrir ce fichier",
+	"admin":"Tableau de bord",
+	"recent":"Recents",
+	"popular":"Populaires",
+	"file":"Fichiers",
+	"View":"Vues",
+	"delete":"supprimer",
+	"no_file":"Aucun fichier"
+
 
 }

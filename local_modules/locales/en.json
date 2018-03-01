@@ -63,7 +63,15 @@
 	"disk_space":"Disk space",
 	"free":"free on",
 	"many_up":"Click here to send multiple files simultaneously",
-	"no_mobile":"Sorry. Use your PC to open this file"
+	"no_mobile":"Sorry. Use your PC to open this file",
+	"admin":"Dashboard",
+	"recent":"Recents",
+	"popular":"Popular",
+	"file":"Files",
+	"View":"Views",
+	"delete":"Delete",
+	"no_file":"No file"
+
 
 
 	
