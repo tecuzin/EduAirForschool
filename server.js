@@ -976,7 +976,8 @@ app.get('/watch',(request,response)=>{
 			var data_page = {
 				'title':request.__('no_file_found'),
 				'ip_server':ip_server,
-				'protocol':protocol
+				'protocol':protocol,
+				'admin':admin
 			};
 			response.render('no_file_found',data_page)
 		}

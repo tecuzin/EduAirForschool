@@ -138,6 +138,15 @@ $(document).ready(function(){
 
 	window.socket.on('get_suggestion',function  (data) { 
 
+		
+		if(data.wikipedia.length==0 || data.media.total>1){  //If there is suggestion
+			
+			//First, we defuse the stop displaying of the suggestions
+			$('.loader_suggestion').fadeOut()
+
+		}
+
+		
 		//display_suggestion(title,url,description,first_letter,image,file_length,view,from,type)
 
 		if(data.media.total!=0 || data.wikipedia.length!=0){
@@ -191,6 +200,7 @@ $(document).ready(function(){
 
 
 	window.display_suggestion = function(title,url,description,first_letter,image,file_length,view,from,type){
+
 
 		$('.suggestion,.suggestion_vid').fadeIn();
 		
@@ -250,6 +260,9 @@ $(document).ready(function(){
 		$('.show_suggestion').fadeOut()
 
 	})
+
+
+
 
 
 

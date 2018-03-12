@@ -213,6 +213,7 @@ width: 90%;
 padding: 0px 0 12px 1em;
 color: #000000;
 outline: none;
+box-sizing: inherit;
 }
 
 

@@ -43,6 +43,7 @@ $(document).ready(function(){
 	window.socket.emit('get_suggestion',$('.media_data').attr('title'))
 
 	
+	
 
 	
 
@@ -59,7 +60,7 @@ $(document).ready(function(){
 		if($('.media_data').attr('pages')*1==i){ 
 
 			//Loading page by page
-			$('.my_pdf_page').on('scrollSpy:enter', function() { console.log($(this).attr('response'))
+			$('.my_pdf_page').on('scrollSpy:enter', function() {
 		
 				//We verify if the div as a page
 				if($(this).attr('response')=='no'){ //If not
