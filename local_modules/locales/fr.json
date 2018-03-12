@@ -71,7 +71,13 @@
 	"file":"Fichiers",
 	"View":"Vues",
 	"delete":"supprimer",
-	"no_file":"Aucun fichier"
+	"no_file":"Aucun fichier",
+	"import_file":"Selectionner le fichier à importer",
+	"police":"Veuillez vous assurer de ne pas porter atteinte à des droits d'auteur ou à la vie privée d'autrui",
+	"learn_more":"En savoir plus",
+	"publish":"Publier",
+	"publishing":"Mise en ligne en cours"
+
 
 
 }

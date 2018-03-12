@@ -35,7 +35,7 @@ $(document).ready(function(){
 
 
     //Click to upload
-    $('.click_to_uplaod').click(function  () {
+    $('.icon_publish').click(function  () {
         
         $('.filer').click()
     })

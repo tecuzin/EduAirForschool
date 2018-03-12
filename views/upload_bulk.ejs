@@ -4,7 +4,7 @@
       <% include parts/menu_top %>
       <div class="container uploader">
         <div class="blue lighten-2 advice">
-           Veuillez vous assurer de ne pas porter atteinte à des droits d'auteur ou à la vie privée d'autrui. <a href="/term_and_condition">En savoir plus</a>
+           <%=__('police')%>. <a href="/term_and_condition"><%=__('learn_more')%></a>
         </div>
         <div class="field_upload" >
           <center> <div class="card-panel blue lighten-2 white-text text-darken-2 statu_upload" style="display:none;"></div></center>
@@ -12,8 +12,8 @@
           
             <div class="selector row click_to_uplaod">
               <center>
-                <div class="col s12"> <a class="icon_publish" href="#"><i class="valign large material-icons">publish</i></a></div>
-                <div class="col s12 text_import">Selectionner les fichiers à importer</div>
+                <div class="col s12"> <a class="icon_publish" href="#"><i class="valign large material-icons"><%=__('publish')%></i></a></div>
+                <div class="col s12 text_import"><%=__('import_file')%></div>
                 <div class="col s12">
                   <div class="chip">Video .mp4</div>
                   <div class="chip">Photo</div>
@@ -32,7 +32,7 @@
                 <img class="thumb_pic" src="assets/img/no_pic.jpg">
               </span>
               
-              <div class="state_upload">Mise en ligne en cours...
+              <div class="state_upload"><%=__('publishing')%>...
                 <div class="progress">
                   <div class="indeterminate"></div>
                 </div>
@@ -51,8 +51,8 @@
                 </div>
   
                 <div>
-                    <a class="waves-effect right waves-light btn blue publish" style="display:none;">Publier</a>
-                    <a class="waves-effect right waves-teal btn-flat cancel_publish" id="cancel">Annuler</a>
+                    <a class="waves-effect right waves-light btn blue publish" style="display:none;"><%=__('publish')%></a>
+                    <a class="waves-effect right waves-teal btn-flat cancel_publish" id="cancel"><%=__('cancel')%></a>
                 </div>
 
                 <div class="not_compatible card-panel red-text text-darken-2" style="display:none;">

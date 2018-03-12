@@ -71,10 +71,15 @@
 	"file":"Files",
 	"View":"Views",
 	"delete":"Delete",
-	"no_file":"No file"
-
-
-
+	"no_file":"No file",
+	"import_file":"Select the file to import",
+	"police":"Please make sure you do not infringe any copyrights or the privacy of others",
+	"learn_more":"Learn more",
+	"publish":"Publish",
+	"publishing":"On-line publishing"
 	
+
+
+
 
 }
