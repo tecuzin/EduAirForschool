@@ -16,7 +16,7 @@ $(document).ready(function(){
 
 
 
-	$(document).keypress(function(event) {
+	$(document).keypress(function(event) { alert('hdhhd')
 
 	    var keycode = event.keyCode || event.which;
 

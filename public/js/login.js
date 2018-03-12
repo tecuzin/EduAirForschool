@@ -192,6 +192,20 @@ $(document).ready(function(){
 	}
 
 
+	$(document).keypress(function(event) { 
+
+	    var keycode = event.keyCode || event.which;
+
+	    if(keycode == '13') {
+
+	        if($('.form_number').val()!='' && $('.form_pass').val()!='')  {
+
+	        	$('.form_log_in').click()
+	        }  
+	    }
+	});
+
+
 	
 
 });
