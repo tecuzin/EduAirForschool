@@ -10,13 +10,14 @@ $(document).ready(function(){
 	$('ul.tabs').tabs();
 
 
-	function display_tabs (hashName,thumbnail,title,view,file_id,tab) { console.log('eee')
+	function display_tabs (hashName,thumbnail,title,view,file_id,tab,original_path,original_ext,final_path,final_ext) { 
 		
-		var html ='<tr class="this_file_'+file_id+'"><td><a href="/watch?media='+hashName+'"><img src="'+thumbnail+'">';
+		var html ='<tr class="this_file_'+file_id+'"><td><a href="/watch?media='+hashName+'"><img src="/assets_media/'+thumbnail+'">';
 		html	+='<p>'+title+'</p></a></td><td><p>'+view+'</p></td><td>';
-		html	+='<a href="'+file_id+'" class="delete_this_file"><i class="material-icons left">close</i></a></td></tr>';
+		html	+='<a href="'+file_id+'" thumbnail="'+thumbnail+'" hashName="'+hashName+'" original_path="'+original_path+'" original_ext="'+original_ext+'" final_path="'+final_path+'" final_ext="'+final_ext+'" class="delete_this_file">';
+		html	+='<i class="material-icons left">close</i></a></td></tr>';
 
-		$('#tab_'+tab).append(html)
+		$('#tab_'+tab+' tbody').append(html)
 	}
 
 
@@ -31,7 +32,7 @@ $(document).ready(function(){
 
 		if(recent.length<0){
 
-			$('#recent,#popular').html('<div class="card-panel red-text text-darken-2">'+$('.user_note').attr('no_file')+'</div>');
+			$('#tab_recent,#tab_popular').html('<div class="card-panel red-text text-darken-2">'+$('.user_note').attr('no_file')+'</div>');
 
 		}else{
 
@@ -39,7 +40,7 @@ $(document).ready(function(){
 
 				var this_entry = recent[i];
 
-				display_tabs(this_entry.fileName,this_entry.thumbnail,this_entry.title,this_entry.view,this_entry.file_id,'recent')
+				display_tabs(this_entry.hashName,this_entry.thumbnail,this_entry.title,this_entry.view,this_entry._id,'recent',this_entry.original_path,this_entry.original_ext,this_entry.final_path,this_entry.final_ext)
 
 			};
 
@@ -47,18 +48,35 @@ $(document).ready(function(){
 				
 				var this_entry = popular[i];
 
-				display_tabs(this_entry.fileName,this_entry.thumbnail,this_entry.title,this_entry.view,this_entry.file_id,'popular')
+				display_tabs(this_entry.hashName,this_entry.thumbnail,this_entry.title,this_entry.view,this_entry._id,'popular',this_entry.original_path,this_entry.original_ext,this_entry.final_path,this_entry.final_ext)
 			};
 		}
 	})
 
 
-	$('.delete_this_file').on('click',function  () {
-		
-		window.socket.emit('delete_file',$(this).attr('href'))
-	})
+	$(document).on('click', '.delete_this_file', function(){
+    	
+    	var confirmation = confirm($('.user_note').attr('confirm_delete_file'))
 
-	window.socket.on('delete_file',function  (file_id) {
+		if(confirmation){
+
+			var json_data = {'file_id':$(this).attr('href'),
+							'hashName':$(this).attr('hashName'),
+							'original_path':$(this).attr('original_path'),
+							'original_ext':$(this).attr('original_ext'),
+							'final_path':$(this).attr('final_path'),
+							'final_ext':$(this).attr('final_ext'),
+							'thumbnail':$(this).attr('thumbnail')
+						} 
+
+			window.socket.emit('delete_file',json_data)
+		}
+
+		return false;
+	});
+
+
+	window.socket.on('delete_file',function  (file_id) { 
 		
 		$('.this_file_'+file_id).fadeOut()
 	})

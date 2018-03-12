@@ -56,6 +56,7 @@
 	"add_comment":"Ajouter un commentaire",
 	"suggestion":"Suggestion",
 	"confirm_delete":"Voulez vous vraiment supprimer ce message ?",
+	"confirm_delete_file":"Voulez vous vraiment supprimer ce fichier ?",
 	"not_allowed":"Des fichiers ne sont pas compatibles",
 	"file_ready":"Votre fichier est diponible",
 	"file_here":"ici",

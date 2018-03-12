@@ -146,6 +146,40 @@ class Elastic{
 	}
 
 
+	static delete_file(file_id){
+
+		client.deleteByQuery({
+
+			index: page_pdf_db,
+			type:page_pdf_db,
+
+			body: {
+				    query: {
+				      term: { id_file_mongoDB: file_id }
+				    }
+				  }
+		}, function (err, response) {
+
+			if(err){
+		   		console.log(err)
+		   	}else{
+		   		
+		   		client.bulk({
+					body: [
+					  
+					    { delete: { _index: intire_file_db, _type: intire_file_db, _id: file_id } },
+					  ]
+					}, function (err, resp) {
+					  
+					   if(err){
+					   		console.log(err)
+					   }
+				});
+		   	}
+		});
+	}
+
+
 }
 
 
@@ -180,25 +214,29 @@ function add_pdf_file (content,Callback) {
 
 		if(this_is_text.length==i+1){ 
 
-			var finalContent 		=  new Object();
+			var finalContent 			=  new Object();
 
-			finalContent.fileName 	= content.fileName;
-			finalContent.media 		= content.media;
-			finalContent.type 		= content.type;
-			finalContent.hashName 	= content.hashName;
-			finalContent.thumbnail	= content.thumbnail;
-			finalContent.size		= content.size;
-			finalContent.pages		= content.pages;
-			finalContent.format		= content.format;
-			finalContent.create_at	= content.create_at;
-			finalContent.user_id	= content.user_id;
-			finalContent.view		= content.view;
-			finalContent.last_view	= content.last_view;
-			finalContent.title		= content.title;
-			finalContent.description= content.description;
-			finalContent.tags		= content.tags;
-			finalContent.text 		= this_is_text.join().trim().replace(/[\r\n]/g, '').replace(/[^\x21-\x7E]+/g, ' ').replace(/^\s+|\s+$/g, '');
-			finalContent.short_text = this_is_text.join().trim().replace(/[\r\n]/g, '').replace(/[^\x21-\x7E]+/g, ' ').replace(/^\s+|\s+$/g, '').substr(0, 100);
+			finalContent.fileName 		= content.fileName;
+			finalContent.media 			= content.media;
+			finalContent.type 			= content.type;
+			finalContent.hashName 		= content.hashName;
+			finalContent.thumbnail		= content.thumbnail;
+			finalContent.size			= content.size;
+			finalContent.original_path	= content.original_path,
+			finalContent.original_ext	= content.original_ext,
+			finalContent.final_path		= content.final_path,
+			finalContent.final_ext		= content.final_ext,
+			finalContent.pages			= content.pages;
+			finalContent.format			= content.format;
+			finalContent.create_at		= content.create_at;
+			finalContent.user_id		= content.user_id;
+			finalContent.view			= content.view;
+			finalContent.last_view		= content.last_view;
+			finalContent.title			= content.title;
+			finalContent.description	= content.description;
+			finalContent.tags			= content.tags;
+			finalContent.text 			= this_is_text.join().trim().replace(/[\r\n]/g, '').replace(/[^\x21-\x7E]+/g, ' ').replace(/^\s+|\s+$/g, '');
+			finalContent.short_text 	= this_is_text.join().trim().replace(/[\r\n]/g, '').replace(/[^\x21-\x7E]+/g, ' ').replace(/^\s+|\s+$/g, '').substr(0, 100);
 			
 
 			delete finalContent.text_extracted; 

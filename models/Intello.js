@@ -141,7 +141,7 @@ class Intello{
 
 
 
-	static delete_file (file_id,call_back){ 
+	static delete_file (data,call_back){ 
 
 		db_connection(function(err, db){ 
 
@@ -153,21 +153,21 @@ class Intello{
 
 			}else{
 
-				db.collection('user_file', {}, function(err, file) {
+				db.collection("user_file").remove({_id: new MongoObjectID(data.file_id)}, function(err, obj){
 
-			        file.remove({_id: ObjectID(file_id)}, function(err, result) {
+					if (err) {
+		                console.log(err);
 
-			            if (err) {
-			                console.log(err);
+	    				call_back({'statu':'problem','message':'I have a problem to delete file on database'})
 
-		    				call_back({'statu':'problem','message':'I have a problem to delete file on database'})
+			        }else{
+			            
+			            //Delete file on elasticsearch
+		            	Elastic.delete_file(data.file_id)
 
-			            }else{
-			            	//Delete file on elasticsearch
-			            	call_back(result);
-			            }
-			        });
-    			});
+		            	call_back(data)
+			        }
+				})
     		}
     	});
 	}

@@ -385,7 +385,7 @@ app.post('/set_my_profil',(request,response)=>{
 
 app.get('/contributor',(request,response)=>{
 
-	// if(request.session.user_id){
+	 if(request.session.user_id){
 
 		var admin = true;
 
@@ -397,9 +397,9 @@ app.get('/contributor',(request,response)=>{
 		};
 
 		response.render('contributor',data_page)
-	// }else{
-	// 	response.redirect('/connect');
-	// }
+	}else{
+		response.redirect('/connect');
+	}
 })
 
 
@@ -811,6 +811,33 @@ io.sockets.on('connection', function (socket) {
 		Intello.get_my_file(function  (results) {
 			
 			socket.emit('get_my_file',results)
+		})
+	})
+
+
+	socket.on('delete_file',function (data) { 
+		
+		//We delete on database
+		Intello.delete_file(data,function(data) { 
+
+			//We delete the file on hard disk
+			var original_file 	= media_library+data.original_path+'/'+data.hashName+data.original_ext;
+			var final_file 		= media_library+data.final_path+'/'+data.hashName+data.final_ext;
+
+			//If the file is on only one place in the disk we delete once
+			if(original_file==final_file){
+				fs.unlinkSync(final_file)
+			}else{
+				//We delete twice
+				fs.unlinkSync(original_file)
+				fs.unlinkSync(final_file)
+			}
+
+			//We delete thumbnail
+			fs.unlinkSync(media_library+data.thumbnail)
+
+			
+			socket.emit('delete_file',data.file_id)
 		})
 	})
 

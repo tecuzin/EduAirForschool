@@ -182,14 +182,7 @@ $(document).ready(function(){
 
 	       			setTimeout(function  () {
 
-
-	       				if(is_connect==false){ //If it was a registration, we redirect to select the profil
-
-	       					window.location.href='/who';
-	       				}else{
-
-	       					window.location.href=data.url;
-	       				}
+	       				window.location.href=data.url;
 	       				
 	       				
 	       			},1000)

@@ -138,8 +138,7 @@ $(document).ready(function(){
 				//We display image card
 				for (var i = 0; i < results.hits.length; i++) {
 
-					var url_thumbnail 	= results.hits[i]._source.thumbnail.split('private/');
-		   			url_thumbnail		= url_thumbnail[1];	
+					var url_thumbnail 	= results.hits[i]._source.thumbnail;
 					
 					$('.suggest_image .container center').append('<li class="col s3"> <a href="/watch?media='+results.hits[i]._source.hashName+'"> <img src="assets_media/'+url_thumbnail+'" class="responsive-img"> </a> </li>')
 					
@@ -237,8 +236,7 @@ $(document).ready(function(){
 	    		  			var description = documents[i]._source.description;
 	    		  		}
 
-	    		  		var url_thumbnail 	= documents[i]._source.thumbnail.split('private/');
-	    		  		url_thumbnail		= url_thumbnail[1];	
+	    		  		var url_thumbnail 	= documents[i]._source.thumbnail;
 
 	    		  		
 	    		  		var html = '<a href="/watch?media='+documents[i]._source.hashName+'" class="collection-item waves-effect waves-light" id="'+documents[i]._id+'" >';
@@ -282,9 +280,7 @@ $(document).ready(function(){
 	    		  			var description = documents[i]._source.description;
 	    		  		}
 
-	    		  		var url_thumbnail 	= documents[i]._source.thumbnail.split('private/');
-	    		  		url_thumbnail		= url_thumbnail[1];	
-
+	    		  		var url_thumbnail 	= documents[i]._source.thumbnail;
 	    		  		
 	    		  		var html = '<a href="/watch?media='+documents[i]._source.hashName+'" class="collection-item waves-effect waves-light" id="'+documents[i]._id+'" >';
 	    		  		html 	+='<img class="first_pic" src="assets_media/'+url_thumbnail+'">';
@@ -325,9 +321,7 @@ $(document).ready(function(){
 	    		  			var description = documents[i]._source.description;
 	    		  		}
 
-	    		  		var url_thumbnail 	= documents[i]._source.thumbnail.split('private/');
-	    		  		url_thumbnail		= url_thumbnail[1];	
-
+	    		  		var url_thumbnail 	= documents[i]._source.thumbnail;
 	    		  		
 	    		  		var html = '<a href="/watch?media='+documents[i]._source.hashName+'" class="collection-item waves-effect waves-light" id="'+documents[i]._id+'" >';
 	    		  		html 	+='<img class="first_pic" src="assets_media/'+url_thumbnail+'">';

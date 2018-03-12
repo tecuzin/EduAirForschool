@@ -161,9 +161,7 @@ $(document).ready(function(){
 					break;
 				}
 
-				var url_thumbnail 	= media_data[i]._source.thumbnail.split('private/');
-
-		    	url_thumbnail		= url_thumbnail[1];
+				var url_thumbnail 	= media_data[i]._source.thumbnail;
 
 		    	//We prevent that the media which is displaying is not the same than hich one e want to display in suggestion
 		    	if($('.media_data').attr('MongoDbFileId')!=media_data[i]._id){

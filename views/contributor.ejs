@@ -33,7 +33,7 @@
               <a href="#test3" class="search_on_media_user"><i class="material-icons left">search</i></a>
               <div id="search-box-user" class="user_input_search"  style="display:none;">
                 <form id='search-form-user'>
-                  <input id='search-text-user' name='q' type='text'placeholder="search" />
+                  <input id='search-text-user' name='q' type='text' placeholder="search" />
                   <button id='search-button-user'>                     
                     <span> <center> <i class="material-icons left">close</i></center></span>
                   </button>
@@ -43,31 +43,31 @@
           </ul>
         </div>
 
-        <div id="recent" class="card-panel col s12">
+        <div id="tab_recent" class="card-panel col s12">
           <div class="progress this_list_progress"><div class="indeterminate"></div></div>
           <table class="bordered this_list_file">
+            <thead>
+              <tr>
+                <th><%= __('file')%></th>
+                <th><%= __('view')%></th>
+                <th><%= __('delete')%></th>
+              </tr>
+            </thead>
             <tbody>
-              <thead>
-                <tr>
-                    <th><%= __('file')%></th>
-                    <th><%= __('view')%></th>
-                    <th><%= __('delete')%></th>
-                </tr>
-              </thead>
             </tbody>
           </table>
         </div>
-        <div id="popular" class="card-panel col s12">
+        <div id="tab_popular" class="card-panel col s12">
           <div class="progress this_list_progress"><div class="indeterminate"></div></div>
           <table class="bordered this_list_file">
+            <thead>
+              <tr>
+                <th><%= __('file')%></th>
+                <th><%= __('view')%></th>
+                <th><%= __('delete')%></th>
+              </tr>
+            </thead>
             <tbody>
-              <thead>
-                <tr>
-                    <th><%= __('file')%></th>
-                    <th><%= __('view')%></th>
-                    <th><%= __('delete')%></th>
-                </tr>
-              </thead>
             </tbody>
           </table>
         </div>
@@ -93,7 +93,7 @@
 
       </div>
 
-      <div class="user_note" no_file="<%= __('no_file')%>"></div>
+      <div class="user_note" no_file="<%= __('no_file')%>" confirm_delete_file="<%= __('confirm_delete_file')%>"></div>
      
      
       

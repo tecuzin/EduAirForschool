@@ -101,16 +101,6 @@ class Filer{
 				})
 			break;
 
-			case 'audio':
-				convert_audio_to_mp3(fileUploaded,function  (results) {
-					
-					Intello.add_new_file(results,function  (response) {
-						
-						Callback(results)
-					})
-				})
-			break;
-
 			case 'application':
 				if(file_type_application.indexOf(file_type_mime)!=-1){
 
@@ -295,6 +285,10 @@ module.exports = Filer;
 				    					'thumbnail':results,
 				    					'size':getFilesizeInBytes(final_file),
 				    					'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,
+				    					'original_path':right_folder,
+										'original_ext':path.extname(file),
+										'final_path':'pdf',
+										'final_ext':path.extname(final_file),
 				    					'format':path.extname(final_file),
 				    					'format_initial':path.extname(file),
 				    					'text_extracted':text_extracted,
@@ -342,6 +336,8 @@ module.exports = Filer;
 
 		if(video_type!=video_type_out && video_type.indexOf('video')!=-1){ //We verify the type mime of video file
 
+			//We convert to MP4 file if it is not a mp4 file
+
 			var convert = new Mp4Convert(temp_file, final_file);
 
 			// convert.on('progress', function(p) {
@@ -368,6 +364,10 @@ module.exports = Filer;
 													'duration':stdout.replace('\n',''),
 													'thumbnail':thumbnail,
 													'size':getFilesizeInBytes(final_file),
+													'original_path':'video',
+													'original_ext':path.extname(final_file),
+													'final_path':'video',
+													'final_ext':path.extname(final_file),
 													'format':path.extname(final_file),
 													'format_initial':path.extname(temp_file),
 													'title':fileUploaded.title,
@@ -388,7 +388,7 @@ module.exports = Filer;
 			//It is not a video, I send an error
 			if(video_type.indexOf('video')==-1){
 
-				//Delete the original video if is is not a MP4 video
+				//Delete the original video if is is not a video
 				fs.unlinkSync(temp_file);
 
 				call_back_json_metada({'duration':false,'thumbnail':false,'error':'this_file_is_not_a_video'});
@@ -418,6 +418,10 @@ module.exports = Filer;
 										'duration':stdout.replace('\n',''),
 										'thumbnail':thumbnail,
 										'size':getFilesizeInBytes(final_file),
+										'original_path':'video',
+										'original_ext':path.extname(final_file),
+										'final_path':'video',
+										'final_ext':path.extname(final_file),
 										'format':path.extname(final_file),
 										'format_initial':path.extname(temp_file),
 										'title':fileUploaded.title,
@@ -563,6 +567,10 @@ module.exports = Filer;
 			    			'hashName':path.basename(final_file,path.extname(final_file)),
 			    			'thumbnail':thumbnail,
 			    			'size':getFilesizeInBytes(final_file),
+			    			'original_path':'image',
+							'original_ext':path.extname(final_file),
+							'final_path':'image',
+							'final_ext':path.extname(final_file),
 			    			'format':path.extname(final_file),
 			    			'text_extracted':text_extracted,
 			    			'title':fileUploaded.title,
@@ -612,6 +620,10 @@ module.exports = Filer;
 			    				'thumbnail':thumbnail,
 			    				'size':getFilesizeInBytes(final_file),
 			    				'pages':stdout.replace(/\n|\r/g, "").replace(/ /g,'').replace('Pages:','')*1,
+			    				'original_path':'pdf',
+								'original_ext':path.extname(final_file),
+								'final_path':'pdf',
+								'final_ext':path.extname(final_file),
 			    				'format':path.extname(final_file),
 			    				'text_extracted':text_extracted,
 			    				'title':fileUploaded.title,
@@ -795,9 +807,9 @@ module.exports = Filer;
 
 		setTimeout(function  () {
 			
-			var destination = media_library+this_file+'/thumbnails/'+path.basename(file,path.extname(file))+'.png';
+			var destination = this_file+'/thumbnails/'+path.basename(file,path.extname(file))+'.png';
 
-			filepreview.generate(file,destination, function(error) {
+			filepreview.generate(file,media_library+destination, function(error) {
 			    
 			    if (error) { 
 			      	return console.log(error);

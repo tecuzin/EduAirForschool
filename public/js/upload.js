@@ -241,7 +241,7 @@ $(document).ready(function(){
 
                 return xhr;
             },
-            success: function(data){console.log(data.message)
+            success: function(data){
 
                 if(data.statu=='success'){
 
