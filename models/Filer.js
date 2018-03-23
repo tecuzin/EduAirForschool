@@ -294,7 +294,8 @@ module.exports = Filer;
 				    					'text_extracted':text_extracted,
 				    					'title':fileUploaded.title,
 										'description':fileUploaded.description,
-										'tags':fileUploaded.tags
+										'tags':fileUploaded.tags,
+										'user_id':fileUploaded.user_id
 				    				}
 			    	
 				    				Callback(this_callback)
@@ -372,7 +373,8 @@ module.exports = Filer;
 													'format_initial':path.extname(temp_file),
 													'title':fileUploaded.title,
 													'description':fileUploaded.description,
-													'tags':fileUploaded.tags
+													'tags':fileUploaded.tags,
+													'user_id':fileUploaded.user_id
 												}
 
 							call_back_json_metada(this_callback);
@@ -426,7 +428,8 @@ module.exports = Filer;
 										'format_initial':path.extname(temp_file),
 										'title':fileUploaded.title,
 										'description':fileUploaded.description,
-										'tags':fileUploaded.tags
+										'tags':fileUploaded.tags,
+										'user_id':fileUploaded.user_id
 									}
 
 									call_back_json_metada(this_callback);
@@ -435,99 +438,6 @@ module.exports = Filer;
 								}
 							});
 			        	})
-			        }
-	    		});
-			}
-		}
-	}
-
-
-
-	function convert_audio_to_mp3 (fileUploaded,call_back_json_metada){ 
-
-		var real_fileName 	= fileUploaded.file_name;
-
-		var temp_file 		= fileUploaded.file_path;
-
-		var file 			= fileUploaded.file_path;
-
-		var final_file		= media_library+'audio/'+path.basename(fileUploaded.file_path,path.extname(fileUploaded.file_path))+'.mp3' ;
-
-		//Convert To MP3 if it is not a mp3 audio
-		var audio_type 	= mime.lookup(temp_file); 
-
-		if(audio_type!=audio_type_out && audio_type.indexOf('audio')!=-1 && path.basename(file,path.extname(file))!='mp3'){ //We verify the type mime of audio file
-
-			//We get the duration of video
-			exec('ffmpeg -i '+file+' -acodec copy '+final_file+'', function(err, stdout, stderr) {
-						
-				if(!err){
-
-					//Delete the original audio if is is not a MP3 audio
-					fs.unlinkSync(temp_file);
-
-					var this_callback = {
-						'fileName':real_fileName,
-						'media':'audio_video',
-						'type':'audio',
-						'hashName':path.basename(final_file,path.extname(final_file)),
-						'duration':stdout.replace('\n',''),
-						'size':getFilesizeInBytes(final_file),
-						'format':path.extname(final_file),
-						'format_initial':path.extname(temp_file),
-						'title':fileUploaded.title,
-						'description':fileUploaded.description,
-						'tags':fileUploaded.tags
-					}
-
-					call_back_json_metada(this_callback);
-				}else{
-					console.log(err)
-				}
-			});
-		
-		}else{ 
-			//It is not a audio, I send an error
-			if(audio_type.indexOf('audio')==-1){
-
-				//Delete the original audio if is is not a MP3 audio
-				fs.unlinkSync(temp_file);
-
-				call_back_json_metada({'duration':false,'thumbnail':false,'error':'this_file_is_not_a_audio'});
-			}else{
-
-				//If is a mp3 audio,I just move the file
-				fs.rename(temp_file, final_file, function (err) {
-			        
-			        if (err){
-
-			            console.log(err)
-			        }else{
-
-			        	//We get the duration of audio
-							exec("ffprobe "+final_file+" -show_format 2>&1 | sed -n 's/duration=//p'", function(err, stdout, stderr) {
-								
-								if(!err){
-
-									var this_callback = {
-										'fileName':real_fileName,
-										'media':'audio_video',
-										'type':'audio',
-										'hashName':path.basename(final_file,path.extname(final_file)),
-										'duration':stdout.replace('\n',''),
-										'size':getFilesizeInBytes(final_file),
-										'format':path.extname(final_file),
-										'format_initial':path.extname(temp_file),
-										'title':fileUploaded.title,
-										'description':fileUploaded.description,
-										'tags':fileUploaded.tags
-									}
-
-									call_back_json_metada(this_callback);
-								}else{
-									console.log(err)
-								}
-							});
 			        }
 	    		});
 			}
@@ -575,7 +485,8 @@ module.exports = Filer;
 			    			'text_extracted':text_extracted,
 			    			'title':fileUploaded.title,
 							'description':fileUploaded.description,
-							'tags':fileUploaded.tags
+							'tags':fileUploaded.tags,
+							'user_id':fileUploaded.user_id
 			    		}
 			    	
 						Callback(this_callback)
@@ -628,7 +539,8 @@ module.exports = Filer;
 			    				'text_extracted':text_extracted,
 			    				'title':fileUploaded.title,
 								'description':fileUploaded.description,
-								'tags':fileUploaded.tags
+								'tags':fileUploaded.tags,
+								'user_id':fileUploaded.user_id
 			    			}
 			    	
 							Callback(this_callback)

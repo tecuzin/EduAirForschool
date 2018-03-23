@@ -260,12 +260,6 @@ $(document).ready(function(){
 		$('.show_suggestion').fadeOut()
 
 	})
-
-
-
-
-
-
 	
 
 
@@ -300,6 +294,7 @@ $(document).ready(function(){
 
 
 
+
 	//convert second to time
 	window.convertTime = function (input, separator) {
 	    var pad = function(input) {return input < 10 ? "0" + input : input;};
@@ -319,6 +314,7 @@ $(document).ready(function(){
 	    else if(bytes < 1073741824) return(bytes / 1048576).toFixed(3) + " MB";
 	    else return(bytes / 1073741824).toFixed(3) + " GB";
 	};
+
 
 
 

@@ -216,6 +216,11 @@ outline: none;
 box-sizing: inherit;
 }
 
+.good_spell{
+  font-style: italic;
+  font-weight: bold;
+}
+
 
 #search-box-user input[type="text"]
 {

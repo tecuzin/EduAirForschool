@@ -34,6 +34,10 @@ var exec = require('child_process').exec;
  
 var directoryPath_for_background = path.join(__dirname, 'public/img/background');
 
+
+
+
+
 console.log('eduair loaded')
 
 var activate_download = true;//To activating download file
@@ -105,6 +109,8 @@ app.use(session({
 
 
 app.use(flash());
+
+
 
 
 
@@ -620,9 +626,7 @@ app.post('/send_description_file',(request,response)=>{
 						'tags':data.tags,
 						'file_name':data.file_name,
 						'file_path':data.file_path,
-						'user_id':request.session.user_id,
-						'user_name':request.session.user_full_name,
-						'user_pic':request.session.user_avatar
+						'user_id':request.session.user_id
 					}
 
 		filer.handelFile(new_file,function  (results) {
@@ -840,6 +844,26 @@ io.sockets.on('connection', function (socket) {
 			socket.emit('delete_file',data.file_id)
 		})
 	})
+
+
+
+	// socket.on('spellcheck',function  (string) { 
+
+	// 	SpellChecker.getDictionary("fr-FR", function(err, dictionary) { 
+		    
+	// 	    if(!err) {
+
+	// 	        var misspelled = ! dictionary.spellCheck(string);
+
+	// 	        if(misspelled) { console.log(dictionary.getSuggestions(string))
+
+	// 	           socket.emit('spellcheck',dictionary.getSuggestions(string));
+	// 	        }
+	// 	    }else{
+	// 	    	console.log('spellcheck Problem__'+err)
+	// 	    }
+	// 	});
+	// })
 
 
 
@@ -1425,18 +1449,6 @@ app.get('/big_brother',(request,response)=>{
 });
 
 
-///////////////////////////////////////////////:testeur///////////////////////////////////////////////////
-
-app.get('/test',(request,response)=>{
-
-	
-	filer.convert_to_mp4('test.3gp',function  (results) {
-		
-		response.send(results);
-	})
-})
-
-///////////////////////////////////////////////:testeur///////////////////////////////////////////////////
 
 
 app.use(function(req, response, next){
