@@ -42,7 +42,7 @@ sudo apt-get install graphicsmagick</code>
 -<code>	sudo npm install --unsafe-perm</code>
 
 Put the clone of this repository in directory of your choice and make a
-<code>node server.js </node> to launch it
+<code>node server.js </code> to launch it
 Warning! it listens on the port 80 so make sure this port is free on your server.
 Then type the IP address of your server on your browser to open the application
 To add new files to your server, just add "/upload" in front of your IP address on the browser.
