@@ -1,5 +1,3 @@
-# EduAirForschool
-
 <h1>Definition</h1>
 
 <h1>Requirement</h1>
@@ -30,11 +28,11 @@ For PDF File
 
 For Pictures:
  <code>sudo apt-get install tesseract-ocr
-sudo apt-get install ghostscript
+sudo apt-get install ghostscript</code>
 For Word (Office)
-sudo apt-get install antiword</code>
+<code>sudo apt-get install antiword</code>
 -	File preview (thumbnail)
-<code>sudo apt-get install unoconv<code>
+<code>code>sudo apt-get install unoconv</code>
 -	Convert PDF file to image
 <code>sudo apt-get install python-software-properties
 sudo apt-get install software-properties-common
